@@ -1,0 +1,15 @@
+#you should add this to the documentroot of your apache server
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -d [OR]
+RewriteCond %{REQUEST_FILENAME} -l
+RewriteRule ^.*$ - [NC,L]
+RewriteRule ^.*$ /page-builder.php [NC,L]
+
+# added only for the VA Scan, this does not protect against any attack, it is against servers that attack client which is not our case
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options nosniff
+    Header set X-XSS-Protection 1
+</IfModule>

@@ -1,0 +1,20 @@
+<?php
+/**
+ * @var Laminas\View\Renderer\PhpRenderer $this
+ */
+//$this->metadata['title'] = 'User Auth';
+?>
+
+<div class="wb-frmvld">
+    <form action="<?=$this->url('user/login', ['locale'=>$this->lang]);?>" method="post">
+        <div class="form-group">
+            <label for="email" class="required"><span class="field-name"><?=$this->translate('Email', 'layout');?></span> <strong class="required">(<?=$this->translate('required', 'layout');?>)</strong></label>
+            <input class="form-control" id="email" name="email" type="text" autocomplete="email" required="required" />
+        </div>
+        <div class="form-group">
+            <label for="password" class="required"><span class="field-name"><?=$this->translate('Password', 'layout');?></span> <strong class="required">(<?=$this->translate('required', 'layout');?>)</strong></label>
+            <input class="form-control" id="password" name="password" type="password" autocomplete="off" required="required" data-rule-minlength="8" />
+        </div>
+        <button type="submit" class="btn btn-primary"><?=$this->translate('Submit');?></button>
+    </form>
+</div>

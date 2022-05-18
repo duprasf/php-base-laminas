@@ -1,0 +1,149 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: layout\n"
+"Language: en-ca\n"
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Skip to main content"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Skip to \"About this site\""
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Language selection"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "[other language name]"
+msgstr "Français"
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Government of Canada"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Search and menus"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Search"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Search website"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Search Canada.ca"
+msgstr ""
+
+#: first found in module/Application/src/Application/View/Helper/Breadcrumbs.php
+msgid "You are here:"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Report a problem or mistake on this page"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Date modified:"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "[PHAC URL]"
+msgstr "https://www.canada.ca/en/public-health.html"
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Public Health Agency of Canada"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Health Canada"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "[HC URL]"
+msgstr "https://www.canada.ca/en/services/health.html"
+
+#: first found in module/Application/view/error/index.phtml
+msgid "An error occurred"
+msgstr ""
+
+#: first found in module/Application/view/error/index.phtml
+msgid "Additional information"
+msgstr ""
+
+#: first found in module/Application/view/error/index.phtml
+msgid "File"
+msgstr ""
+
+#: first found in module/Application/view/error/index.phtml
+msgid "Message"
+msgstr ""
+
+#: first found in module/Application/view/error/index.phtml
+msgid "Stack trace"
+msgstr ""
+
+#: first found in module/Application/view/error/index.phtml
+msgid "Previous exceptions"
+msgstr ""
+
+#: first found in module/Application/view/error/index.phtml
+msgid "No Exception available"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "From"
+msgstr ""
+
+#: first found in module/Application/view/layout/layout.phtml
+msgid "Section menu"
+msgstr ""
+
+#: first found in module/Application/src/Application/Model/MetadataBuilder.php
+msgid "no metadata"
+msgstr ""
+
+#: first found in module/Application/src/Application/Model/MetadataBuilder.php
+msgid "Invalid metadata description"
+msgstr ""
+
+#: first found in module/Application/src/Application/Model/MetadataBuilder.php
+msgid "Issued date is invalid"
+msgstr ""
+
+#: first found in module/Application/src/Application/Model/MetadataBuilder.php
+msgid "Modified date is invalid"
+msgstr ""
+
+#: first found in module/Application/src/Application/Model/MetadataBuilder.php
+msgid "Modified date is prior to the issued date"
+msgstr ""
+
+#: first found in module/Application/src/Application/Model/MetadataBuilder.php
+msgid "Title is missing"
+msgstr ""
+
+#: first found in module/Application/src/Application/Model/MetadataBuilder.php
+msgid "Government of Canada, Infrastructure Canada"
+msgstr ""
+
+#: 
+msgid "Home"
+msgstr ""
+
+#: 
+msgid "required"
+msgstr ""
+
+#: 
+msgid "Public Health Agency of Canada, Government of Canada"
+msgstr ""
+

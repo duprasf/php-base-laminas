@@ -1,0 +1,49 @@
+<?php
+/**
+* Local Configuration Override
+*
+* This configuration override file is for overriding environment-specific and
+* security-sensitive configuration information. Copy this file without the
+* .dist extension at the end and populate values as needed.
+*
+* @NOTE: This file is ignored from Git by default. This is a good practice,
+* as it prevents sensitive credentials from accidentally being committed
+* into version control.
+*/
+return array(
+    'service_manager' => array(
+        'services' => array(
+            // Domain is used when building full path (for example in email)
+            'domain' => 'http://centos.local',
+
+            // Version of CDTS to use
+            "cdtsEnvironment" => "dev", // dev or prod
+
+            "wetPath" => "/apps/wet",
+
+            // This is not used by default but can be used for sending error
+            // report or other notification to the admin
+            'admin-email-address'=>'francois.dupras@canada.ca',
+            'log-file'=>'logs/error-logs',
+
+            // The default metadata if the page did not provide some/all of it
+            'default-metadata' => array(
+                'title'=>'Health Canada',
+                'description'=>'Health Canada',
+                'author'=>'Health Canada, Government of Canada',
+                'issued'=>date("Y-m-d"),
+            ),
+
+            'implementedLanguages'=>array('en'=>'English', 'fr'=>'Français'),
+        ),
+    ),
+    'view_manager' => array(
+        'display_not_found_reason' => false,
+        'display_exceptions'       => false,
+        'template_path_stack' => array(
+            // Define where the FileSystemRoute should look for the
+            // 'standalone' pages, the pages not part of a MVC application
+            'FileSystemPage' => ROOT . '/../framework-site',
+        )
+    ),
+);

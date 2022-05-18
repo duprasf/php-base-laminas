@@ -1,0 +1,447 @@
+<?php
+/**
+ * @var Laminas\View\Renderer\PhpRenderer $this
+ */
+use \Application\Model\Breadcrumbs;
+?>
+<?= $this->doctype() ?>
+<?php
+$layout = $this->viewModel()->getCurrent();
+$this->completeMetadata($layout);
+$views = $layout->getChildren();
+$view = isset($views[0]) ? $views[0] : $layout;
+if(!$this->lang) {
+    // on error pages, the lang is not defined. Use 'en' as default
+    $this->lang = 'en';
+}
+$otherLang = $this->lang == 'en' ? 'fr' : 'en';
+
+$cdtsVersion = $layout->cdts['version'];
+$integrity = $layout->cdts['integrity'];
+$cdtsPath = $layout->cdts['path'];
+
+$cdtsEnv = $layout->cdts['env'];
+$cdnEnv = $cdtsEnv == 'prod' ? 'live' : 'dev';
+
+if(is_null($this->attribution) && !is_null($view->attribution)) {
+    $this->attribution = $view->attribution;
+}
+if($this->attribution == 'PHAC') {
+    $this->attribution = array($this->translate('Public Health Agency of Canada', 'layout'), $this->translate('[PHAC URL]', 'layout'));
+}
+elseif($this->attribution == 'HC') {
+    $this->attribution = array($this->translate('Health Canada', 'layout'), $this->translate('[HC URL]', 'layout'));
+}
+elseif(is_string($this->attribution) && strpos($this->attribution, '|')) {
+    $this->attribution = explode('|', $this->attribution);
+} else {
+    $this->attribution = null;
+}
+
+if(!$this->contentSecurityPolicy) {
+    $this->contentSecurityPolicy = "default-src 'self' *.canada.ca healthycanadians.gc.ca canadiaensensante.gc.ca ajax.googleapis.com www.google-analytics.com www.googletagmanager.com *.googleapis.com fonts.gstatic.com use.fontawesome.com 'unsafe-eval' 'unsafe-inline'";
+}
+
+$sideMenu = $layout->sideMenu;
+$sideMenuLocation = $layout->sideMenuLocation;
+$usefulLinks = $layout->usefulLinks;
+$usefulLinksLocation = $layout->usefulLinksLocation;
+?>
+<!DOCTYPE html><!--[if lt IE 9]><html class="no-js lt-ie9<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr"><![endif]--><!--[if gt IE 8]><!-->
+<html class="no-js<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr">
+    <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
+        wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
+        <title><?=$this->stripTags($this->title);?></title>
+        <meta content="width=device-width,initial-scale=1" name="viewport">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+        <?if(isset($this->basePath)):?>
+        <base href="<?=$this->basePath;?>">
+        <?endif;?>
+
+        <?if($this->description):?>
+        <meta name="description" content="<?=$this->stripTags($this->description);?>">
+        <meta property="dcterms:description" content="<?=$this->stripTags($this->description);?>">
+        <?endif;?>
+
+        <?if($this->keywords):?><meta name="keywords" content="<?=is_array($this->keywords)?implode(',',$this->keywords):$this->keywords;?>"><?endif;?>
+
+        <meta name="author" content="<?=$this->author ? $this->translate($this->author) : $this->translate('Government of Canada');?>">
+        <meta property="dcterms:creator" content="<?=$this->author ? $this->translate($this->author) : $this->translate('Government of Canada');?>">
+
+        <meta property="dcterms:title" content="<?=$this->stripTags($this->title);?>">
+        <meta property="dcterms:language" title="ISO639-2/T" content="<?=$this->lang=='fr' ? 'fra' : 'eng';?>">
+        <?if($this->subject):?><meta property="dcterms:subject" title="gccore" content="<?=is_array($this->subject)?implode('; ',$this->subject):$this->subject;?>"><?endif;?>
+
+        <meta property="dcterms:issued" title="W3CDTF" content="<?=date('Y-m-d', $this->issuedTimestamp);?>">
+        <meta property="dcterms:modified" title="W3CDTF" content="<?=date('Y-m-d', $this->modifiedTimestamp);?>">
+
+        <meta http-equiv="Content-Security-Policy" content="<?=$this->contentSecurityPolicy;?>">
+
+        <!-- Google Tag Manager DO NOT REMOVE OR MODIFY - NE PAS SUPPRIMER OU MODIFIER -->
+        <script>dataLayer1 = [];</script>
+        <!-- End Google Tag Manager -->
+        <script type="text/javascript" src="<?=$cdtsPath;?>/cdts/compiled/soyutils.js" crossorigin="anonymous" integrity="<?=$integrity['/cdts/compiled/soyutils.js']??$integrity['/cdts/compiled/soyutils.js'];?>"></script>
+        <script type="text/javascript" src="<?=$cdtsPath;?>/cdts/compiled/wet-<?=$this->lang;?>.js" crossorigin="anonymous" integrity="<?=$integrity["/cdts/compiled/wet-{$this->lang}.js"]??$integrity["/cdts/compiled/wet-{$this->lang}.js"];?>"></script>
+
+        <style>
+            ol.numbered {
+                display: table;
+            }
+
+            ol.numbered > li {
+                display: table-row;
+            }
+            ol.numbered > li::before {
+                content: attr(data-num) " ";
+                display: table-cell;
+                text-align: right;
+                padding-right: 1em;
+            }
+            ol.unnumbered > li::before {
+                content: none;
+                display: initial;
+                text-align: initial;
+                padding-right: initial;
+            }
+        </style>
+
+        <noscript>
+            <!-- Write closure fall-back static file -->
+            <!--[if gte IE 9 | !IE ]><!-->
+            <link href="<?=$cdtsPath;?>/assets/favicon.ico" rel="icon" type="image/x-icon">
+            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/theme.min.css" integrity="<?=$integrity['/css/theme.min.css']??$integrity['/css/theme.min.css'];?>" crossorigin="anonymous">
+            <link rel="stylesheet" href="<?=$cdtsPath;?>/cdts/cdtsfixes.css" integrity="<?=$integrity['/cdts/cdtsfixes.css']??$integrity['/cdts/cdtsfixes.css'];?>" crossorigin="anonymous">
+            <!--<![endif]-->
+            <!--[if lt IE 9]>
+            <link href="<?=$cdtsPath;?>/assets/favicon.ico" rel="shortcut icon">
+            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/ie8-theme.min.css" integrity="<?=$integrity['/css/ie8-theme.min.css']??$integrity['/css/ie8-theme.min.css'];?>" crossorigin="anonymous">
+            <![endif]-->
+            <!--[if lte IE 9]><![endif]-->
+            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/noscript.min.css" integrity="<?=$integrity['/css/noscript.min.css']??$integrity['/css/noscript.min.css'];?>" crossorigin="anonymous">
+        </noscript>
+        <!-- Write closure template -->
+        <script type="text/javascript">
+            document.write(wet.builder.refTop({
+                cdnEnv: "<?=$cdtsEnv;?>"
+            }));
+        </script>
+        <!-- Custom CSS Start -->
+        <?=$this->headLink();?>
+        <?=$this->headStyle();?>
+
+        <?if($this->vars('extra-css')) foreach($this->vars('extra-css') as $file):?>
+            <link rel="stylesheet" href="<?=str_replace('[CDTS]', $cdtsPath, $file);?>" />
+        <?endforeach;?>
+        <!-- Custom CSS End -->
+    </head>
+    <body vocab="http://schema.org/" typeof="WebPage">
+        <!-- Google Tag Manager DO NOT REMOVE OR MODIFY - NE PAS SUPPRIMER OU MODIFIER -->
+        <noscript><iframe title="Google Tag Manager" src="//www.googletagmanager.com/ns.html?id=GTM-TLGQ9K" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer1'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer1','GTM-TLGQ9K');</script>
+        <!-- End Google Tag Manager -->
+        <div id="def-top">
+            <ul id="wb-tphp">
+                <li class="wb-slc">
+                    <a class="wb-sl" href="#wb-cont"><?=$this->translate('Skip to main content');?></a>
+                </li>
+                <li class="wb-slc visible-sm visible-md visible-lg">
+                    <a class="wb-sl" href="#wb-info"><?=$this->translate('Skip to "About this site"');?></a>
+                </li>
+            </ul>
+
+            <header role="banner">
+                <div id="wb-bnr" class="container">
+                    <section id="wb-lng" class="visible-md visible-lg text-right">
+                        <h2 class="wb-inv"><?=$this->translate('Language selection');?></h2>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <ul class="list-inline margin-bottom-none">
+                                    <li><a lang="<?=$otherLang;?>" href="<?=$this->getLangSwitchUrl();?>"><?=$this->translate('[other language name]');?></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="row">
+                        <div class="brand col-xs-8 col-sm-9 col-md-6">
+                            <a href="https://www.canada.ca/<?=$this->lang;?>.html"><object type="image/svg+xml" tabindex="-1" data="<?=$cdtsPath;?>/assets/sig-blk-<?=$this->lang;?>.svg"></object><span class="wb-inv"> <?=$this->translate('Government of Canada');?></span></a>
+                        </div>
+                        <section class="wb-mb-links col-xs-4 col-sm-3 visible-sm visible-xs" id="wb-glb-mn">
+                            <h2><?=$this->translate('Search and menus');?></h2>
+                            <ul class="list-inline text-right chvrn">
+                                <li><a href="#mb-pnl" title="<?=$this->translate('Search and menus');?>" aria-controls="mb-pnl" class="overlay-lnk" role="button"><span class="glyphicon glyphicon-search"><span class="glyphicon glyphicon-th-list"><span class="wb-inv"><?=$this->translate('Search and menus');?></span></span></span></a></li>
+                            </ul>
+                            <div id="mb-pnl"></div>
+                        </section>
+                        <section id="wb-srch" class="col-xs-6 text-right visible-md visible-lg">
+                            <h2><?=$this->translate('Search');?></h2>
+                            <form action="https://recherche-search.gc.ca/rGs/s_r?#wb-land" method="get" name="cse-search-box" role="search" class="form-inline">
+                                <div class="form-group">
+                                    <label for="wb-srch-q" class="wb-inv"><?=$this->translate('Search website');?></label>
+                                    <input name="cdn" value="canada" type="hidden">
+                                    <input name="st" value="s" type="hidden">
+                                    <input name="num" value="10" type="hidden">
+                                    <input name="langs" value="<?=$this->lang;?>" type="hidden">
+                                    <input name="st1rt" value="1" type="hidden">
+                                    <input name="s5bm3ts21rch" value="x" type="hidden">
+                                    <input id="wb-srch-q" list="wb-srch-q-ac" class="wb-srch-q form-control" name="q" value="" size="27" maxlength="150" placeholder="<?=$this->translate('Search Canada.ca');?>" type="search">
+                                    <input name="_charset_" value="UTF-8" type="hidden">
+                                    <datalist id="wb-srch-q-ac">
+                                        <!--[if lte IE 9]><select><![endif]-->
+                                        <!--[if lte IE 9]></select><![endif]-->
+                                    </datalist>
+                                </div>
+                                <div class="form-group submit">
+                                    <button type="submit" id="wb-srch-sub" class="btn btn-primary btn-small" name="wb-srch-sub">
+                                        <span class="glyphicon-search glyphicon">
+                                        </span>
+                                        <span class="wb-inv"><?=$this->translate('Search');?></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+                    </div>
+                </div>
+                <nav role="navigation" id="wb-sm" data-ajax-replace="http://cdn.canada.ca/gcweb-cdn-<?=$cdnEnv;?>/sitemenu/sitemenu-<?=$this->lang;?>.html" data-trgt="mb-pnl" class="wb-menu visible-md visible-lg" typeof="SiteNavigationElement">
+                    <div class="container nvbar">
+                        <?if($this->lang == 'fr'):?>
+                        <h2>Menu des sujets</h2>
+                        <div class="row">
+                            <ul class="list-inline menu">
+                                <li><a href="http://www.edsc.gc.ca/fr/emplois/index.page">Emplois</a></li>
+                                <li><a href="http://www.cic.gc.ca/francais/index.asp">Immigration</a></li>
+                                <li><a href="https://voyage.gc.ca/">Voyage</a></li>
+                                <li><a href="https://www.canada.ca/fr/services/entreprises.html">Entreprises</a></li>
+                                <li><a href="https://www.canada.ca/fr/services/prestations.html">Prestations</a></li>
+                                <li><a href="https://www.canada.ca/fr/services/sante.html">Santé</a></li>
+                                <li><a href="https://www.canada.ca/fr/services/impots.html">Impôts</a></li>
+                                <li><a href="https://www.canada.ca/fr/services.html">Autres services</a></li>
+                            </ul>
+                        </div>
+                        <?else:?>
+                        <h2>Topics menu</h2>
+                        <div class="row">
+                            <ul class="list-inline menu">
+                                <li><a href="http://www.esdc.gc.ca/en/jobs/index.page">Jobs</a></li>
+                                <li><a href="http://www.cic.gc.ca/english/index.asp">Immigration</a></li>
+                                <li><a href="https://travel.gc.ca/">Travel</a></li>
+                                <li><a href="https://www.canada.ca/en/services/business.html">Business</a></li>
+                                <li><a href="https://www.canada.ca/en/services/benefits.html">Benefits</a></li>
+                                <li><a href="https://www.canada.ca/en/services/health.html">Health</a></li>
+                                <li><a href="https://www.canada.ca/en/services/taxes.html">Taxes</a></li>
+                                <li><a href="https://www.canada.ca/en/services.html">More services</a></li>
+                            </ul>
+                        </div>
+                        <?endif;?>
+                    </div>
+                </nav>
+                <?=$this->breadcrumbs($view->breadcrumbItems);?>
+            </header>
+        </div>
+
+
+        <?if($sideMenu):?>
+            <div class="container"><div class="row">
+            <main role="main" property="mainContentOfPage" class="col-md-9 <?=$sideMenuLocation!='right'? ' col-md-push-3':'';?>">
+        <?else:?>
+            <main role="main" property="mainContentOfPage" class="container">
+        <?endif;?>
+
+            <?if(!$this->isAppWithoutH1):?>
+                <h1 property="name" id="wb-cont"><?=$this->titleH1;?></h1>
+                <?if(is_array($this->attribution) && count($this->attribution) == 2):?>
+                    <p class="gc-byline">
+                        <strong>
+                            <?=$this->translate('From');?>
+                            <a href="<?=$this->attribution[1];?>"><?=$this->attribution[0];?></a>
+                        </strong>
+                    </p>
+                <?endif;?>
+            <?endif;?>
+
+
+            <div id="flashMessengerGroup">
+            <?=$this->displayFlashMessages($this->flashMessenger);?>
+            </div>
+            <div class="clearfix"></div>
+
+            <?=$this->content;?>
+
+            <div class="clearfix"></div>
+
+            <div id="def-preFooter">
+                <div class="row pagedetails">
+                    <div class="col-sm-6 col-lg-4 mrgn-tp-sm">
+                        <a href="https://www.canada.ca/<?=$this->lang.($this->lang == 'fr' ? '/signaler-probleme.html' : '/report-problem.html');?>" class="btn btn-default btn-block"><?=$this->translate('Report a problem or mistake on this page');?></a>
+                    </div>
+                    <div class="col-sm-3 mrgn-tp-sm pull-right">
+                        <div class="wb-share" data-wb-share='{"lnkClass": "btn btn-default btn-block"}'></div>
+                    </div>
+                    <div class="datemod col-xs-12 mrgn-tp-lg">
+                        <dl id="wb-dtmd">
+                            <?if($this->vars('is-app')):?>
+                            <dt><?=$this->translate("Version:");?></dt><dd><?=date('y.md', $this->modifiedTimestamp);?></dd>
+                            <?else:?>
+                            <dt><?=$this->translate("Date modified:&#32;");?></dt><dd><time property="dateModified"><?=date('Y-m-d', $this->modifiedTimestamp);?></time></dd>
+                            <?endif;?>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <?if($sideMenu):?>
+            <nav class="wb-sec col-md-3 <?=$sideMenuLocation!='right' ? ' col-md-pull-9' : '';?>" typeof="SiteNavigationElement" id="wb-sec" role="navigation">
+                <h2 id="wb-sec-h" class="wb-inv"><?=$this->translate('Section menu');?></h2>
+                <?=$sideMenu;?>
+            </nav>
+        <?endif;?>
+        <?if($usefulLinks):?>
+            <div class="col-md-3 <?=$usefulLinksLocation!='right' ? ' col-md-pull-9' : '';?>">
+                <section class="panel panel-primary">
+                    <header class="panel-heading">
+                        <h5 class="panel-title"><?=$this->translate('Useful Links');?></h5>
+                    </header>
+                    <div class="panel-body">
+                    <?foreach($usefulLinks as $link):?>
+                        <p><a href="<?=$link["url"];?>"><?=$link['name'];?></a></p>
+                    <?endforeach;?>
+                    </div>
+                </section>
+            </div>
+        <?endif;?>
+        <?if($sideMenu || $usefulLinks):?>
+            </div></div>
+        <?endif;?>
+        <div id="def-footer">
+            <aside class="gc-nttvs container" data-ajax-replace="//cdn.canada.ca/gcweb-cdn-<?=$cdnEnv;?>/features/features-<?=$this->lang;?>.html">
+                <?if($this->lang=='fr'):?>
+                <h2>Activités et initiatives du gouvernement du Canada</h2>
+                <div id="gcwb_prts" class="wb-eqht row">
+                    <p class="mrgn-lft-md"><a href="http://www.canada.ca/activites.html">Accédez aux activités et initiatives du gouvernement du Canada</a></p>
+                </div>
+                <?else:?>
+                <h2>Government of Canada activities and initiatives</h2>
+                <div id="gcwb_prts" class="wb-eqht row">
+                    <p class="mrgn-lft-md"><a href="http://www.canada.ca/activities.html">Access Government of Canada activities and initiatives</a></p>
+                </div>
+                <?endif;?>
+            </aside>
+            <footer role="contentinfo" id="wb-info">
+                <?if($this->lang == 'fr'):?>
+                    <nav role="navigation" class="container wb-navcurr">
+                        <h2 class="wb-inv">Au sujet du gouvernement</h2>
+                        <ul class="list-unstyled colcount-sm-2 colcount-md-3">
+                            <li><a href="https://www.canada.ca/fr/contact.html">Contactez-nous</a></li>
+                            <li><a href="https://www.canada.ca/fr/gouvernement/min.html">Ministères et organismes</a></li>
+                            <li><a href="https://www.canada.ca/fr/gouvernement/fonctionpublique.html">Fonction publique et force militaire</a></li>
+                            <li><a href="http://www.servicecanada.gc.ca/gcnouvelles">Nouvelles</a></li>
+                            <li><a href="https://www.canada.ca/fr/gouvernement/systeme/lois.html">Traités, lois et règlements</a></li>
+                            <li><a href="https://www.canada.ca/fr/transparence/rapports.html">Rapports à l'échelle du gouvernement</a></li>
+                            <li><a href="http://pm.gc.ca/fra">Premier ministre</a></li>
+                            <li><a href="https://www.canada.ca/fr/gouvernement/systeme.html">Comment le gouvernement fonctionne</a></li>
+                            <li><a href="http://ouvert.canada.ca/">Gouvernement ouvert</a></li>
+                        </ul>
+                    </nav>
+                    <div class="brand">
+                        <div class="container">
+                            <div class="row">
+                                <nav class="col-md-10 ftr-urlt-lnk">
+                                    <h2 class="wb-inv">À propos du site</h2>
+                                    <ul>
+                                        <li><a href="https://www.canada.ca/fr/sociaux.html">Médias sociaux</a></li>
+                                        <li><a href="https://www.canada.ca/fr/mobile.html">Applications mobiles</a></li>
+                                        <li><a href="https://www1.canada.ca/fr/nouveausite.html">À propos de Canada.ca</a></li>
+                                        <li><a href="https://www.canada.ca/fr/transparence/avis.html">Avis</a></li>
+                                        <li><a href="https://www.canada.ca/fr/transparence/confidentialite.html">Confidentialité</a></li>
+                                    </ul>
+                                </nav>
+                                <div class="col-xs-6 visible-sm visible-xs tofpg">
+                                    <a href="#wb-cont">Haut de la page <span class="glyphicon glyphicon-chevron-up"></span></a>
+                                </div>
+                                <div class="col-xs-6 col-md-2 text-right">
+                                    <object type="image/svg+xml" tabindex="-1" role="img" data="<?=$cdtsPath;?>/assets/wmms-blk.svg" aria-label="Symbole du gouvernement du Canada"></object>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?else:?>
+                    <nav role="navigation" class="container wb-navcurr">
+                        <h2 class="wb-inv">About government</h2>
+                        <ul class="list-unstyled colcount-sm-2 colcount-md-3">
+                            <li><a href="https://www.canada.ca/en/contact.html">Contact us</a></li>
+                            <li><a href="https://www.canada.ca/en/government/dept.html">Departments and agencies</a></li>
+                            <li><a href="https://www.canada.ca/en/government/publicservice.html">Public service and military</a></li>
+                            <li><a href="http://www.servicecanada.gc.ca/gcnews">News</a></li>
+                            <li><a href="https://www.canada.ca/en/government/system/laws.html">Treaties, laws and regulations</a></li>
+                            <li><a href="https://www.canada.ca/en/transparency/reporting.html">Government-wide reporting</a></li>
+                            <li><a href="http://pm.gc.ca/eng">Prime Minister</a></li>
+                            <li><a href="https://www.canada.ca/en/government/system.html">How government works</a></li>
+                            <li><a href="http://open.canada.ca/en/">Open government</a></li>
+                        </ul>
+                    </nav>
+                    <div class="brand">
+                        <div class="container">
+                            <div class="row">
+                                <nav class="col-md-10 ftr-urlt-lnk">
+                                    <h2 class="wb-inv">About this site</h2>
+                                    <ul>
+                                        <li><a href="https://www.canada.ca/en/social.html">Social media</a></li>
+                                        <li><a href="https://www.canada.ca/en/mobile.html">Mobile applications</a></li>
+                                        <li><a href="https://www1.canada.ca/en/newsite.html">About Canada.ca</a></li>
+                                        <li><a href="https://www.canada.ca/en/transparency/terms.html">Terms and conditions</a></li>
+                                        <li><a href="https://www.canada.ca/en/transparency/privacy.html">Privacy</a></li>
+                                    </ul>
+                                </nav>
+                                <div class="col-xs-6 visible-sm visible-xs tofpg">
+                                    <a href="#wb-cont">Top of Page <span class="glyphicon glyphicon-chevron-up"></span></a>
+                                </div>
+                                <div class="col-xs-6 col-md-2 text-right">
+                                    <object type="image/svg+xml" tabindex="-1" role="img" data="<?=$cdtsPath;?>/assets/wmms-blk.svg" aria-label="Symbol of the Government of Canada"></object>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?endif;?>
+            </footer>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.js" integrity="sha384-1qy6pxCPVEhkjPJM8mBaaRNIDGE20UzrPyndMEoCaeK390vhZ3jt3SQtS6aZDqRA" crossorigin="anonymous"></script>
+
+        <!-- Write closure template -->
+        <script>
+            var defTop = document.getElementById("def-top");
+            defTop.outerHTML = wet.builder.top({
+                cdnEnv: "<?=$cdtsEnv;?>",
+                topSecMenu: <?=$sideMenu ? 'true':'false';?>,
+                lngLinks: [{
+                    lang: "<?=$otherLang;?>",
+                    href: "<?=$this->getLangSwitchUrl();?>",
+                    text: "<?=$this->translate('[other language name]');?>"
+                }],
+                breadcrumbs: <?=$view->breadcrumbItems instanceOf Breadcrumbs ? $view->breadcrumbItems->tojson() : '[]';?>
+            });
+            var defPreFooter = document.getElementById("def-preFooter");
+            defPreFooter.outerHTML = wet.builder.preFooter({
+                cdnEnv: "<?=$cdtsEnv;?>",
+                dateModified: '<?=date('Y-m-d', $this->modifiedTimestamp);?>'
+            });
+            var defFooter = document.getElementById("def-footer");
+            defFooter.outerHTML = wet.builder.footer({
+                cdnEnv: "<?=$cdtsEnv;?>"
+            });
+            document.write(wet.builder.refFooter({
+                cdnEnv: "<?=$cdtsEnv;?>"
+            }));
+        </script>
+
+        <!-- Custom Scripts Start -->
+        <?if($this->vars('extra-js'))foreach($this->vars('extra-js') as $file):?>
+            <script src="<?=str_replace('[CDTS]', $cdtsPath, $file);?>"></script>
+        <?endforeach;?>
+        <?=$this->headScript();?>
+        <?=$this->inlineScript();?>
+        <!-- Custom Scripts End -->
+    </body>
+</html>

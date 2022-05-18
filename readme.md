@@ -1,0 +1,1 @@
+# Docker image of PHP with Laminas

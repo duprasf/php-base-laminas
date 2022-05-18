@@ -1,0 +1,580 @@
+// time savers
+var $$ = function(selector) { return document.querySelectorAll(selector); }
+
+function ready(fn) {
+	if (document.readyState != 'loading'){
+		fn();
+	} else {
+		document.addEventListener('DOMContentLoaded', fn);
+	}
+}
+
+function ucfirst(str) {
+	str += '';
+	var f = str.charAt(0).toUpperCase();
+	return f + str.substr(1);
+}
+
+function dashToCamel(str, firstUpper) {
+    if(firstUpper == undefined) {
+        firstUpper = false;
+    }
+    str += '';
+    str = str.replace(/-([a-z])/gi, function(match) {
+        return match[1].toUpperCase();
+    });
+    if(firstUpper) {
+        var f = str.charAt(0).toUpperCase();
+        return f + str.substr(1);
+    }
+    else {
+        return str;
+    }
+}
+
+function in_array(needle, haystack, argStrict) {
+	var key = '',strict = !! argStrict;
+
+	if (strict) {
+		for (key in haystack) {
+			if (haystack[key] === needle) {
+				return true;
+			}
+		}
+	} else {
+		for (key in haystack) {
+			if (haystack[key] == needle) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+//Array.prototype.forEach
+var $foreach = function(elements, callback) { Array.prototype.forEach.call(elements, callback); }
+
+function isPartOfTree(element, selector) {
+	return getClosestParent(element, selector) ? true : false;
+}
+
+function closestParent(element, selector) { return getClosestParent(element, selector); }
+
+function getClosestParent(element, selector) {
+	parent = element.parentNode;
+	if(element.matches && element.matches(selector)) return element;
+	else if(parent) return getClosestParent(parent, selector);
+	return false;
+}
+if(!HTMLElement.prototype.closest) {
+    closestPrototype = function(selector) { return closestParent(this, selector);};
+    HTMLElement.prototype.closest = closestPrototype;
+}
+/*
+// adding more functionnalities to jQuery
+jQuery.fn.selectText = function(){
+	var doc = document;
+	var element = this[0];
+	if (doc.body.createTextRange) {
+		var range = document.body.createTextRange();
+		range.moveToElementText(element);
+		range.select();
+	} else if (window.getSelection) {
+		var selection = window.getSelection();
+		var range = document.createRange();
+		range.selectNodeContents(element);
+		selection.removeAllRanges();
+		selection.addRange(range);
+	}
+};
+$.widget( "custom.catcomplete", $.ui.autocomplete, {
+	_renderMenu: function( ul, items ) {
+		var that = this,
+		currentCategory = "";
+		$.each( items, function( index, item ) {
+			if ( item.category != currentCategory ) {
+				ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+				currentCategory = item.category;
+			}
+			that._renderItemData( ul, item );
+		});
+	}
+});
+(function(jQuery){
+	jQuery.fn.formToJson = function(options) {
+		options = jQuery.extend({}, options);
+
+		var self = this,
+		json = {},
+		push_counters = {},
+		patterns = {
+			"validate": /^[a-zA-Z][a-zA-Z0-9_]*(?:\[(?:\d*|[a-zA-Z0-9_]+)\])*$/,
+			"key":      /[a-zA-Z0-9_]+|(?=\[\])/g,
+			"push":     /^$/,
+			"fixed":    /^\d+$/,
+			"named":    /^[a-zA-Z0-9_]+$/
+		};
+
+
+		this.build = function(base, key, value){
+			base[key] = value;
+			return base;
+		};
+
+		this.push_counter = function(key){
+			if(push_counters[key] === undefined){
+				push_counters[key] = 0;
+			}
+			return push_counters[key]++;
+		};
+		jQuery.each(jQuery(this).serializeArray(), function(){
+			// skip invalid keys
+			if(!patterns.validate.test(this.name)){
+				return;
+			}
+			var k,
+			keys = this.name.match(patterns.key),
+			merge = this.value,
+			reverse_key = this.name;
+
+			while((k = keys.pop()) !== undefined){
+				// adjust reverse_key
+				reverse_key = reverse_key.replace(new RegExp("\\[" + k + "\\]$"), '');
+				// push
+				if(k.match(patterns.push)){
+					merge = self.build([], self.push_counter(reverse_key), merge);
+				}
+				// fixed
+				// removed the fixed key (array) since I have both numeric and named key in my equipment page
+				//else if(k.match(patterns.fixed)){
+				//    merge = self.build([], k, merge);
+				//}
+				// named
+				else if(k.match(patterns.named)){
+					merge = self.build({}, k, merge);
+				}
+			}
+			json = jQuery.extend(true, json, merge);
+		});
+		return json;
+	}
+
+})(jQuery);
+/**/
+//////////////////////////////////////////////////////////////
+// String manipulation
+var strManip = (function() {
+	var strManip = {};
+	strManip.getAccentCharacterMap = function() {
+		return {
+			'Š':'S',	'Œ':'OE',	'Ž':'Z',	'š':'s',	'œ':'oe',	'ž':'z',	'Ÿ':'Y',	'¥':'Y',	'µ':'u',	'À':'A',	'Á':'A',
+			'Â':'A',	'Ã':'A',	'Ä':'A',	'Å':'A',	'Æ':'AE',	'Ç':'C',	'È':'E',	'É':'E',	'Ê':'E',	'Ë':'E',	'Ì':'I',	'Í':'I',
+			'Î':'I',	'Ï':'I',	'Ð':'D',	'Ñ':'N',	'Ò':'O',	'Ó':'O',	'Ô':'O',	'Õ':'O',	'Ö':'O',	'Ø':'O',	'Ù':'U',	'Ú':'U',
+			'Û':'U',	'Ü':'U',	'Ý':'Y',	'ß':'s',	'à':'a',	'á':'a',	'â':'a',	'ã':'a',	'ä':'a',	'å':'a',	'æ':'ae',	'ç':'c',
+			'è':'e',	'é':'e',	'ê':'e',	'ë':'e',	'ì':'i',	'í':'i',	'î':'i',	'ï':'i',	'ð':'o',	'ñ':'n',	'ò':'o',	'ó':'o',
+			'ô':'o',	'õ':'o',	'ö':'o',	'ø':'o',	'ù':'u',	'ú':'u',	'û':'u',	'ü':'u',	'ý':'y',	'ÿ':'y',
+		};
+	}
+	strManip.removeAccents = function(str, newPairs)
+	{
+		var replacePairs=strManip.getAccentCharacterMap();
+		if(typeof newPairs === 'object') {
+			for(var key in newPairs) {
+				replacePairs[key] = newPairs[key];
+			}
+		}
+		var newStr = str;
+		for(var i in replacePairs) {
+			newStr = newStr.replace(new RegExp(i, 'g'), replacePairs[i]);
+		}
+		return newStr;
+	}
+
+	strManip.convertToCleanString = function(string, exception) { return strManip.clean(string, exception); }
+	strManip.clean = function(string, exception)
+	{
+		if(string.length === 0) return string;
+		if(exception != undefined && exception.push == 'push()') exception = [exception];
+		if(!(exception && exception.push == 'push()')) { exception = []; }
+
+		string = strManip.strip_tags(string);
+		string = strManip.html_entity_decode(string);
+
+		exception.push('\\w');
+
+		var clean = strManip.removeAccents(string, {'–':'-', '—':'-', '_':' '})
+					.replace(new RegExp('[^'+exception.join()+']', 'g'), '-')
+					.replace(' ', '-')
+					.replace(/-{2,}/g, '-')
+					.replace(/^-/, '')
+					.replace(/-$/, '')
+					.toLowerCase();
+		return clean;
+	}
+
+	strManip.strip_tags = function(input, allowed) {
+		//  discuss at: http://phpjs.org/functions/strip_tags/
+		// original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// improved by: Luke Godfrey
+		// improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		//    input by: Pul
+		//    input by: Alex
+		//    input by: Marc Palau
+		//    input by: Brett Zamir (http://brett-zamir.me)
+		//    input by: Bobby Drake
+		//    input by: Evertjan Garretsen
+		// bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// bugfixed by: Onno Marsman
+		// bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// bugfixed by: Eric Nagel
+		// bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// bugfixed by: Tomasz Wesolowski
+		//  revised by: Rafał Kukawski (http://blog.kukawski.pl/)
+		//   example 1: strip_tags('<p>Kevin</p> <br /><b>van</b> <i>Zonneveld</i>', '<i><b>');
+		//   returns 1: 'Kevin <b>van</b> <i>Zonneveld</i>'
+		//   example 2: strip_tags('<p>Kevin <img src="someimage.png" onmouseover="someFunction()">van <i>Zonneveld</i></p>', '<p>');
+		//   returns 2: '<p>Kevin van Zonneveld</p>'
+		//   example 3: strip_tags("<a href='http://kevin.vanzonneveld.net'>Kevin van Zonneveld</a>", "<a>");
+		//   returns 3: "<a href='http://kevin.vanzonneveld.net'>Kevin van Zonneveld</a>"
+		//   example 4: strip_tags('1 < 5 5 > 1');
+		//   returns 4: '1 < 5 5 > 1'
+		//   example 5: strip_tags('1 <br/> 1');
+		//   returns 5: '1  1'
+		//   example 6: strip_tags('1 <br/> 1', '<br>');
+		//   returns 6: '1 <br/> 1'
+		//   example 7: strip_tags('1 <br/> 1', '<br><br/>');
+		//   returns 7: '1 <br/> 1'
+
+		allowed = (((allowed || '') + '')
+			.toLowerCase()
+			.match(/<[a-z][a-z0-9]*>/g) || [])
+		.join(''); // making sure the allowed arg is a string containing only tags in lowercase (<a><b><c>)
+		var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
+		commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
+		return input.replace(commentsAndPhpTags, '')
+		.replace(tags, function($0, $1) {
+			return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+		});
+	}
+	strManip.html_entity_decode = function(string, quote_style) {
+		//  discuss at: http://phpjs.org/functions/html_entity_decode/
+		// original by: john (http://www.jd-tech.net)
+		//    input by: ger
+		//    input by: Ratheous
+		//    input by: Nick Kolosov (http://sammy.ru)
+		// improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// improved by: marc andreu
+		//  revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		//  revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// bugfixed by: Onno Marsman
+		// bugfixed by: Brett Zamir (http://brett-zamir.me)
+		// bugfixed by: Fox
+		//  depends on: get_html_translation_table
+		//   example 1: html_entity_decode('Kevin &amp; van Zonneveld');
+		//   returns 1: 'Kevin & van Zonneveld'
+		//   example 2: html_entity_decode('&amp;lt;');
+		//   returns 2: '&lt;'
+
+		var hash_map = {},
+		symbol = '',
+		tmp_str = '',
+		entity = '';
+		tmp_str = string.toString();
+
+		if (false === (hash_map = strManip.get_html_translation_table('HTML_ENTITIES', quote_style))) {
+			return false;
+		}
+
+		// fix &amp; problem
+		// http://phpjs.org/functions/get_html_translation_table:416#comment_97660
+		delete(hash_map['&']);
+		hash_map['&'] = '&amp;';
+
+		for (symbol in hash_map) {
+			entity = hash_map[symbol];
+			tmp_str = tmp_str.split(entity)
+			.join(symbol);
+		}
+		tmp_str = tmp_str.split('&#039;')
+		.join("'");
+
+		return tmp_str;
+	}
+	strManip.get_html_translation_table = function (table, quote_style) {
+		//  discuss at: http://phpjs.org/functions/get_html_translation_table/
+		// original by: Philip Peterson
+		//  revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// bugfixed by: noname
+		// bugfixed by: Alex
+		// bugfixed by: Marco
+		// bugfixed by: madipta
+		// bugfixed by: Brett Zamir (http://brett-zamir.me)
+		// bugfixed by: T.Wild
+		// improved by: KELAN
+		// improved by: Brett Zamir (http://brett-zamir.me)
+		//    input by: Frank Forte
+		//    input by: Ratheous
+		//        note: It has been decided that we're not going to add global
+		//        note: dependencies to php.js, meaning the constants are not
+		//        note: real constants, but strings instead. Integers are also supported if someone
+		//        note: chooses to create the constants themselves.
+		//   example 1: get_html_translation_table('HTML_SPECIALCHARS');
+		//   returns 1: {'"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;'}
+
+		var entities = {},
+		hash_map = {},
+		decimal;
+		var constMappingTable = {},
+		constMappingQuoteStyle = {};
+		var useTable = {},
+		useQuoteStyle = {};
+
+		// Translate arguments
+		constMappingTable[0] = 'HTML_SPECIALCHARS';
+		constMappingTable[1] = 'HTML_ENTITIES';
+		constMappingQuoteStyle[0] = 'ENT_NOQUOTES';
+		constMappingQuoteStyle[2] = 'ENT_COMPAT';
+		constMappingQuoteStyle[3] = 'ENT_QUOTES';
+
+		useTable = !isNaN(table) ? constMappingTable[table] : table ? table.toUpperCase() : 'HTML_SPECIALCHARS';
+		useQuoteStyle = !isNaN(quote_style) ? constMappingQuoteStyle[quote_style] : quote_style ? quote_style.toUpperCase() :
+		'ENT_COMPAT';
+
+		if (useTable !== 'HTML_SPECIALCHARS' && useTable !== 'HTML_ENTITIES') {
+			throw new Error('Table: ' + useTable + ' not supported');
+			// return false;
+		}
+
+		entities['38'] = '&amp;';
+		if (useTable === 'HTML_ENTITIES') {
+			entities['160'] = '&nbsp;';
+			entities['161'] = '&iexcl;';
+			entities['162'] = '&cent;';
+			entities['163'] = '&pound;';
+			entities['164'] = '&curren;';
+			entities['165'] = '&yen;';
+			entities['166'] = '&brvbar;';
+			entities['167'] = '&sect;';
+			entities['168'] = '&uml;';
+			entities['169'] = '&copy;';
+			entities['170'] = '&ordf;';
+			entities['171'] = '&laquo;';
+			entities['172'] = '&not;';
+			entities['173'] = '&shy;';
+			entities['174'] = '&reg;';
+			entities['175'] = '&macr;';
+			entities['176'] = '&deg;';
+			entities['177'] = '&plusmn;';
+			entities['178'] = '&sup2;';
+			entities['179'] = '&sup3;';
+			entities['180'] = '&acute;';
+			entities['181'] = '&micro;';
+			entities['182'] = '&para;';
+			entities['183'] = '&middot;';
+			entities['184'] = '&cedil;';
+			entities['185'] = '&sup1;';
+			entities['186'] = '&ordm;';
+			entities['187'] = '&raquo;';
+			entities['188'] = '&frac14;';
+			entities['189'] = '&frac12;';
+			entities['190'] = '&frac34;';
+			entities['191'] = '&iquest;';
+			entities['192'] = '&Agrave;';
+			entities['193'] = '&Aacute;';
+			entities['194'] = '&Acirc;';
+			entities['195'] = '&Atilde;';
+			entities['196'] = '&Auml;';
+			entities['197'] = '&Aring;';
+			entities['198'] = '&AElig;';
+			entities['199'] = '&Ccedil;';
+			entities['200'] = '&Egrave;';
+			entities['201'] = '&Eacute;';
+			entities['202'] = '&Ecirc;';
+			entities['203'] = '&Euml;';
+			entities['204'] = '&Igrave;';
+			entities['205'] = '&Iacute;';
+			entities['206'] = '&Icirc;';
+			entities['207'] = '&Iuml;';
+			entities['208'] = '&ETH;';
+			entities['209'] = '&Ntilde;';
+			entities['210'] = '&Ograve;';
+			entities['211'] = '&Oacute;';
+			entities['212'] = '&Ocirc;';
+			entities['213'] = '&Otilde;';
+			entities['214'] = '&Ouml;';
+			entities['215'] = '&times;';
+			entities['216'] = '&Oslash;';
+			entities['217'] = '&Ugrave;';
+			entities['218'] = '&Uacute;';
+			entities['219'] = '&Ucirc;';
+			entities['220'] = '&Uuml;';
+			entities['221'] = '&Yacute;';
+			entities['222'] = '&THORN;';
+			entities['223'] = '&szlig;';
+			entities['224'] = '&agrave;';
+			entities['225'] = '&aacute;';
+			entities['226'] = '&acirc;';
+			entities['227'] = '&atilde;';
+			entities['228'] = '&auml;';
+			entities['229'] = '&aring;';
+			entities['230'] = '&aelig;';
+			entities['231'] = '&ccedil;';
+			entities['232'] = '&egrave;';
+			entities['233'] = '&eacute;';
+			entities['234'] = '&ecirc;';
+			entities['235'] = '&euml;';
+			entities['236'] = '&igrave;';
+			entities['237'] = '&iacute;';
+			entities['238'] = '&icirc;';
+			entities['239'] = '&iuml;';
+			entities['240'] = '&eth;';
+			entities['241'] = '&ntilde;';
+			entities['242'] = '&ograve;';
+			entities['243'] = '&oacute;';
+			entities['244'] = '&ocirc;';
+			entities['245'] = '&otilde;';
+			entities['246'] = '&ouml;';
+			entities['247'] = '&divide;';
+			entities['248'] = '&oslash;';
+			entities['249'] = '&ugrave;';
+			entities['250'] = '&uacute;';
+			entities['251'] = '&ucirc;';
+			entities['252'] = '&uuml;';
+			entities['253'] = '&yacute;';
+			entities['254'] = '&thorn;';
+			entities['255'] = '&yuml;';
+		}
+
+		if (useQuoteStyle !== 'ENT_NOQUOTES') {
+			entities['34'] = '&quot;';
+		}
+		if (useQuoteStyle === 'ENT_QUOTES') {
+			entities['39'] = '&#39;';
+		}
+		entities['60'] = '&lt;';
+		entities['62'] = '&gt;';
+
+		// ascii decimals to real symbols
+		for (decimal in entities) {
+			if (entities.hasOwnProperty(decimal)) {
+				hash_map[String.fromCharCode(decimal)] = entities[decimal];
+			}
+		}
+
+		return hash_map;
+	}
+
+	strManip.ucfirst = function(str) {
+		//  discuss at: http://phpjs.org/functions/ucfirst/
+		// original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+		// bugfixed by: Onno Marsman
+		// improved by: Brett Zamir (http://brett-zamir.me)
+		//   example 1: ucfirst('kevin van zonneveld');
+		//   returns 1: 'Kevin van zonneveld'
+
+		str += '';
+		var f = str.charAt(0)
+			.toUpperCase();
+		return f + str.substr(1);
+	}
+
+	return strManip;
+})();
+
+function uniqid(prefix, more_entropy) {
+  //  discuss at: http://phpjs.org/functions/uniqid/
+  // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  //  revised by: Kankrelune (http://www.webfaktory.info/)
+  //        note: Uses an internal counter (in php_js global) to avoid collision
+  //        test: skip
+  //   example 1: uniqid();
+  //   returns 1: 'a30285b160c14'
+  //   example 2: uniqid('foo');
+  //   returns 2: 'fooa30285b1cd361'
+  //   example 3: uniqid('bar', true);
+  //   returns 3: 'bara20285b23dfd1.31879087'
+
+  if (typeof prefix === 'undefined') {
+    prefix = '';
+  }
+
+  var retId;
+  var formatSeed = function(seed, reqWidth) {
+    seed = parseInt(seed, 10)
+      .toString(16); // to hex str
+    if (reqWidth < seed.length) { // so long we split
+      return seed.slice(seed.length - reqWidth);
+    }
+    if (reqWidth > seed.length) { // so short we pad
+      return Array(1 + (reqWidth - seed.length))
+        .join('0') + seed;
+    }
+    return seed;
+  };
+
+  // BEGIN REDUNDANT
+  if (!this.php_js) {
+    this.php_js = {};
+  }
+  // END REDUNDANT
+  if (!this.php_js.uniqidSeed) { // init seed with big random int
+    this.php_js.uniqidSeed = Math.floor(Math.random() * 0x75bcd15);
+  }
+  this.php_js.uniqidSeed++;
+
+  retId = prefix; // start with prefix, add current milliseconds hex string
+  retId += formatSeed(parseInt(new Date()
+    .getTime() / 1000, 10), 8);
+  retId += formatSeed(this.php_js.uniqidSeed, 5); // add seed hex string
+  if (more_entropy) {
+    // for more entropy we add a float lower to 10
+    retId += (Math.random() * 10)
+      .toFixed(8)
+      .toString();
+  }
+
+  return retId;
+}
+
+function array_sum(array) {
+	//  discuss at: http://phpjs.org/functions/array_sum/
+	// original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	// bugfixed by: Nate
+	// bugfixed by: Gilbert
+	// improved by: David Pilia (http://www.beteck.it/)
+	// improved by: Brett Zamir (http://brett-zamir.me)
+	//   example 1: array_sum([4, 9, 182.6]);
+	//   returns 1: 195.6
+	//   example 2: total = []; index = 0.1; for (y=0; y < 12; y++){total[y] = y + index;}
+	//   example 2: array_sum(total);
+	//   returns 2: 67.2
+
+	var key, sum = 0;
+
+	if (array && typeof array === 'object' && array.change_key_case) { // Duck-type check for our own array()-created PHPJS_Array
+		return array.sum.apply(array, Array.prototype.slice.call(arguments, 0));
+	}
+
+	// input sanitation
+	if (typeof array !== 'object') {
+		return null;
+	}
+
+	for (key in array) {
+		if (!isNaN(parseFloat(array[key]))) {
+			sum += parseFloat(array[key]);
+		}
+	}
+
+	return sum;
+}
+
+function isIterable(obj) {
+  // checks for null and undefined
+  if (obj == null) {
+    return false;
+  }
+  return typeof obj[Symbol.iterator] === 'function';
+}
