@@ -35,7 +35,7 @@ pipeline {
                     rootGroup = properties.root_group
                     rootVersion = properties.root_version
                     buildId = env.BUILD_ID
-                    version = rootVersion + "-" + (buildId ? buildId : "MANUAL-BUILD")
+                    version = rootVersion + "." + (buildId ? buildId : "MANUAL-BUILD")
                     module = rootGroup
 
                     // Setup Artifactory connection
