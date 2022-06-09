@@ -73,7 +73,6 @@ pipeline {
                     def buildInfoTemp
                     buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:${version}", 'docker-local'
                     buildInfo.append buildInfoTemp
-                    def buildInfoTemp
                     buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:latest", 'docker-local'
                     buildInfo.append buildInfoTemp
                 }
