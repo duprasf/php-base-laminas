@@ -18,8 +18,8 @@ RUN npm install --global gulp
 COPY code/ /var/www/
 
 WORKDIR /var/www
-RUN chown www-data:www-data -r /var/www/*
 
 RUN composer update
+RUN chown www-data:www-data -R /var/www/*
 
 RUN rm -Rf html && ln -s public html
