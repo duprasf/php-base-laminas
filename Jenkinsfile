@@ -66,11 +66,15 @@ pipeline {
                         }
                         docker build -t php-base-laminas:${version} -t php-base-laminas:latest ./docker/
                         docker tag php-base-laminas:${version} ${containerRegistry}/php/php-base-laminas:${version}
+                        docker tag php-base-laminas:latest ${containerRegistry}/php/php-base-laminas:latest
                     """
                 }
                 script {
                     def buildInfoTemp
                     buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:${version}", 'docker-local'
+                    buildInfo.append buildInfoTemp
+                    def buildInfoTemp
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:latest", 'docker-local'
                     buildInfo.append buildInfoTemp
                 }
             }
