@@ -1,4 +1,6 @@
-FROM jack.hc-sc.gc.ca/php/php:8-base
+FROM jack.hc-sc.gc.ca/php/php-base:latest
+# when local
+#FROM php-8-base:latest
 
 LABEL title = 'Laminas framework with npm/gulp. Apps going in /apps/'
 LABEL author = 'Web/Mobile Team (imsd.web-dsgi@hc-sc.gc.ca)'

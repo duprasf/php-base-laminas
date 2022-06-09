@@ -65,7 +65,7 @@ pipeline {
                             containerRegistry
                         }
                         docker build -t php-base-laminas:${version} -t php-base-laminas:latest ./docker/
-                        docker tag php:${version} ${containerRegistry}/php/php-base/php-base-laminas:${version}
+                        docker tag php-base-laminas:${version} ${containerRegistry}/php/php-base/php-base-laminas:${version}
                     """
                 }
                 script {

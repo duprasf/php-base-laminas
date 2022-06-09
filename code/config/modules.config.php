@@ -1,14 +1,24 @@
 <?php
-
 /**
- * List of enabled modules for this application.
- *
- * This should be an array of module namespaces used in the application.
- */
-$appsModules = file_exists(__DIR__.'/autoload/_modules.local.php')
+* List of additional enabled modules for this application.
+*
+* This should be an array of module namespaces used in the application.
+*/
+$extraModules = file_exists(__DIR__.'/autoload/_modules.local.php')
     ? include(__DIR__.'/autoload/_modules.local.php')
     : array()
 ;
+
+/**
+* Every modules in apps/ is loaded automatically, this is for using
+* this image as a container for a single app.
+*/
+$apps = [];
+if(!in_array('noAutoLoadApps', $extraModules)) {
+    $apps = glob(realpath(dirname(__DIR__).'/apps').DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR);
+    $apps = array_map('basename', $apps);
+}
+array_splice($extraModules, array_search('noAutoLoadApps', $extraModules), 1);
 
 return array_merge([
     'Laminas\Mvc\Plugin\FilePrg',
@@ -30,4 +40,4 @@ return array_merge([
     'UserAuth',
     'Application',
     'PublicAsset',
-],$appsModules);
+], $apps, $extraModules);
