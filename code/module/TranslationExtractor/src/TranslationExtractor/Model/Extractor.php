@@ -67,19 +67,8 @@ class Extractor
             $output = $this->output;
         }
 
-        try {
-            $array = $this->parseFolder($source);
-            $this->writePo($output, $array);
-        }
-        catch(\InvalidArgumentException $e) {
-            print "Source is invalid".PHP_EOL;
-        }
-        catch(\LengthException $e) {
-            print "No translated string found".PHP_EOL;
-        }
-        catch(\Exception $e) {
-            print $e->getMessage().PHP_EOL;
-        }
+        $array = $this->parseFolder($source);
+        $this->writePo($output, $array);
 
         return $this;
     }
@@ -157,7 +146,7 @@ class Extractor
             }
         }
         else {
-            throw new \InvalidArgumentException('folder not found');
+            throw new \InvalidArgumentException('folder '.$source.' not found');
         }
         return $array;
     }

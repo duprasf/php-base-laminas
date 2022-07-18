@@ -40,4 +40,5 @@ return array_merge([
     'UserAuth',
     'Application',
     'PublicAsset',
+    'TranslationExtractor',
 ], $apps, $extraModules);
