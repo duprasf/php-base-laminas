@@ -35,6 +35,8 @@ class UrlFactory implements FactoryInterface
             $helper->setRouteMatch($match);
         }
 
+        $helper->setLang($serviceLocator->get('lang'));
+
         return $helper;
     }
 }

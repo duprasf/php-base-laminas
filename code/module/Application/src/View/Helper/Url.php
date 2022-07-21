@@ -16,14 +16,29 @@ class Url extends UrlHelper {
         return $this->view;
     }
 
+    protected $lang;
+    public function setLang($lang)
+    {
+        $this->lang = $lang;
+        return $this;
+    }
+    public function getLang()
+    {
+        return $this->lang;
+    }
+
     public function __invoke(
         $name = null,
         $params = array(),
         $options = array(),
         $reuseMatchedParams = false
     ) {
+
+        if(!is_array($params)) {
+            $params = array();
+        }
         if(!isset($params['lang'])) {
-            $params['lang'] = $this->getView()->vars('lang');
+            $params['lang'] = $this->getLang();
         }
         if(!isset($params['locale'])) {
             $params['locale'] = $params['lang'];
