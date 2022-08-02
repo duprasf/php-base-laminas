@@ -1,7 +1,4 @@
 <?php
-/**
- * @var Laminas\View\Renderer\PhpRenderer $this
- */
 use \Application\Model\Breadcrumbs;
 ?>
 <?= $this->doctype() ?>
@@ -84,8 +81,8 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         <!-- Google Tag Manager DO NOT REMOVE OR MODIFY - NE PAS SUPPRIMER OU MODIFIER -->
         <script>dataLayer1 = [];</script>
         <!-- End Google Tag Manager -->
-        <script type="text/javascript" src="<?=$cdtsPath;?>/cdts/compiled/soyutils.js" crossorigin="anonymous" integrity="<?=$integrity['/cdts/compiled/soyutils.js']??$integrity['/cdts/compiled/soyutils.js'];?>"></script>
-        <script type="text/javascript" src="<?=$cdtsPath;?>/cdts/compiled/wet-<?=$this->lang;?>.js" crossorigin="anonymous" integrity="<?=$integrity["/cdts/compiled/wet-{$this->lang}.js"]??$integrity["/cdts/compiled/wet-{$this->lang}.js"];?>"></script>
+        <script src="<?=$cdtsPath;?>/cdts/compiled/soyutils.js" crossorigin="anonymous" integrity="<?=$integrity['/cdts/compiled/soyutils.js']??$integrity['/cdts/compiled/soyutils.js'];?>"></script>
+        <script src="<?=$cdtsPath;?>/cdts/compiled/wet-<?=$this->lang;?>.js" crossorigin="anonymous" integrity="<?=$integrity["/cdts/compiled/wet-{$this->lang}.js"]??$integrity["/cdts/compiled/wet-{$this->lang}.js"];?>"></script>
 
         <style>
             ol.numbered {
@@ -124,9 +121,10 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             <link rel="stylesheet" href="<?=$cdtsPath;?>/css/noscript.min.css" integrity="<?=$integrity['/css/noscript.min.css']??$integrity['/css/noscript.min.css'];?>" crossorigin="anonymous">
         </noscript>
         <!-- Write closure template -->
-        <script type="text/javascript">
+        <script>
             document.write(wet.builder.refTop({
-                cdnEnv: "<?=$cdtsEnv;?>"
+                cdnEnv: "<?=$cdtsEnv;?>",
+                jqueryEnv: "<?=$cdtsEnv;?>"
             }));
         </script>
         <!-- Custom CSS Start -->
@@ -407,10 +405,9 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                 <?endif;?>
             </footer>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.js" integrity="sha384-1qy6pxCPVEhkjPJM8mBaaRNIDGE20UzrPyndMEoCaeK390vhZ3jt3SQtS6aZDqRA" crossorigin="anonymous"></script>
 
         <!-- Write closure template -->
-        <script>
+        <script defer="defer">
             var defTop = document.getElementById("def-top");
             defTop.outerHTML = wet.builder.top({
                 cdnEnv: "<?=$cdtsEnv;?>",
@@ -425,6 +422,8 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             var defPreFooter = document.getElementById("def-preFooter");
             defPreFooter.outerHTML = wet.builder.preFooter({
                 cdnEnv: "<?=$cdtsEnv;?>",
+                <?php print $this->showShare===false?'showShare: false,':'';?>
+                <?php print $this->showFeedback===false?'showFeedback: false,':'';?>
                 dateModified: '<?=date('Y-m-d', $this->modifiedTimestamp);?>'
             });
             var defFooter = document.getElementById("def-footer");
@@ -435,10 +434,9 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                 cdnEnv: "<?=$cdtsEnv;?>"
             }));
         </script>
-
         <!-- Custom Scripts Start -->
         <?if($this->vars('extra-js'))foreach($this->vars('extra-js') as $file):?>
-            <script src="<?=str_replace('[CDTS]', $cdtsPath, $file);?>"></script>
+            <script src="<?=str_replace('[CDTS]', $cdtsPath, $file);?>" defer="defer"></script>
         <?endforeach;?>
         <?=$this->headScript();?>
         <?=$this->inlineScript();?>

@@ -8,18 +8,15 @@ LABEL source = 'https://github.hc-sc.gc.ca/hs/php-base-laminas'
 
 # update the OS and install common modules
 RUN apt-get update -y && \
-    apt-get upgrade -y nodejs npm && \
     rm -rf /var/lib/apt/lists/*
-
-RUN npm install
-RUN npm install -g n && n 11
-RUN npm install --global gulp
-
-COPY code/ /var/www/
 
 WORKDIR /var/www
 
+COPY code/ /var/www/
 RUN composer update
+
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && apt-get install -y nodejs
+RUN npm install
 RUN chown www-data:www-data -R /var/www/*
 
 RUN rm -Rf html && ln -s public html

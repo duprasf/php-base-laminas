@@ -121,7 +121,9 @@ class Module
         $sm->setAllowOverride(TRUE);
         $route = $e->getRouteMatch();
         $translator = $sm->get('MvcTranslator');
-        //if(PHP_SAPI != 'cli') $sm->get('router')->setTranslator($translator);
+        if(PHP_SAPI != 'cli') {
+            $sm->get('router')->setTranslator($translator);
+        }
 
         $lang = '';
         if($sm->has('lang')) {

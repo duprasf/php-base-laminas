@@ -7,9 +7,11 @@ namespace Application;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack;
 
 return [
     'router' => [
+        'router_class' => TranslatorAwareTreeRouteStack::class,
         'routes' => [
             'root' => [
                 'type'    => Segment::class,
@@ -136,10 +138,15 @@ return [
             __DIR__ . '/../view',
         ],
     ],
-    /*
     'translator' => [
         'locale' => 'en_CA',
         'translation_file_patterns' => [
+            [
+                'type'     => 'gettext',
+                'base_dir' => __DIR__ . '/../../../language',
+                'pattern'  => 'layout-%s.mo',
+                'text_domain'=>'layout',
+            ],
             [
                 'type'     => 'gettext',
                 'base_dir' => __DIR__ . '/../language',
@@ -147,5 +154,4 @@ return [
             ],
         ],
     ],
-    /**/
 ];

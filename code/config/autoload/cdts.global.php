@@ -2,7 +2,6 @@
 return [
     'service_manager' => [
         'services'=> [
-            'cdts-version'=>'4_0_32',
             'cdts-path'=>'https://www.canada.ca/etc/designs/canada/cdts/gcweb/v%s',
             'cdts-integrity'=>[
                 '4_0_24'=>[
@@ -31,6 +30,15 @@ return [
                     '/cdts/cdtsfixes.css'=>"sha384-No+ATAwkMIc/2e9/908hPv/n6h84qeIT0ujDSDbsLXo3NdWjjOobQjOvQ6PDhuR6",
                     '/css/ie8-theme.min.css'=>"sha384-clzigVbwqYHNkIrKxnU7kvGIA34SJUC0r1A3Q8cUkx3QeoSmxX/SL+9dmwqf+uCD",
                     '/css/noscript.min.css'=>"sha384-YPGPGgtKCjAbqUw5iFn7pxdtJs4JKg1JM35Wk+/75p+CXi53r8prqn8SACFbXxXG",
+                ],
+                '4_0_45'=>[
+                    '/cdts/compiled/soyutils.js'=>'sha384-hfwnpowMIP7hDqCMoNULlqSq7k2nu8R7zl+zHfYpNc5iokyd+Gbk5NO5ZdJFCv0o',
+                    '/cdts/compiled/wet-en.js'=>'sha384-LzGsBKw0oOMVMjvc1Mfm6KZ2pgLkVbgHOjEhZ60V/XGIX+Ke3esX8z/gAFc1m33F',
+                    '/cdts/compiled/wet-fr.js'=>'sha384-RGNThZb8OwCKqSV92fTnqhF6IyALe9w8NaKC3U1nrFVkTbDQHoxgsFcOurjprxPf',
+                    '/cdts/cdtsfixes.css'=>"sha384-No+ATAwkMIc/2e9/908hPv/n6h84qeIT0ujDSDbsLXo3NdWjjOobQjOvQ6PDhuR6",
+                    //'/css/theme.min.css'=>"sha384-OC8RXMtN4ILge7jffk24K2S+crP681ghM6SMHOeW8MAZ8PT4fLPc+5cBA9JIqnqB",
+                    //'/css/ie8-theme.min.css'=>"sha384-clzigVbwqYHNkIrKxnU7kvGIA34SJUC0r1A3Q8cUkx3QeoSmxX/SL+9dmwqf+uCD",
+                    //'/css/noscript.min.css'=>"sha384-YPGPGgtKCjAbqUw5iFn7pxdtJs4JKg1JM35Wk+/75p+CXi53r8prqn8SACFbXxXG",
                 ],
             ],
         ],

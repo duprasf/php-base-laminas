@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+for d in /var/www/apps/*
+do
+    if [ -d "$d" ];
+    then
+        npm run php-postcss -- $d/postcss/main.pcss --output $d/public/css/main.css
+    fi;
+done
+
+#npm run php-postcss -- /var/www/apps/CharacterSheets/postcss/main.pcss --output /var/www/apps/CharacterSheets/public/css/main.css --watch

@@ -1,35 +1,31 @@
 {
-  "name": "Laminas base image",
+  "name": "base_image",
   "version": "2.0.0",
   "description": "Laminas base image",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "php-postcss": "postcss"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.hc-sc.gc.ca/hs/php-base-laminas.git"
+    "url": ""
   },
   "author": "Francois Dupras",
   "license": "ISC",
   "devDependencies": {
-    "autoprefixer": "*",
-    "cssnano": "*",
-    "cssnext": "*",
-    "gulp": "*",
-    "gulp-concat": "*",
-    "gulp-cssnano": "*",
-    "gulp-postcss": "*",
-    "gulp-flatten": "*",
-    "gulp-header": "*",
-    "gulp-minify": "*",
-    "gulp-postcss": "*",
-    "gulp-rename": "*",
-    "gulp-util": "*",
-    "postcss-color-function": "*",
-    "postcss-discard-comments": "*",
-    "postcss-for": "*",
+    "postcss": "*",
+    "postcss-cli": "*",
     "postcss-import": "*",
-    "precss": "*"
+    "postcss-partial-import": "*",
+    "postcss-color-function": "*",
+    "postcss-color-mod-function": "*",
+    "postcss-discard-comments": "*",
+    "postcss-at-rules-variables": "*",
+    "postcss-custom-media": "*",
+    "postcss-each": "*",
+    "postcss-each-variables": "*",
+    "postcss-for": "*",
+    "postcss-custom-media": "*",
+    "postcss-nested": "*"
   }
 }

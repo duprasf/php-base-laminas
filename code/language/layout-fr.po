@@ -159,3 +159,15 @@ msgstr ""
 msgid "Submit"
 msgstr "Soumettre"
 
+#: 
+msgid "Next"
+msgstr "Suivante"
+
+#: 
+msgid "Previous"
+msgstr "Précédente"
+
+#: 
+msgid "Start"
+msgstr "Débuté"
+

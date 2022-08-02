@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+docker stop laminas
+docker rm laminas
+
+docker run -d --name laminas -p 80:80 \
+    -v ~/docker/php-base-laminas/code/:/var/www \
+    php-base-laminas
