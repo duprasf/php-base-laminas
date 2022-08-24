@@ -6,5 +6,5 @@ docker rm laminas
 docker run -d --name laminas -p 80:80 \
     --net appnet \
     -v ~/docker/php-base-laminas/code/:/var/www \
-    -e PHP_DEV_ENV=0 \
+    -e PHP_DEV_ENV=1 \
     php-base-laminas
