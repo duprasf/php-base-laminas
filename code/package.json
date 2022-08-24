@@ -4,6 +4,7 @@
   "description": "Laminas base image",
   "main": "index.js",
   "scripts": {
+    "postcss": "postcss ./apps/MyApp/source/postcss/main.pcss --output ./apps/MyApp/public/css/main.css --watch",
     "php-postcss": "postcss"
   },
   "repository": {
@@ -13,19 +14,25 @@
   "author": "Francois Dupras",
   "license": "ISC",
   "devDependencies": {
+    "gulp": "*",
+    "gulp-postcss": "*",
+    "gulp-concat": "*",
+    "gulp-rename": "*",
+    "gulp-terser": "*",
+    "gulp-sourcemaps": "*",
     "postcss": "*",
     "postcss-cli": "*",
     "postcss-import": "*",
     "postcss-partial-import": "*",
     "postcss-color-function": "*",
     "postcss-color-mod-function": "*",
+    "postcss-simple-vars": "*",
     "postcss-discard-comments": "*",
     "postcss-at-rules-variables": "*",
     "postcss-custom-media": "*",
     "postcss-each": "*",
     "postcss-each-variables": "*",
     "postcss-for": "*",
-    "postcss-custom-media": "*",
     "postcss-nested": "*"
   }
 }

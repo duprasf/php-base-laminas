@@ -3,11 +3,23 @@ namespace UserAuth\Model;
 
 use \Laminas\EventManager\SharedEventManager;
 use \UserAuth\Module as UserAuth;
-use \Psr\Log;
+use \Psr\Log\LoggerInterface;
+use \Psr\Log\LogLevel;
 
 class UserAudit
 {
-    protected $eventManager;
+    private $logger;
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+        return $this;
+    }
+    protected function getLogger()
+    {
+        return $this->logger;
+    }
+
+    private $eventManager;
     public function setEventManager(SharedEventManager $manager)
     {
         $this->eventManager = $manager;
@@ -26,26 +38,19 @@ class UserAudit
     public function listen($e)
     {
         $event='';
-        $level = Log\LogLevel::INFO;
+        $level = LogLevel::INFO;
         $message = '[USER_AUTH] ';
-        $context=[];
-        $params = $e->getParams();
-        $context['username']=$params['email']??'';
-        $context['userId']=$params['userId']??'';
-        $context['email']=$params['email']??'';
-        $context['ip']=$_SERVER['SERVER_ADDR'];
-        $context['userAgent']=$_SERVER['HTTP_USER_AGENT'];
 
         switch($e->getName()) {
             case UserAuth::EVENT_LOGIN:
-                $message.='[LOGIN] {username} ({userId}) has login successfuly from {ip} using {userAgent}.';
+                $message.='[LOGIN] {username} ({userId}) has login successfully from {ip} using {userAgent}.';
                 break;
             case UserAuth::EVENT_LOGIN_FAILED:
-                $level = Log\LogLevel::WARNING;
+                $level = LogLevel::WARNING;
                 $message.='[LOGIN_FAILED] A failed login attempt for {username} ({userId}) was attempted from {ip} using {userAgent}.';
                 break;
             case UserAuth::EVENT_LOGOUT:
-                $message.='[LOGOUT]{username} ({userId}) logged out.';
+                $message.='[LOGOUT] {username} ({userId}) logged out.';
                 break;
             case UserAuth::EVENT_RESET_PASSWORD_REQUEST:
                 $message.='[RESET_PASS_REQUEST] A password reset was requested for {username} ({userId}) from {ip} using {userAgent} sent to {email}.';
@@ -60,20 +65,37 @@ class UserAudit
                 $message.='[REGISTER] A new user, {username} ({userId}), has registered from {ip} using {userAgent}.';
                 break;
             case UserAuth::EVENT_REGISTER_FAILED:
-                $level = Log\LogLevel::ALERT;
+                $level = LogLevel::ALERT;
                 $message.='[REGISTER_FAILED] A failed registration was detected with username {username} from {ip} using {userAgent}.';
                 break;
             case UserAuth::EVENT_CHANGE_PASSWORD:
-                $message.='[PASSWORD_CHANGED] A password was successfuly changed for {username} ({userId}) from {ip} using {userAgent}.';
+                $message.='[PASSWORD_CHANGED] A password was successfully changed for {username} ({userId}) from {ip} using {userAgent}.';
                 break;
             default:
+                return $this;
                 break;
         }
-        if($event == '') {
-            return $this;
-        }
 
-        $this->getLogger()->log($level, $message, $context);
+        $context=[];
+        $params = $e->getParams();
+        $context['userId']=$params['userId']??null;
+        $context['email']=$params['email']??null;
+        $context['ip']=$_SERVER['SERVER_ADDR'];
+        $context['userAgent']=$_SERVER['HTTP_USER_AGENT'];
+        $context['type'] = $e->getName();
+        $message = preg_replace_callback(
+            '(\{([a-zA-Z]+)\})',
+            function($key) use ($context) {
+                if($key[1] == 'username' && !isset($context['username'])) {
+                    $key[1] = 'email';
+                }
+                return $context[$key[1]] ?? '';
+            },
+            $message
+        );
+
+        $logger = $this->getLogger();
+        $logger->log($level, $message, $context);
         return $this;
     }
 

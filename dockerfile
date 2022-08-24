@@ -1,8 +1,8 @@
-FROM jack.hc-sc.gc.ca/php/php-base:latest
+#FROM jack.hc-sc.gc.ca/php/php-base:latest
 # when local
-#FROM php-8-base:latest
+FROM php-base:latest
 
-LABEL title = 'Laminas framework with npm/gulp. Apps going in /apps/'
+LABEL title = 'Laminas framework with npm. Apps are going in /apps/'
 LABEL author = 'Web/Mobile Team (imsd.web-dsgi@hc-sc.gc.ca)'
 LABEL source = 'https://github.hc-sc.gc.ca/hs/php-base-laminas'
 
@@ -16,7 +16,12 @@ COPY code/ /var/www/
 RUN composer update
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && apt-get install -y nodejs
+RUN npm install --global gulp-cli
 RUN npm install
 RUN chown www-data:www-data -R /var/www/*
 
 RUN rm -Rf html && ln -s public html
+
+COPY go-laminas.sh /go-laminas.sh
+RUN chmod 774 /go-laminas.sh
+CMD ["/go-laminas.sh"]

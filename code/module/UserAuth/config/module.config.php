@@ -42,6 +42,20 @@ return [
                         'child_routes'=>[
                         ],
                     ],
+                    'logout' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/{logout}',
+                            'defaults' => [
+                            ],
+                            'defaults' => [
+                                'action'     => 'logout',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                        'child_routes'=>[
+                        ],
+                    ],
                     'register' => [
                         'type'    => Segment::class,
                         'options' => [
@@ -133,8 +147,9 @@ return [
     ],
     'service_manager' => [
         'factories' => [
-            Model\User::class => Factory\UserFactory::class,
+            Model\UserLogger::class => Factory\UserLoggerFactory::class,
             Model\UserAudit::class => Factory\UserAuditFactory::class,
+            Model\User::class => Factory\UserFactory::class,
         ],
         'aliases' => [
         ],

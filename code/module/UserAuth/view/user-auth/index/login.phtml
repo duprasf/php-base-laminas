@@ -3,6 +3,7 @@
  * @var Laminas\View\Renderer\PhpRenderer $this
  */
 //$this->metadata['title'] = 'User Auth';
+$this->metadata['extra-css']='/application/css/pulse.css';
 ?>
 
 <div class="wb-frmvld">
@@ -15,6 +16,21 @@
             <label for="password" class="required"><span class="field-name"><?=$this->translate('Password', 'layout');?></span> <strong class="required">(<?=$this->translate('required', 'layout');?>)</strong></label>
             <input class="form-control" id="password" name="password" type="password" autocomplete="off" required="required" data-rule-minlength="8" />
         </div>
+        <?if($this->errorCount):?>
+            <input type="hidden" name="errorCount" value="<?=$this->errorCount;?>">
+            <?if($this->errorCount):?>
+                <p>
+                <?=sprintf(
+                    $this->translate('If you lost your password, you can <a href="%s" class="%s" style="border-radius: 10px;">reset your password</a>.'),
+                    $this->url('user/reset-password'),
+                    $this->errorCount>2?'pulse-primary':''
+                );?>
+                </p>
+            <?endif;?>
+        <?endif;?>
         <button type="submit" class="btn btn-primary"><?=$this->translate('Submit');?></button>
+        <?php if($this->registrationAllowed):?>
+        <a class="btn btn-link" href="<?=$this->url('user/register');?>"><?=$this->translate('Register');?></a>
+        <?php endif;?>
     </form>
 </div>

@@ -20,7 +20,7 @@ if(!in_array('noAutoLoadApps', $extraModules)) {
 }
 array_splice($extraModules, array_search('noAutoLoadApps', $extraModules), 1);
 
-return array_merge([
+$modules = array_merge([
     'Laminas\Mvc\Plugin\FilePrg',
     'Laminas\Mvc\Plugin\FlashMessenger',
     'Laminas\Mvc\Plugin\Identity',
@@ -42,3 +42,5 @@ return array_merge([
     'PublicAsset',
     'TranslationExtractor',
 ], $apps, $extraModules);
+
+return $modules;

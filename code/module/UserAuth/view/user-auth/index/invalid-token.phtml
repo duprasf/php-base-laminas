@@ -1,0 +1,10 @@
+<?php
+/**
+ * @var Laminas\View\Renderer\PhpRenderer $this
+ */
+$this->metadata['title'] = $this->translate('Invalid link');
+?>
+
+<div class="alert alert-danger">
+    <p><?=$this->translate('It seems like this link does not exists or was previously used.');?></p>
+</div>

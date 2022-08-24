@@ -7,7 +7,6 @@ use \Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack as UrlPlugin;
 use \UserAuth\Exception\UserConfirmException;
 use \Laminas\EventManager\EventManagerInterface as EventManager;
 use \UserAuth\Module as UserAuth;
-use \Psr\Log\LoggerInterface;
 use \Laminas\Session\Container;
 
 class User implements UserInterface, \ArrayAccess
@@ -26,6 +25,10 @@ class User implements UserInterface, \ArrayAccess
     public const STATUS_ACTIVE = 1;
     public const STATUS_INACTIVE = 2;
     public const STATUS_BLOCKED_BY_ADMIN = 3;
+
+    public const VERIFICATION_DONE = 1;
+    public const VERIFICATION_COULD_NOT_SEND = 2;
+    public const VERIFICATION_EMAIL_SENT = 3;
 
     protected const TOKEN_TYPE_CONFIRM_EMAIL='confirmEmail';
     protected const TOKEN_TYPE_RESET_PASSWORD='resetPassword';
@@ -73,9 +76,10 @@ class User implements UserInterface, \ArrayAccess
     }
 
     protected $defaultValues = ['emailVerified'=>0, 'status'=>1];
-    public function setDefaultValues(array $values)
+    public function setDefaultValues($key, $value)
     {
-        $this->defaultValues = $values;
+        $this->defaultValues[$key] = $value;
+        return $this;
     }
     public function getDefaultValues($key=null)
     {
@@ -107,7 +111,7 @@ class User implements UserInterface, \ArrayAccess
     {
         $this->urlPlugin = $url;
     }
-    public function getUrlPlugin()
+    protected function getUrlPlugin()
     {
         return $this->urlPlugin;
     }
@@ -126,13 +130,6 @@ class User implements UserInterface, \ArrayAccess
     }
     public function getTranslator() {
         return $this->translator;
-    }
-
-    protected $logger;
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger=$logger;
-        return $this;
     }
 
     public function isLoggedIn() : bool
@@ -224,6 +221,7 @@ class User implements UserInterface, \ArrayAccess
         }
         $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER.'.pre', $this, ['email'=>$email, 'userId'=>null]);
 
+        $result = false;
         $pdo = $this->getParentDb();
         $pdo->beginTransaction();
         try {
@@ -240,26 +238,26 @@ class User implements UserInterface, \ArrayAccess
             ];
             $prepared->execute($data);
             $data['userId'] = $pdo->lastInsertId();
-            if(!$this->getDefaultValues('emailVerified')) {
-                if($notify) {
-                    $token = $this->generateToken($data['userId'], self::TOKEN_TYPE_CONFIRM_EMAIL);
-                    $notifyData = $this->getGcNotifyData();
 
-                    $result = $notify->sendEmail(
-                        $data['email'],
-                        $notifyData['confirm-email-template'],
-                        [
-                            'url-en'=>$this->url()->assemble(['locale'=>'en','token'=>$token,], ['name'=>'user/confirm-email','force_canonical' => true,]),
-                            'url-fr'=>$this->url()->assemble(['locale'=>'fr','token'=>$token,], ['name'=>'user/confirm-email','force_canonical' => true,]),
-                        ],
-                        $notifyData['api-key']
-                    );
-                } else {
-                    throw new \Exception('Handler for GC Notify not specified');
-                }
-            } else {
+            if($data['emailVerified']) {
                 $this->buildLoginSession($data['userId']);
+                return self::VERIFICATION_DONE;
             }
+            if(!$notify) {
+                throw new \Exception('Handler for GC Notify not specified');
+            }
+            $token = $this->generateToken($data['userId'], self::TOKEN_TYPE_CONFIRM_EMAIL);
+            $notifyData = $this->getGcNotifyData();
+            $result = $notify->sendEmail(
+                $data['email'],
+                $notifyData['confirm-email-template'],
+                [
+                    'url-en'=>$this->url()->assemble(['locale'=>'en','token'=>$token,], ['name'=>'user/confirm-email','force_canonical' => true,]),
+                    'url-fr'=>$this->url()->assemble(['locale'=>'fr','token'=>$token,], ['name'=>'user/confirm-email','force_canonical' => true,]),
+                ],
+                $notifyData['api-key']
+            );
+
             $pdo->commit();
             $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER, $this, ['email'=>$data['email'], 'userId'=>$data['userId']]);
         } catch(\Exception $e){
@@ -267,7 +265,11 @@ class User implements UserInterface, \ArrayAccess
             $pdo->rollBack();
             throw $e;
         }
-        return $this->getDefaultValues('emailVerified') || (!$this->getDefaultValues('emailVerified') && $notify);
+
+        if(!$result) {
+            return self::VERIFICATION_COULD_NOT_SEND;
+        }
+        return self::VERIFICATION_EMAIL_SENT;
     }
 
     public function requestResetPassword(String $email, GcNotify $notify)
@@ -309,14 +311,19 @@ class User implements UserInterface, \ArrayAccess
             $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_HANDLED.'.pre', $this, ['email'=>null, 'userId'=>$userId]);
 
             $pdo = $this->getParentDb();
+            $pdo->beginTransaction();
             try {
                 $prepared = $pdo->prepare("UPDATE `user` SET password=:password WHERE userId=:userId");
+
                 $prepared->execute([
                     'password'=>password_hash($password, PASSWORD_DEFAULT),
                     'userId'=>$userId
                 ]);
+                $this->removeToken($token, $pdo);
+                $pdo->commit();
                 $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_HANDLED, $this, ['email'=>null, 'userId'=>$userId]);
             } catch(\Exception $e){
+                $pdo->rollBack();
                 throw $e;
             }
             return true;
@@ -449,10 +456,22 @@ class User implements UserInterface, \ArrayAccess
         return !count($errors);
     }
 
-    protected function getUserIdFromToken(String $token)
+    protected function removeToken($token, ?\PDO $pdo=null)
+    {
+        if(!$pdo) {
+            $pdo = $this->getParentDb();
+        }
+
+        $prepared = $pdo->prepare("DELETE FROM userToken WHERE token=? LIMIT 1");
+        $prepared->execute([$token]);
+        return $prepared->rowCount();
+
+    }
+
+    public function getUserIdFromToken(String $token)
     {
         $pdo = $this->getParentDb();
-        $prepared = $pdo->prepare("SELECT userId FROM userToken WHERE token=:token");
+        $prepared = $pdo->prepare("SELECT userId FROM userToken WHERE token=?");
         $prepared->execute([$token]);
         return $prepared->fetchColumn();
     }

@@ -49,7 +49,6 @@ class Module implements ConfigProviderInterface
         $application = $e->getApplication();
         $eventManager = $application->getEventManager()->getSharedManager();
 
-
         // register listener
         $listener = $application->getServiceManager()->get(Model\UserAudit::class);
         $listener->setEventManager($eventManager);

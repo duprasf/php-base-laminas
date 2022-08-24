@@ -1,0 +1,41 @@
+<?php
+namespace UserAuth;
+
+use \UserAuth\Model\User;
+
+return [
+    'service_manager' => array(
+        'factories' => array(
+            // You can overwrite the User class with your own class
+            // this could be to add your own functions/fields
+            // User::class => Factory\UserFactory::class,
+            'user-pdo'=>function($sm) {
+                return new \PDO(
+                    'mysql:host=test-db;dbname=users;',
+                    'userauth',
+                    'Canada123',
+                    array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'')
+                );
+            },
+        ),
+        'services'=>[
+            // you can change the rules for the password
+            'user-auth-password-rules'=>[
+                'minSize'=>1,
+                'atLeastOneLowerCase'=>true,
+                'atLeastOneUpperCase'=>true,
+                'atLeastOneNumber'=>true,
+                //'atLeastOneSpecialCharacters'=>'{}[]()\/\'"`~,;:.<>*^@$%+?&!=#_-', // make sure the "-" is the last character
+                //'pattern'=>'([a-zA-Z0-9\{\}\[\]\(\)\/\\\'"`~,;:\.<>\*\^\-@\$%\+\?&!=#_]{12,})i',
+            ],
+            'user-auth-registration-allowed' => true,
+            'user-auth-must-verify-email' => true,
+            'user-auth-default-user-status' => User::STATUS_ACTIVE,
+        ],
+    ),
+    'gc-notify-config'=>[
+        __NAMESPACE__=>[
+            'apikey'=>'api',
+        ],
+    ],
+];

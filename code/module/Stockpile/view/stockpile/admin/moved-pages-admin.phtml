@@ -1,0 +1,162 @@
+<?php
+$this->metadata = array(
+    "title"=>$this->translate('Moved pages setup'),
+    "breadcrumbs"=>"(Stockpile|/{$this->lang}/stockpile)|(".$this->translate('Moved pages setup')."|/{$this->lang}/stockpile/moved-pages)",
+    "extra-js"=>"/apps/js/jquery-ui/jquery-ui.min.js",
+);?>
+
+<style>
+#movedPageList td {
+    vertical-align: middle;
+}
+#newMovedPageForm {
+    margin-bottom: 2em;
+}
+#newMovedPageForm input[type="text"] {
+    width: 100%;
+}
+.movedPagesTable {
+    margin-top:2em;
+}
+</style>
+
+<form id="newMovedPageForm" action="?" method="GET">
+<p><?php print $this->translate("With this form you may add a new moved page. This will redirect any user going to the old path, to the new one.");?></p>
+    <div class="alert alert-warning">
+        <p><?php print $this->translate("This redirect tool only works when the original page is not found. Please remember to delete the old/original page when the new one is ready.");?></p>
+    </div>
+    <div id="formBlock">
+        <div class="form-group">
+            <label for="originalLocation"><?php print $this->translate("Original/old page");?></label>
+            <input type="text" class="form-control" id="originalLocation" name="originalLocation" placeholder="<?php print 'Ex: 2.0_text/page_'.$this->lang[0].'.shtml';?>">
+        </div>
+        <div class="form-group">
+            <label for="newLocation"><?php print $this->translate("New page");?></label>
+            <input type="text" class="form-control" id="newLocation" name="newLocation" placeholder="<?php print 'Ex: /'.$this->lang.'/page';?>">
+        </div>
+    </div>
+    <button class="addNewMovedPage btn btn-primary"><?php print $this->translate('Add this moved page');?></button>
+</form>
+
+<div class="messenger"></div>
+
+<table class="table table-hover movedPagesTable">
+<thead>
+<tr>
+    <th><?php print $this->translate("Original/old page");?></th>
+    <th><?php print $this->translate("New page");?></th>
+    <th><?php print $this->translate("Delete");?></th>
+</tr>
+</thead>
+<tbody id="movedPageList">
+<?php foreach($this->movedPages as $page):?>
+<tr>
+    <td><?php print $page['originalLocation'];?></td>
+    <td><?php print $page['newLocation'];?></td>
+    <td><a href="#" class="removeMovedPage btn btn-link" data-id="<?php print $page['movedPageId'];?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span><span class="sr-only"><?php print $this->translate('Delete this page redirection');?></span></a></td>
+</tr>
+<?php endforeach;?>
+</tbody>
+</table>
+
+<script>
+<?php ob_start();?>
+$(function() {
+    document.getElementById('newMovedPageForm').addEventListener('submit', saveNew);
+
+    var elements = document.querySelectorAll('.removeMovedPage'), len = elements.length;
+    for(i=0;i<len;i++) {
+        elements[i].addEventListener('click', removeMovedPage);
+    }
+});
+function removeMovedPage(e) {
+    e.preventDefault();
+    var id=this.getAttribute('data-id');
+    var parent = this.closest('tr');
+
+    if(this.classList && this.classList.add) {
+        this.classList.add('disabled');
+    }
+
+    $.ajax({
+        "url":'<?php print $this->url('moved-pages-admin/remove', array('locale'=>$this->lang));?>',
+        "type":'post',
+        "data":{"movedPageId":id},
+        "success":handleRemovedPage,
+        "context":parent
+    });
+    return false;
+}
+function handleRemovedPage(serverdata) {
+    var el = this.querySelector('.disabled');
+    if(el.classList && el.classList.remove) {
+        el.classList.remove('disabled');
+    }
+
+    if(serverdata.error) {
+        flashMessenger.addErrorMessage(serverdata.error, document.querySelector('.messenger'));
+    }
+    else {
+        flashMessenger.addSuccessMessage('<?php print $this->translate("The moved page was removed");?>', document.querySelector('.messenger'));
+        var tds = this.querySelectorAll('td');
+        var originalLocation = document.getElementById('originalLocation');
+        var newLocation = document.getElementById('newLocation');
+        originalLocation.value = tds[0].textContent;
+        newLocation.value = tds[1].textContent;
+        $(this).effect('transfer', { to: "#formBlock", className: "ui-effects-transfer" }, 500,
+            function(){ $('td', this).animate({'padding-top':0, 'padding-bottom':0}, 500);});
+        $(this).animate({'font-size':0, 'opacity':0}, 500, function() { this.outerHTML = '';});
+    }
+}
+
+function saveNew(e) {
+    e.preventDefault();
+    var originalLocation = document.getElementById('originalLocation').value;
+    var newLocation = document.getElementById('newLocation').value;
+    var matches = null;
+
+    if(matches = originalLocation.match(/^(?:(?:http:\/\/)?infranet(?:-test)?.ad.infrastructure.gc.ca)?\/(.+)$/)) {
+        originalLocation = matches[1];
+
+        if(matches = newLocation.match(/^((?:(?:https?:\/\/)?(?:(?:(?:www\.|health\.)?canada\.ca)|(?:(?:www\.)?healthycanadians\.gc\.ca)))?\/(?:en|fr)\/.*)$/)) {
+            newLocation = matches[1];
+            $.ajax({
+                "url":'<?php print $this->url('moved-pages-admin/add', array('locale'=>$this->lang));?>',
+                "type":'post',
+                "data":{"originalLocation":originalLocation, "newLocation":newLocation},
+                "success":handleAddPage
+            });
+        }
+        else {
+            alert('<?php print $this->translate('The new page must start with /en/ or /fr/');?>');
+        }
+    }
+    else {
+        alert('<?php print $this->translate('The original location is invalid');?>');
+    }
+    return false;
+}
+function handleAddPage(serverdata) {
+    if(serverdata.error) {
+        flashMessenger.addErrorMessage(serverdata.error, document.querySelector('.messenger'));
+    }
+    else {
+        flashMessenger.addSuccessMessage('<?php print $this->translate("The moved page was added correctly. REMINDER: you will need to remove the existing page for this redirect to work.");?>', document.querySelector('.messenger'));
+        var tr = document.createElement('tr');
+        var tbody = document.getElementById('movedPageList');
+        tbody.insertBefore(tr, tbody.firstChild);
+        tr.innerHTML = '<td>'+serverdata.originalLocation+'</td><td>'+serverdata.newLocation+'</td><td><a href="#" class="removeMovedPage btn btn-link" data-id="'+serverdata.movedPageId+'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span><span class="sr-only"><?php print $this->translate('Delete this page redirection');?></span></a></td>';
+        tr.querySelector('.removeMovedPage').addEventListener('click', removeMovedPage);
+        var anim = {
+            "font-size":$(tr.querySelector('td')).css('font-size'),
+            "padding-top":$(tr.querySelector('td')).css('padding-top'),
+            "padding-bottom":$(tr.querySelector('td')).css('padding-bottom'),
+            "opacity":1
+        };
+        $('td', tr).css({"font-size":0,"padding-top":0,"padding-bottom":0,"opacity":0}).animate(anim,500);
+
+        $("#formBlock").effect('transfer', { to: tr, className: "ui-effects-transfer" }, 500);
+    }
+}
+<?php $this->headScript()->appendScript(ob_get_clean());?>
+</script>

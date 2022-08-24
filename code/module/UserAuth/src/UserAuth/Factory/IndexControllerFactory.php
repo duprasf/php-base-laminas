@@ -16,11 +16,6 @@ class IndexControllerFactory implements FactoryInterface
     {
         $obj = new IndexController();
         $config = $container->get('config');
-
-        if(isset($config['UserAuth']) && isset($config['UserAuth']['password-rules'])) {
-            $obj->setPasswordRules($config['UserAuth']['password-rules']);
-        }
-
         $gcNotify = $config['gc-notify-config']['UserAuth'];
         $nofity = $container->get('GcNotify');
 
@@ -39,6 +34,15 @@ class IndexControllerFactory implements FactoryInterface
         $obj->setGcNotify($nofity);
 
         $obj->setUser($container->get(User::class));
+
+        if($container->has('user-auth-registration-allowed')) {
+            $obj->setConfig('registrationAllowed', $container->get('user-auth-registration-allowed'));
+        }
+
+        if($container->has('user-auth-password-rules')) {
+            $obj->setConfig('passwordRules', $container->get('user-auth-password-rules'));
+            $obj->setPasswordRules($container->get('user-auth-password-rules'));
+        }
 
         return $obj;
     }

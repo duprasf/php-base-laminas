@@ -69,6 +69,7 @@ $this->metadata['extra-js'] = '/js/userauth-register.js';
             <input class="form-control" id="confirmPassword" name="confirmPassword" type="password" autocomplete="off" required="required" />
         </div>
         <button type="submit" class="btn btn-primary"><?=$this->translate('Register', 'layout');?></button>
+        <a class="btn btn-link" href="<?=$this->url('user/login');?>"><?=$this->translate('Login');?></a>
     </form>
 </div>
 <script>

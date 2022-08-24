@@ -8,6 +8,7 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Model\Breadcrumbs;
 use GcNotify\GcNotify;
+use UserAuth\Model\User;
 use UserAuth\Model\UserInterface;
 use UserAuth\Exception\UserConfirmException;
 
@@ -48,6 +49,20 @@ class IndexController extends AbstractActionController
         return $this->userObj;
     }
 
+    protected $config = array();
+    public function setConfig($key, $val)
+    {
+        $this->config[$key] = $val;
+        return $this;
+    }
+    protected function getConfig($key = null, $default = null)
+    {
+        if($key) {
+            return $this->config[$key] ?? $default;
+        }
+        return $this->config;
+    }
+
     public function indexAction()
     {
         $view = $this->_setCommonMetadata(new ViewModel());
@@ -68,17 +83,32 @@ class IndexController extends AbstractActionController
         $view = $this->_setCommonMetadata(new ViewModel());
         $request = $this->getRequest();
         if ($request->isPost()) {
-            if($this->getUser()->authenticate($this->params()->fromPost('email'),$this->params()->fromPost('password'))) {
+            $data = $this->params()->fromPost();
+            if($this->getUser()->authenticate($data['email'],$data['password'])) {
                 $this->flashMessenger()->addSuccessMessage($this->getTranslator()->translate('Login successful.'));
                 if($this->params()->fromQuery('referrer')) {
-                    $this->redirect()->toUrl($this->params()->fromQuery('referrer'));
+                    return $this->redirect()->toUrl($this->params()->fromQuery('referrer'));
                 }
                 return $this->redirect()->toRoute('user', ['locale'=>$this->lang()]);
             } else {
                 $this->flashMessenger()->addErrorMessage($this->getTranslator()->translate('There was an error login you with your credentials. Please try again.'));
+                $view->setVariable('errorCount', ++$data['errorCount'] ?? 1);
             }
         }
+        $view->setVariable('registrationAllowed', $this->getConfig('registrationAllowed', false));
         return $view;
+    }
+
+    public function logoutAction()
+    {
+        $view = $this->_setCommonMetadata(new ViewModel());
+        $request = $this->getRequest();
+        $this->getUser()->logout();
+        $this->flashMessenger()->addSuccessMessage($this->getTranslator()->translate('Logout successful.'));
+        if($this->params()->fromQuery('referrer')) {
+            $this->redirect()->toUrl($this->params()->fromQuery('referrer'));
+        }
+        return $this->redirect()->toRoute('user', ['locale'=>$this->lang()]);
     }
 
     public function registerAction()
@@ -105,13 +135,20 @@ class IndexController extends AbstractActionController
                 if($isPasswordValid) {
                     try {
                         $results = $this->getUser()->register($email, $password, $this->getGcNotify());
+                        $route = 'user/registrationError';
+                        if($results == User::VERIFICATION_DONE) {
+                            $route = 'user/registrationComplete';
+                        }
+                        if($results == User::VERIFICATION_EMAIL_SENT) {
+                            $route = 'user/register/confirmationEmailSent';
+                        }
                         return $this->redirect()->toRoute(
-                            $results ? 'user/register/confirmationEmailSent' : 'user/registrationComplete',
+                            $route,
                             ['locale' => $this->params()->fromRoute('locale')]
                         );
                     } catch (\PDOException $e) {
                         $errors['additionalRules'] = [
-                            'message'=>$translator->translate('An unknown database error occured.'),
+                            'message'=>$translator->translate('A database error occured (was this email used to registered previously?).'),
                             'field'=>'email'
                         ];
                     } catch (\Exception $e) {
@@ -221,15 +258,20 @@ class IndexController extends AbstractActionController
         $view = $this->_setCommonMetadata(new ViewModel());
         $passwordRules = $this->getPasswordRules();
         $view->setVariable('passwordRules', $passwordRules);
+        $token = $this->params()->fromRoute('token');
+        $userId = $this->getUser()->getUserIdFromToken($token);
+        if(!$userId) {
+            return $view->setTemplate('user-auth/index/invalid-token');
+        }
 
+
+        $view->setVariable('token', $token);
         $request = $this->getRequest();
-
         if ($request->isPost()) {
             $errors = [];
 
             $translator = $this->getTranslator();
 
-            $token = $this->params()->fromRoute('token');
             $password = $this->params()->fromPost('password');
             $confirm = $this->params()->fromPost('confirmPassword');
 

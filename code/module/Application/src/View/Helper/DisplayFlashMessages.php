@@ -65,7 +65,8 @@ class DisplayFlashMessages implements \Laminas\View\Helper\HelperInterface
             default:
                 $class="module-info module-simplify alert alert-info"; break;
         }
-        $html ='<div class="flashMessenger '.$class.'"><div>'.(is_array($message)?implode('<br>', array_merge($message)):$message).'</div><button type="button" class="close" onclick="flashMessenger.remove(this.parentNode);"><span aria-hidden="true">&times;</span><span class="sr-only">'.$this->view->translate('close').'</span></button></div>';
+        // <button type="button" class="close" onclick="flashMessenger.remove(this.parentNode);"><span aria-hidden="true">&times;</span><span class="sr-only">'.$this->view->translate('close').'</span></button>
+        $html ='<div class="flashMessenger '.$class.'"><div>'.(is_array($message)?implode('<br>', array_merge($message)):$message).'</div></div>';
 
         return $html;
     }
