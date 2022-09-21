@@ -7,6 +7,7 @@ cd /var/www
 if [ "$PHP_DEV_ENV" == "1" ]
 then
     cp config/autoload/development.local.php.dist config/autoload/development.local.php
+    chmod 664 config/autoload/development.local.php
     gulp &
 fi
 

@@ -9,6 +9,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use UserAuth\Model\User;
 use UserAuth\Model\UserAudit;
 use UserAuth\Model\UserInterface;
+use UserAuth\Model\JWT;
 
 class UserFactory implements FactoryInterface
 {
@@ -28,6 +29,7 @@ class UserFactory implements FactoryInterface
 
         $obj->setEventManager($container->get('EventManager'));
         $obj->setParentDb($container->get('user-pdo'));
+
         $obj->setUrlPlugin($container->get('router'));
         $obj->setTranslator($container->get('MvcTranslator'));
 
@@ -38,7 +40,9 @@ class UserFactory implements FactoryInterface
             $obj->setDefaultValues('status', $container->get('user-auth-default-user-status'));
         }
 
-        if(method_exists($obj, 'loadFromSession')) {
+        $obj->setJwtObj($container->get(JWT::class));
+
+        if(!$options['skipLoadFromSession'] && method_exists($obj, 'loadFromSession')) {
             $obj->loadFromSession();
         }
         return $obj;

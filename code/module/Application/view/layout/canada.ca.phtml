@@ -304,7 +304,11 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                     </header>
                     <div class="panel-body">
                     <?foreach($usefulLinks as $link):?>
-                        <p><a href="<?=$link["url"];?>"><?=$link['name'];?></a></p>
+                        <?if(isset($link['break'])):?>
+                            <p><?=$link['break'];?></p>
+                        <?else:?>
+                            <p><a href="<?=$link["url"];?>"><?=$link['name'];?></a></p>
+                        <?endif;?>
                     <?endforeach;?>
                     </div>
                 </section>

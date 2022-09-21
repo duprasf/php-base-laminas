@@ -118,7 +118,7 @@ class MetadataBuilder
             }
 
             if(!isset($data['creator'])) {
-                $data['creator'] = $this->translate('Government of Canada, Infrastructure Canada');
+                $data['creator'] = $this->translate('Government of Canada, Health Canada');
             }
 
             if(isset($data['breadcrumbs']) && !is_array($data['breadcrumbs'])) {

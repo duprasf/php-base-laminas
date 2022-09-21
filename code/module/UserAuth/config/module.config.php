@@ -146,10 +146,13 @@ return [
         ],
     ],
     'service_manager' => [
+        'invokables'=>[
+        ],
         'factories' => [
             Model\UserLogger::class => Factory\UserLoggerFactory::class,
             Model\UserAudit::class => Factory\UserAuditFactory::class,
             Model\User::class => Factory\UserFactory::class,
+            Model\JWT::class => Factory\JWTFactory::class,
         ],
         'aliases' => [
         ],

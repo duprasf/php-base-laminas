@@ -8,6 +8,7 @@ use \UserAuth\Exception\UserConfirmException;
 use \Laminas\EventManager\EventManagerInterface as EventManager;
 use \UserAuth\Module as UserAuth;
 use \Laminas\Session\Container;
+use \Psr\Log\LoggerInterface;
 
 class User implements UserInterface, \ArrayAccess
 {
@@ -32,6 +33,17 @@ class User implements UserInterface, \ArrayAccess
 
     protected const TOKEN_TYPE_CONFIRM_EMAIL='confirmEmail';
     protected const TOKEN_TYPE_RESET_PASSWORD='resetPassword';
+
+    protected $jwtObj;
+    public function setJwtObj(JWT $obj)
+    {
+        $this->jwtObj = $obj;
+        return $this;
+    }
+    protected function getJwtObj()
+    {
+        return $this->jwtObj;
+    }
 
     protected $passwordRules;
     public function setPasswordRules(array $passwordRules)
@@ -120,6 +132,13 @@ class User implements UserInterface, \ArrayAccess
         return $this->getUrlPlugin();
     }
 
+    protected $logger;
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger=$logger;
+        return $this;
+    }
+
     /**
     * @var MvcTranslator
     */
@@ -151,7 +170,7 @@ class User implements UserInterface, \ArrayAccess
         $data = $prepared->fetch(\PDO::FETCH_ASSOC);
         if($data && password_verify($password, $data['password'])) {
             $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN, $this, ['email'=>$email, 'userId'=>$data['userId']]);
-            $this->loadUserById($data['userId']);
+            $this->_loadUserById($data['userId']);
             $this->buildLoginSession($data['userId']);
             return true;
         } else {
@@ -164,7 +183,7 @@ class User implements UserInterface, \ArrayAccess
     {
         $container = new Container('UserAuth');
         if($container->userId) {
-            return $this->loadUserById($container->userId);
+            return $this->_loadUserById($container->userId);
         } else {
             return false;
         }
@@ -186,7 +205,7 @@ class User implements UserInterface, \ArrayAccess
         return $container->toArray();
     }
 
-    protected function loadUserById(int $id) : bool
+    protected function _loadUserById(int $id) : bool
     {
         $pdo = $this->getParentDb();
         $prepared = $pdo->prepare("SELECT userId, email, emailVerified, status FROM `user` WHERE userId = ?");
@@ -359,7 +378,7 @@ class User implements UserInterface, \ArrayAccess
             throw new UserConfirmException('token expire', UserConfirmException::CODE_TOKEN_EXPIRED);
         }
 
-        if(!$this->loadUserById($data['userId'])) {
+        if(!$this->_loadUserById($data['userId'])) {
             $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'user does not exists', 'errCode'=>UserConfirmException::CODE_USER_DOES_NOT_EXISTS]);
             throw new UserConfirmException('user does not exists', UserConfirmException::CODE_USER_DOES_NOT_EXISTS);
         }
@@ -509,22 +528,20 @@ class User implements UserInterface, \ArrayAccess
 
     public function jwtToData($jwt)
     {
-        $jwt = $auth ? str_replace('Bearer ', '', $auth->getFieldValue()) : null;
-        $data = null;
-        try {
-            if($jwt) {
-                // still not working since we don't have a way to use the same user obj in all apps.
-                //$dataExtracted = json_decode($controller->getUserObject()->getJwtPayload($jwt), true);
-                if($dataExtracted && isset($dataExtracted['exp']) && $dataExtracted['exp'] > time()) {
-                    $data = $dataExtracted;
-                }
-                $dataExtracted = null;
-            }
-        }
-        catch(\Exception $e) {
-        }
+        return $this->getJwtObj()->getPayload($jwt);
+    }
 
-        return $data;
+    public function getJWT($time = 86400)
+    {
+        $jwt = $this->getJwtObj();
+        $header = [
+            'typ' => 'JWT',
+            'alg' => 'HS256'
+        ];
+        $payload = [
+            'id'=>$this['userId'],
+        ];
+        return $jwt->generate($header, $payload, $time);
     }
 
     /**
