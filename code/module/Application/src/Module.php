@@ -16,7 +16,6 @@ class Module
 {
     public function getConfig(): array
     {
-        /** @var array $config */
         $config = include __DIR__ . '/../config/module.config.php';
         foreach(glob(__DIR__ . '/../config/autoload/{,*.}{global,local}.php', GLOB_BRACE) as $file) {
             if(is_readable($file)) {
@@ -177,8 +176,7 @@ class Module
             } else {
 
             }
-
-            $layout->setVariable('contentSecurityPolicy', $service->get('contentSecurityPolicy'));
+            $layout->setVariable('contentSecurityPolicy', $service->has('contentSecurityPolicy') ? $service->get('contentSecurityPolicy') : null);
         }
     }
 }

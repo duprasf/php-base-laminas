@@ -32,23 +32,6 @@ return [
                 'author'=>'Health Canada, Government of Canada',
                 'issued'=>date("Y-m-d"),
             ],
-
-            // this can be overwriten in local configuration if needed
-            'contentSecurityPolicy' => "default-src 'self' ".implode(' ', [
-                "*.canada.ca",
-                "healthycanadians.gc.ca",
-                "canadiaensensante.gc.ca",
-                "code.jquery.com",
-                "ajax.googleapis.com",
-                "www.google-analytics.com",
-                "ssl.google-analytics.com",
-                "www.googletagmanager.com",
-                "*.googleapis.com",
-                "fonts.gstatic.com",
-                "use.fontawesome.com",
-                "'unsafe-eval'",
-                "'unsafe-inline'",
-            ]),
         ],
     ],
     'translator' => [
