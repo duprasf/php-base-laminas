@@ -6,18 +6,9 @@
 pipeline {
     agent {
         label 'WHMB-DV-WB-01'
-        /*label 'dockerv1'/*
     }
-
-    options { disableConcurrentBuilds() }
-
-    /*
-    parameters {
-        string(name: 'FRAMEWORK_CONFIG_FILE_PATH', defaultValue: '/run/secrets/framework-secrets.sh', description: 'Location of the framework config file on the VM')
-    }
-    /* */
-
     environment {
+        containerRegistryCredentials = credentials('ARTIFACTORY_PUBLISH')
         containerRegistry = 'jack.hc-sc.gc.ca'
         containerRegistryPull = 'jack.hc-sc.gc.ca'
     }
