@@ -11,7 +11,7 @@ RUN apt-get update -y && \
     rm -rf /var/lib/apt/lists/*
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get install -y nodejs
+RUN apt-get install -y -V nodejs
 
 WORKDIR /var/www
 COPY code/ /var/www/
