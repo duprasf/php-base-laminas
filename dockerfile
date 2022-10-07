@@ -10,7 +10,8 @@ LABEL source = 'https://github.hc-sc.gc.ca/hs/php-base-laminas'
 RUN apt-get update -y && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && apt install -y nodejs
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+RUN apt-get install -y nodejs
 
 WORKDIR /var/www
 COPY code/ /var/www/
