@@ -5,7 +5,7 @@
 
 pipeline {
     agent {
-        label 'WHMB-DV-WB-01'
+        label 'StandardV1'
     }
     environment {
         containerRegistryCredentials = credentials('ARTIFACTORY_PUBLISH')
