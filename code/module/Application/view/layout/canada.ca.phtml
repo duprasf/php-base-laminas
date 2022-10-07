@@ -37,7 +37,7 @@ elseif(is_string($this->attribution) && strpos($this->attribution, '|')) {
 }
 
 if(!$this->contentSecurityPolicy) {
-    $this->contentSecurityPolicy = "default-src 'self' *.canada.ca healthycanadians.gc.ca canadiaensensante.gc.ca code.jquery.com ajax.googleapis.com www.google-analytics.com ssl.google-analytics.com www.googletagmanager.com *.googleapis.com fonts.gstatic.com use.fontawesome.com 'unsafe-eval' 'unsafe-inline'";
+    $this->contentSecurityPolicy = "default-src 'self' *.canada.ca healthycanadians.gc.ca canadiaensensante.gc.ca code.jquery.com ajax.googleapis.com google.com www.google.com www.google-analytics.com ssl.google-analytics.com www.googletagmanager.com *.googleapis.com fonts.gstatic.com use.fontawesome.com 'unsafe-eval' 'unsafe-inline'";
 }
 
 
