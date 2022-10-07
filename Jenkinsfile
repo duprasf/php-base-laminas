@@ -5,7 +5,7 @@
 
 pipeline {
     agent {
-        label 'standardv1'
+        label 'WHMB-DV-WB-01'
         /*label 'dockerv1'/*
     }
 
