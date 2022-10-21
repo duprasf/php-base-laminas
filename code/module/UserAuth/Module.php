@@ -50,7 +50,9 @@ class Module implements ConfigProviderInterface
         $eventManager = $application->getEventManager()->getSharedManager();
 
         // register listener
-        $listener = $application->getServiceManager()->get(Model\UserAudit::class);
-        $listener->setEventManager($eventManager);
+        if($application->getServiceManager()->has('user-pdo')) {
+            $listener = $application->getServiceManager()->get(Model\UserAudit::class);
+            $listener->setEventManager($eventManager);
+        }
     }
 }
