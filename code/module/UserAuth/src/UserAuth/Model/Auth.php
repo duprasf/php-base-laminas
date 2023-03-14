@@ -16,14 +16,14 @@ class Auth
                 $encryptedPasswdParts = explode('$',$pair[1]);
                 $algorithm = $encryptedPasswdParts[1];
                 $salt = $encryptedPasswdParts[2];
-                return $this->verify($algorithm,$salt,$passwd,$encryptedPasswdParts[3], $pair[1]);
+                return $this->verify($passwd, $pair[1], $encryptedPasswdParts[3], $algorithm, $salt);
             }
         }
 
         return false;
     }
 
-    public function verify($algo, $salt, $password, $encryptedPassword,$fullEncryptedString)
+    public function verify($password, $fullEncryptedString, $encryptedPassword='', $algo=PASSWORD_DEFAULT, $salt='')
     {
         $return = false;
         switch(strtolower($algo)) {
@@ -40,7 +40,7 @@ class Auth
         return $return;
     }
 
-    public function encrypt($algo, $salt, $password)
+    public function encrypt($password, $algo=PASSWORD_DEFAULT, $salt='')
     {
         $cryptPassword = null;
         switch(strtolower($algo)) {
