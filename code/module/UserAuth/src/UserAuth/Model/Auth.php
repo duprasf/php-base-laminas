@@ -33,6 +33,7 @@ class Auth
             case '2y':
             case 'argon2i':
             case 'argon2id':
+            default:
                 return password_verify($password, $fullEncryptedString);
                 break;
         }
@@ -54,6 +55,9 @@ class Auth
                 break;
             case 'argon2id':
                 $cryptPassword = password_hash($passwd,PASSWORD_ARGON2ID);
+                break;
+            default:
+                $cryptPassword = password_hash($passwd,PASSWORD_DEFAULT);
                 break;
 
         }
