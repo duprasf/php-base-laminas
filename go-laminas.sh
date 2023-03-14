@@ -6,9 +6,9 @@ cd /var/www
 # and join javascript
 if [ "$PHP_DEV_ENV" == "1" ]
 then
-    cp config/autoload/development.local.php.dist config/autoload/development.local.php
-    chmod 664 config/autoload/development.local.php
+    cp /var/www/config/autoload/development.local.php.dist /var/www/config/autoload/development.local.php
+    chown www-data:www-data /var/www/config/autoload/development.local.php
     gulp &
 fi
 
-apache2-foreground
+/go-php.sh
