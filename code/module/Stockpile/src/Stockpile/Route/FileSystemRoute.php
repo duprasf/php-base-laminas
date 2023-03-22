@@ -43,6 +43,9 @@ class FileSystemRoute extends Regex
         if(strpos($path,'..') !== false) return null;
 
         $path = parse_url($path, PHP_URL_PATH);
+        if(pathinfo($path, PATHINFO_EXTENSION) == 'html') {
+            $path = substr($path, 0, -5);
+        }
 
         $lang = $match->getParam('lang');
         $lang3 = $lang == 'fr' ? 'fra' : 'eng';
@@ -68,6 +71,7 @@ class FileSystemRoute extends Regex
                 break;
             }
         }
+
         if(!$found) {
             return null;
         }

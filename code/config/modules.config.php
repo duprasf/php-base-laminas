@@ -17,8 +17,9 @@ $apps = [];
 if(!in_array('noAutoLoadApps', $extraModules)) {
     $apps = glob(realpath(dirname(__DIR__).'/apps').DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR);
     $apps = array_map('basename', $apps);
+} else {
+    array_splice($extraModules, array_search('noAutoLoadApps', $extraModules), 1);
 }
-array_splice($extraModules, array_search('noAutoLoadApps', $extraModules), 1);
 
 $modules = array_merge([
     'Laminas\Mvc\Plugin\FilePrg',
