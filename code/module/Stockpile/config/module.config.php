@@ -1,6 +1,5 @@
 <?php
 namespace Stockpile;
-exit(basename(__FILE__).':'.__LINE__);
 
 /**
 * The path where the file-system-route can find its files is
