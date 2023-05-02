@@ -13,5 +13,5 @@ interface UserInterface
     public function changePassword(String $token, String $password);
     public function validatePassword(String $password, String $confirmation=null, array $passwordRules=[]);
     public function isLoggedIn() : bool;
-    public function getUserId() : ?int;
+    public function getUserId();
 }

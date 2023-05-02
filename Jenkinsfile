@@ -79,21 +79,21 @@ pipeline {
         }
         success {
             script {
-                resultString = "Success"
+                resultString = "Success ☼"
             }
         }
         unstable {
             script {
-                resultString = "Unstable"
+                resultString = "Unstable ⛅"
             }
         }
         failure {
             script {
-                resultString = "Failure"
+                resultString = "Failure 🌩"
             }
         }
         cleanup {
-            emailext body: "<p>See build result details at: <a href='${env.JOB_URL}'>${env.JOB_URL}</a></p>", mimeType: 'text/html; charset=UTF-8', recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'DevelopersRecipientProvider'], [$class: 'UpstreamComitterRecipientProvider'], [$class: 'RequesterRecipientProvider']], replyTo: 'no-reply@build.scs-lab.com', subject: "${currentBuild.fullDisplayName} ${resultString}"
+            emailext body: "<strong>${resultString}</strong><p>See build result details at: <a href='${env.JOB_URL}'>${env.JOB_URL}</a></p>", mimeType: 'text/html; charset=UTF-8', recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'DevelopersRecipientProvider'], [$class: 'UpstreamComitterRecipientProvider'], [$class: 'RequesterRecipientProvider']], replyTo: 'devops@hc-sc.gc.ca', subject: "${resultString} ${currentBuild.fullDisplayName}"
             script {
                 jiraIssueSelector(issueSelector: [$class: 'DefaultIssueSelector'])
                         .each {

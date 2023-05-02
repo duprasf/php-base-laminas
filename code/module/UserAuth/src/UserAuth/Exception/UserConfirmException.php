@@ -1,7 +1,9 @@
 <?php
 namespace UserAuth\Exception;
 
-class UserConfirmException extends \Exception
+use UserException;
+
+class UserConfirmException extends UserException
 {
     public const CODE_TOKEN_NOT_FOUND=1;
     public const CODE_TOKEN_EXPIRED=2;

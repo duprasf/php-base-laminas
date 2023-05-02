@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
+docker stop php-base-laminas
+docker rm php-base-laminas
 
-docker stop laminas
-docker rm laminas
-
-docker run -d --name laminas -p 80:80 \
+docker run -d --name php-base-laminas \
     --net appnet \
-    -v ~/docker/php-base-laminas/code/:/var/www \
+    --restart unless-stopped \
     -e PHP_DEV_ENV=1 \
-    php-base-laminas
+    -v /etc/localtime:/etc/localtime:ro \
+    --label traefik.enable=true \
+    --label traefik.http.routers.lessons.rule='Host(`localdev.hc-sc.gc.ca`)' \
+    --label traefik.http.routers.lessons_http.rule='Host(`localdev.hc-sc.gc.ca`)' \
+    --label traefik.http.routers.lessons_http.entrypoints=web \
+    -v /docker/php-base-laminas/code/module/ActiveDirectory:/var/www/module/ActiveDirectory \
+    -v /docker/php-base-laminas/code/module/UserAuth:/var/www/module/UserAuth \
+    php-base-laminas:latest

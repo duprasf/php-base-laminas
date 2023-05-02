@@ -152,6 +152,7 @@ return [
             Model\UserLogger::class => Factory\UserLoggerFactory::class,
             Model\UserAudit::class => Factory\UserAuditFactory::class,
             Model\User::class => Factory\UserFactory::class,
+            Model\LdapUser::class => Factory\UserFactory::class,
             Model\JWT::class => Factory\JWTFactory::class,
         ],
         'aliases' => [

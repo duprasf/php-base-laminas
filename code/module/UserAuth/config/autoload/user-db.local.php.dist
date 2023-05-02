@@ -1,7 +1,7 @@
 <?php
 namespace UserAuth;
 
-use \UserAuth\Model\User;
+use \UserAuth\Model\DbUser;
 
 return [
     'service_manager' => array(
@@ -30,7 +30,7 @@ return [
             ],
             'user-auth-registration-allowed' => true,
             'user-auth-must-verify-email' => true,
-            'user-auth-default-user-status' => User::STATUS_ACTIVE,
+            'user-auth-default-user-status' => DbUser::STATUS_ACTIVE,
             'JWT_SECRET'=>'Secret key for the JWT. The longer the more secure',
         ],
     ),

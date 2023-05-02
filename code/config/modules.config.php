@@ -39,6 +39,7 @@ $modules = array_merge([
     'Laminas\Validator',
     //'LmcUser',
     'UserAuth',
+    'ActiveDirectory',
     'Application',
     'PublicAsset',
     'TranslationExtractor',

@@ -1,0 +1,39 @@
+<?php
+return [
+    'service_manager' => [
+        'services' => [
+            'ldap-options' => [
+                '1'=>[
+                    'host'            => 'HCQCK1AWVDCP001.ad.hc-sc.gc.ca',
+                    'username'        => 'AD\sv-mySource-LDAP',
+                    'password'        => '***** removed *****',
+                    'baseDn'          => 'OU=User Accounts,OU=Accounts,OU=Health Canada,DC=ad,DC=hc-sc,DC=gc,DC=ca',
+                    //'bindRequiresDn'  => true,
+                    //'useSsl'          =>true,
+                ],
+                '2'=>[
+                    'host'            => 'HCONK1VWVDCP002.ad.hc-sc.gc.ca',
+                    'username'        => 'AD\sv-mySource-LDAP',
+                    'password'        => '***** removed *****',
+                    'baseDn'          => 'OU=User Accounts,OU=Accounts,OU=Health Canada,DC=ad,DC=hc-sc,DC=gc,DC=ca',
+                    //'bindRequiresDn'  => true,
+                    //'useSsl'          =>true,
+                ],
+                '5'=>[
+                    'host'            => 'HCONK1VWVDCP005.ad.hc-sc.gc.ca',
+                    'username'        => 'AD\sv-mySource-LDAP',
+                    'password'        => '***** removed *****',
+                    'baseDn'          => 'OU=User Accounts,OU=Accounts,OU=Health Canada,DC=ad,DC=hc-sc,DC=gc,DC=ca',
+                    //'bindRequiresDn'  => true,
+                    //'useSsl'          =>true,
+                ],
+                'ldap-legacy-options' => [
+                    'host'            => 'r6ldap01.hc-sc.gc.ca',
+                    'baseDn'          => 'OU=HC-SC,O=GC,C=CA',
+                    'port'            => 389,
+                    //'bindRequiresDn'  => true,
+                ],
+            ],
+        ],
+    ],
+];
