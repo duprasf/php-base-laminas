@@ -11,7 +11,7 @@ return array(
             'path'=>realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'public'),
             // this is a white list of extensions, anything that is loaded
             // with a different extension will be returned a 404
-            'whitelist'=>array('js','css','jpg','jpeg','png','gif','svg','ttf','woff',),
+            'whitelist'=>array('js','map','css','jpg','jpeg','png','gif','svg','ttf','woff',),
         ),
     ),
 );

@@ -5,9 +5,11 @@ use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
 use Laminas\EventManager\Event;
 
+/**
+* @ignore basic module class for laminas, no need to include it in the documentation
+*/
 class Module
 {
-
     public function onBootstrap(MvcEvent $e)
     {
         $eventManager        = $e->getApplication()->getEventManager();

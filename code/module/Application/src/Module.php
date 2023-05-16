@@ -12,8 +12,14 @@ use \Laminas\Session\Container;
 use \Laminas\Session\Validator;
 use \Laminas\View\Model\JsonModel;
 
+/**
+* Base configuration class for the Application module. This is the namespace for generic features
+*/
 class Module
 {
+    /**
+    * @ignore default method for Lamnias, no need to be in documentation
+    */
     public function getConfig(): array
     {
         $config = include __DIR__ . '/../config/module.config.php';
@@ -25,6 +31,9 @@ class Module
         return $config;
     }
 
+    /**
+    * @ignore default method for Lamnias, no need to be in documentation
+    */
     public function onBootstrap(MvcEvent $e)
     {
         $application = $e->getApplication();
@@ -53,6 +62,12 @@ class Module
         $this->bootstrapSession($e);
     }
 
+    /**
+    * Initialize the Laminas Session class to be used in other modules
+    *
+    * @param MvcEvent $e
+    * @return null
+    */
     public function bootstrapSession(MvcEvent $e)
     {
         $session = $e->getApplication()
@@ -62,7 +77,7 @@ class Module
 
         $container = new Container('initialized');
 
-        if (isset($container->init)) {
+        if(isset($container->init)) {
             return;
         }
 
@@ -75,17 +90,17 @@ class Module
         $container->httpUserAgent = $request->getServer()->get('HTTP_USER_AGENT');
 
         $config = $serviceManager->get('Config');
-        if (! isset($config['session'])) {
+        if (!isset($config['session'])) {
             return;
         }
 
         $sessionConfig = $config['session'];
 
-        if (! isset($sessionConfig['validators'])) {
+        if (!isset($sessionConfig['validators'])) {
             return;
         }
 
-        $chain   = $session->getValidatorChain();
+        $chain = $session->getValidatorChain();
 
         foreach ($sessionConfig['validators'] as $validator) {
             switch ($validator) {
@@ -104,6 +119,12 @@ class Module
         }
     }
 
+    /**
+    * Setup the flash messenger and the controller in the layout
+    *
+    * @param MvcEvent $event
+    * @return Module
+    */
     public function onDispatch(MvcEvent $event)
     {
         $controller = $event->getTarget();
@@ -114,6 +135,11 @@ class Module
         return $this;
     }
 
+    /**
+    * Set locale (lang) in the the application, the router and the service manager
+    *
+    * @param MvcEvent $e
+    */
     public function setLocale(MvcEvent $e)
     {
         $sm = $e->getApplication()->getServiceManager();
@@ -139,6 +165,12 @@ class Module
         $sm->setAllowOverride(FALSE);
     }
 
+    /**
+    * Set "default" variables (lang, supportedLang and contentSecurityPolicy) to the layout and view object
+    *
+    * @param MvcEvent $event
+    * @return Module
+    */
     public function updateMetadata(MvcEvent $event)
     {
         $application = $event->getTarget();
@@ -151,12 +183,6 @@ class Module
         $layout      = $event->getViewModel();
         $views       = $layout->getChildren();
         $view        = isset($views[0]) ? $views[0] : new \Laminas\View\Model\ViewModel();
-        //$user        = $service->get('user');
-
-        // if no variable called user was defined, inject the current user
-        //if(!$view->getVariable('user')) {
-            //$view->setVariable('user', $user);
-        //}
 
         // if we are returning json, skip this process
         if($layout instanceof JsonModel)

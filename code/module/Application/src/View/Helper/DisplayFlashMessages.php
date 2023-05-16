@@ -1,13 +1,18 @@
 <?php
 namespace Application\View\Helper;
 
-use \Laminas\Mvc\I18n\Translator;
-use \Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\Mvc\I18n\Translator;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\View\Helper\HelperInterface;
+use Laminas\View\Renderer\RendererInterface;
 
-class DisplayFlashMessages implements \Laminas\View\Helper\HelperInterface
+/**
+* Class to display the HTML Flash Messages received from the previous page (or current page)
+*/
+class DisplayFlashMessages implements HelperInterface
 {
-    protected $view;
-    public function setView(\Laminas\View\Renderer\RendererInterface $view) {$this->view = $view;}
+    private $view;
+    public function setView(RendererInterface $view) {$this->view = $view;}
     public function getView() {return $this->view;}
 
     static protected $jsLoaded = false;
@@ -71,8 +76,16 @@ class DisplayFlashMessages implements \Laminas\View\Helper\HelperInterface
         return $html;
     }
 
+    /**
+    * Set the Javascript required for the flash messenger to work in the page headScript
+    *
+    */
     public function javascript()
     {
+        if(static::$jsLoaded) {
+            return;
+        }
+
         static::$jsLoaded = true;
         ob_start();?>
         var flashMessenger = (function() {
@@ -114,7 +127,7 @@ class DisplayFlashMessages implements \Laminas\View\Helper\HelperInterface
 
             return this;
         })();
-        <?$this->getView()->headScript()->appendScript(ob_get_clean());?>
         <?php
+        $this->getView()->headScript()->appendScript(ob_get_clean());
     }
 }

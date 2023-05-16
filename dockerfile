@@ -16,8 +16,8 @@ RUN apt-get install -y -V nodejs
 WORKDIR /var/www
 COPY code/ /var/www/
 
-RUN mkdir -p /var/www/module/Void
-RUN git clone https://github.com/duprasf/Void.git /var/www/module/Void/.
+RUN mkdir -p /var/www/vendor/Void
+RUN git clone https://github.com/duprasf/Void.git /var/www/vendor/Void/.
 
 RUN npm install --global gulp-cli
 RUN npm install

@@ -1,10 +1,13 @@
 <?php
 namespace Logger\Model;
 
-use Psr\Log;
+use Psr\Log\LoggerInterface;
 use Logger\Model\LoggerTrait;
 
-class FileLogger implements Log\LoggerInterface
+/**
+* PSR logger that write in a file (JSON encoded)
+*/
+class FileLogger implements LoggerInterface
 {
     use LoggerTrait;
 

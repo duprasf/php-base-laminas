@@ -3,6 +3,9 @@ namespace ActiveDirectory;
 
 use Laminas\ModuleManager\Feature\ConfigProviderInterface;
 
+/**
+* @ignore Basic class to setup module, does not need to be in documentation
+*/
 class Module implements ConfigProviderInterface
 {
     public function getConfig()

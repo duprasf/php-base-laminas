@@ -2,10 +2,12 @@
 namespace GcNotify;
 
 /**
-* Class that sends email using GcNotify (https://notification.canada.ca/)
-* This is the Version 7.1+ of PHP, for verions lower than that see GcNotify_PHP5.php
+* Class that sends email using GcNotify, this is the Version 7.1+ of PHP, for verions
+* lower than that see GcNotify_PHP5 on GC/Code
 *
 * @author Francois Dupras, francois.dupras@canada.ca
+* @link https://gccode.ssc-spc.gc.ca/sustaining-applications/gc-notify
+* @link https://notification.canada.ca/
 * @version 1.0
 */
 class GcNotify {

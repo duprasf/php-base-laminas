@@ -5,8 +5,11 @@ use Laminas\Mvc\Router\Http\RouteInterface;
 use Laminas\Stdlib\RequestInterface as Request;
 use Laminas\Mvc\Router\Http\RouteMatch;
 use Laminas\Router\Http\Regex;
+use Void\StringFunction;
 
-
+/**
+* The route that will test for assets if no other route was matched
+*/
 class PublicAssetRoute extends Regex {
     protected $config;
     public function setSearchFolders(array $config)
@@ -19,6 +22,14 @@ class PublicAssetRoute extends Regex {
         return $this->config;
     }
 
+    /**
+    * Loop over the configuration key to find a match
+    *
+    * @param Request $request
+    * @param mixed $pathOffset
+    *
+    * @return \Laminas\Router\RouteMatch|null
+    */
     public function match(Request $request, $pathOffset = null)
     {
         $match = parent::match($request, $pathOffset);
@@ -27,6 +38,7 @@ class PublicAssetRoute extends Regex {
         }
 
         $path = preg_replace('(/+$)', '', $match->getParam('path'));
+        // if we see '..' in the path assume it is a bad request and exit
         if(strpos($path,'..') !== false) {
             return null;
         }
@@ -56,7 +68,7 @@ class PublicAssetRoute extends Regex {
         if(!$assetToLoad) {
             foreach($config as $key=>$conf) {
                 $namespaceFolder = substr($path, 0, strpos($path, '/'));
-                if(\Void\StringFunction::camel2dashed($key) == $namespaceFolder) {
+                if(StringFunction::camel2dashed($key) == $namespaceFolder) {
                     $path = substr($path, strlen($namespaceFolder)+1);
                 }
                 $assetToLoad = $this->searchForAsset($path, $conf);
@@ -76,6 +88,14 @@ class PublicAssetRoute extends Regex {
         return $match;
     }
 
+    /**
+    * Internal method that looks at all the files in the defined folders and
+    * return the first match
+    *
+    * @param String $path, the path we are trying to match
+    * @param array $config, the configuration for this folder (whitelist extension and path)
+    * @return mixed
+    */
     protected function searchForAsset($path, array $config)
     {
         if(!isset($config['path'])) {
@@ -109,6 +129,13 @@ class PublicAssetRoute extends Regex {
         }
     }
 
+    /**
+    * Simple check to see if asset exists
+    *
+    * @param String $urlPath
+    * @param String $internalPath
+    * @return bool
+    */
     protected function doesAssetExists($urlPath, $internalPath)
     {
         $filename = realpath($internalPath.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $urlPath));

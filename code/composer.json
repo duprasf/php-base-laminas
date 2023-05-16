@@ -23,7 +23,7 @@
         "psr-4": {
             "Application\\": "module/Application/src/",
             "GcNotify\\": "module/GcNotify/",
-            "Void\\": "module/Void/"
+            "Void\\": "vendor/Void/"
         }
     },
     "autoload-dev": {

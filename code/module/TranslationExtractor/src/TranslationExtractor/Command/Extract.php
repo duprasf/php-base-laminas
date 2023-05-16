@@ -15,7 +15,6 @@ class Extract extends Command
 
     protected function configure() : void
     {
-
         $this->setName(self::$defaultName)
             ->setDescription('Extract translations to a .po file')
             ->addArgument(
@@ -33,6 +32,14 @@ class Extract extends Command
         //$this->addOption('output', null, InputOption::VALUE_REQUIRED, 'Output file name');
     }
 
+    /**
+    * In CLI, you can extract the strings from a project (folder) into a .po to be translated
+    * using services like poeditor.com
+    *
+    * @param InputInterface $input
+    * @param OutputInterface $screen
+    * @return {int|mixed}
+    */
     protected function execute(InputInterface $input, OutputInterface $screen) : int
     {
         $folder = $input->getArgument('input');
@@ -51,35 +58,6 @@ class Extract extends Command
         } catch(\Exception $e) {
             $screen->writeln('<error>ERROR</error> '.$e->getMessage());
         }
-        /*
-        if($all) {
-            $extractor->extractAllModules($folder, $output);
-        }
-        else if($form) {
-            $filter = new \Laminas\Filter\Word\DashToCamelCase();
-            $upper = $filter->filter($form);
-
-            $filter = new \Laminas\Filter\Word\CamelCaseToDash();
-            $lower = strtolower($filter->filter($form));
-
-            if(!$folder || !file_exists($folder.'/Module.php')) {
-                print "You must provide a valid module folder as a start point for the form".PHP_EOL;
-            }
-            else {
-                $fileList = array(
-                    $folder."/config/autoload/{$lower}.local.php",
-                    $folder."/config/autoload/{$lower}.global.php",
-                    $folder."/src/".basename($folder)."/Controller/{$upper}Controller.php",
-                    $folder."/src/".basename($folder)."/Model/{$upper}.php",
-                    $folder."/view/".strtolower($filter->filter(basename($folder)))."/{$lower}",
-                );
-                $extractor->processFileList($fileList, $output);
-            }
-        }
-        else {
-            $extractor->processFolder($folder, $output);
-        }
-        /**/
         return 0;
     }
 }

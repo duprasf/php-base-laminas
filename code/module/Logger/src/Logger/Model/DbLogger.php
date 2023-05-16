@@ -1,10 +1,13 @@
 <?php
 namespace Logger\Model;
 
-use Psr\Log;
+use Psr\Log\LoggerInterface;
 use Logger\Model\LoggerTrait;
 
-class DbLogger implements Log\LoggerInterface
+/**
+* PSR logger that writes in a DB (table logs, fields: level, message)
+*/
+class DbLogger implements LoggerInterface
 {
     use LoggerTrait;
 

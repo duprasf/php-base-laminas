@@ -281,7 +281,7 @@ class IndexController extends AbstractActionController
 
                 if($isPasswordValid) {
                     try {
-                        $result = $this->getUser()->changePassword($token, $password);
+                        $result = $this->getUser()->resetPassword($token, $password);
                         $view->setVariable('result', $result);
                     } catch (\PDOException $e) {
                         $errors['additionalRules'] = [

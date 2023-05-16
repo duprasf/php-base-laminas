@@ -1,10 +1,10 @@
 <?php
-namespace Application\View\Helper\Factory;
+namespace Application\Factory\View\Helper;
 
 use Laminas\ServiceManager\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Interop\Container\ContainerInterface;
-use \Application\View\Helper\CompleteMetadata;
+use Application\View\Helper\CompleteMetadata;
 
 class CompleteMetadataFactory implements FactoryInterface
 {

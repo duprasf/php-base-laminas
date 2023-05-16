@@ -1,6 +1,9 @@
 <?php
 namespace UserAuth\Model;
 
+use UserAuth\Exception\JwtExpiredException;
+use UserAuth\Exception\JwtException;
+
 class JWT {
     private $secret;
     public function setSecret(string $secret)
@@ -24,6 +27,8 @@ class JWT {
     public function generate(array $header, array $payload, int $timeToLive = 604800): string
     {
         if($timeToLive > 0){
+            // if $timeToLive is 0, use the value defined in $payload.
+            // This is used to confirm the token is valid
             $now = new \DateTime();
             $payload['iat'] = $now->getTimestamp();
             $payload['exp'] = $payload['iat'] + $timeToLive;
@@ -85,15 +90,15 @@ class JWT {
     public function getPayload(string $token)
     {
         if(!$this->isToken($token)){
-            throw new \Exception('["status"=>400, "message"=>"Token not found"]');
+            throw new JwtException('Token not found');
         }
 
         if(!$this->valid($token)){
-            throw new \Exception('["status"=>403, "message"=>"Invalid token"]');
+            throw new JwtException('Invalid token');
         }
 
         if($this->isExpired($token)){
-            throw new \Exception('["status"=>403, "message"=>"Expired token"]');
+            throw new JwtExpiredException('Expired token');
         }
 
         return $this->getPart($token, 1);

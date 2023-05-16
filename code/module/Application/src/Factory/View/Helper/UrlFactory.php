@@ -1,12 +1,12 @@
 <?php
-namespace Application\View\Helper;
+namespace Application\Factory\View\Helper;
 
-use \Laminas\ServiceManager\FactoryInterface;
-use \Application\View\Helper\Url;
-use \Laminas\Console\Console;
-use \Laminas\Mvc\Router\RouteMatch;
-use \Laminas\ServiceManager\ServiceLocatorInterface;
-use \Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\FactoryInterface;
+use Interop\Container\ContainerInterface;
+use Laminas\Console\Request as ConsoleRequest;
+use Laminas\Mvc\Router\RouteMatch;
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Application\View\Helper\Url;
 
 class UrlFactory implements FactoryInterface
 {
@@ -20,7 +20,6 @@ class UrlFactory implements FactoryInterface
         $config = $serviceLocator->get('Config');
         $helper = new Url();
 
-        //$router = Console::isConsole() ? 'HttpRouter' : 'Router';
         $request = $serviceLocator->get('Request');
         $router = $request instanceof ConsoleRequest ? 'Router' : 'HttpRouter';
         $helper->setRouter($serviceLocator->get($router));

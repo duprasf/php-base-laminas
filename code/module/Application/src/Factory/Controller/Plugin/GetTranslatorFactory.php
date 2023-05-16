@@ -4,16 +4,16 @@
  * To create Application Plugin by injecting config array
  */
 
-namespace Application\Controller\Plugin\Factory;
+namespace Application\Factory\Controller\Plugin;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\Mvc\I18n\Translator;
 
 class GetTranslatorFactory implements FactoryInterface
 {
     /**
-    * Get the translator
+    * Get the translator object
     *
     * @param ContainerInterface $container
     * @param mixed $requestedName
@@ -23,6 +23,6 @@ class GetTranslatorFactory implements FactoryInterface
     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new \Application\Controller\Plugin\GetTranslator($container->get('MvcTranslator'), $container->get('lang'));
+        return new $requestedName($container->get('MvcTranslator'), $container->get('lang'));
     }
 }

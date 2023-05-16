@@ -6,6 +6,9 @@ use \Laminas\View\Renderer\RendererInterface;
 use \Laminas\View\Helper\HelperInterface;
 use \Application\Model\Breadcrumbs;
 
+/**
+* Generate the WET HTML for the breadcrumbs
+*/
 class BreadcrumbsHelper implements HelperInterface
 {
     protected $view;
@@ -40,6 +43,11 @@ class BreadcrumbsHelper implements HelperInterface
         return $this;
     }
 
+    /**
+    * Return the WET HTML for the breadcrumbs
+    *
+    * @return String
+    */
     public function __toString()
     {
         $translator = $this->getTranslator();

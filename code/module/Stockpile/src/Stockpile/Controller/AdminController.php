@@ -6,7 +6,7 @@ use Laminas\View\Model\JsonModel;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Void\ArrayObject;
 use Stockpile\Model\MovedPage;
-use Stockpile\Model\Auth;
+use UserAuth\Model\Auth;
 
 class AdminController extends AbstractActionController
 {
@@ -39,7 +39,7 @@ class AdminController extends AbstractActionController
             header('HTTP/1.0 401 Unauthorized');
             exit('Login is required');
         } else {
-            $auth = new \Stockpile\Model\Auth();
+            $auth = $this->getAuthObj();
             if(!$auth(
                 ['admin:$2y$10$1d9mCLGOd7U.gpGSdKExieOAteD8tjqidn/VcPi3Em654PDUeEIfa'],
                 $_SERVER['PHP_AUTH_USER'],

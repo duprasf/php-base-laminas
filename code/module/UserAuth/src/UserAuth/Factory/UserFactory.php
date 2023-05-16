@@ -18,24 +18,34 @@ class UserFactory implements FactoryInterface
     {
         $obj = new $requestName();
 
+        if($container->has('userConfig')) {
+            $obj->setUserConfig($container->get('userConfig'));
+        }
+
         if($container->has('user-auth-password-rules') && method_exists($obj, 'setPasswordRules')) {
             $obj->setPasswordRules($container->get('user-auth-password-rules'));
         }
 
-        $obj->setGcNotifyData([
-            'api-key'=>$container->get('gc-notify-auth-system-key'),
-            'confirm-email-template'=>$container->get('gc-notify-auth-confirm-email'),
-            'reset-password-template'=>$container->get('gc-notify-auth-reset-password'),
-        ]);
+        if($container->has('gc-notify-auth-system-key') && method_exists($obj, 'setGcNotifyData')) {
+            $obj->setGcNotifyData([
+                'api-key'=>$container->get('gc-notify-auth-system-key'),
+                'confirm-email-template'=>$container->get('gc-notify-auth-confirm-email'),
+                'reset-password-template'=>$container->get('gc-notify-auth-reset-password'),
+            ]);
+        }
 
         $obj->setEventManager($container->get('EventManager'));
 
-        if($container->has('user-pdo') && method_exists($obj, 'setParentDb')) {
-            $obj->setParentDb($container->get('user-pdo'));
+        if($container->has('user-parent-db') && method_exists($obj, 'setParentDb')) {
+            $obj->setParentDb($container->get('user-parent-db'));
         }
 
-        $obj->setUrlPlugin($container->get('router'));
-        $obj->setTranslator($container->get('MvcTranslator'));
+        if(method_exists($obj, 'setUrlPlugin')) {
+            $obj->setUrlPlugin($container->get('router'));
+        }
+        if(method_exists($obj, 'setTranslator')) {
+            $obj->setTranslator($container->get('MvcTranslator'));
+        }
 
         if($container->has('user-auth-must-verify-email') && method_exists($obj, 'setDefaultValues')) {
             $obj->setDefaultValues('emailVerified', $container->get('user-auth-must-verify-email') ? 0 : 1);
@@ -48,11 +58,7 @@ class UserFactory implements FactoryInterface
 
         $this->setLdap($obj, $container);
 
-        if(is_array($options) && isset($options['skipLoadFromSession']) && $options['skipLoadFromSession']) {
-            return $obj;
-        }
-
-        if(method_exists($obj, 'loadFromSession')) {
+        if($obj->getUserConfig('useSession') && method_exists($obj, 'loadFromSession') && !(isset($options['skipLoadFromSession']) && $options['skipLoadFromSession'])) {
             $obj->loadFromSession();
         }
 

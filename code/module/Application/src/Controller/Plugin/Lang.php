@@ -3,6 +3,9 @@ namespace Application\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
+/**
+* Simple class to just return the lang of the current page
+*/
 class Lang extends AbstractPlugin
 {
     protected $lang;

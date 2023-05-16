@@ -3,6 +3,9 @@ namespace Stockpile;
 
 use Laminas\ModuleManager\Feature\ConfigProviderInterface;
 
+/**
+* @ignore default module class for laminas, no need to have it in the documentation
+*/
 class Module implements ConfigProviderInterface
 {
     public function getConfig()

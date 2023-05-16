@@ -1,8 +1,11 @@
 <?php
 namespace Application\Model;
 
-use \Laminas\Mvc\I18n\Translator;
+use Laminas\Mvc\I18n\Translator;
 
+/**
+* Build the metadata and adds the default values if any or missing
+*/
 class MetadataBuilder
 {
     const ERROR_NO_METADATA = 1;
@@ -83,7 +86,7 @@ class MetadataBuilder
 
             if(!isset($data['description'])) {
                 $error[] = $this->translate('Invalid metadata description');
-                $data['description'] = 'Infrastructure Canada';
+                $data['description'] = 'Health Canada';
             }
 
             if(!isset($data['issued']) || (isset($data['issued']) && !preg_match('(^\d{4}-\d{2}-\d{2}(?: \d{1,2}:\d{1,2}(?::\d{1,2})?)?$)', $data['issued']))) {

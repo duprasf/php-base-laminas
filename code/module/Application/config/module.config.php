@@ -20,6 +20,7 @@ return [
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'index',
+                        'locale'     => 'en',
                     ],
                     'constraints'=>[
                         'locale'=>'en|fr',
@@ -35,8 +36,8 @@ return [
     ],
     'controller_plugins' => [
         'factories' => [
-            Controller\Plugin\GetTranslator::class=>Controller\Plugin\Factory\GetTranslatorFactory::class,
-            Controller\Plugin\Lang::class=>Controller\Plugin\Factory\LangFactory::class,
+            Controller\Plugin\GetTranslator::class=>Factory\Controller\Plugin\GetTranslatorFactory::class,
+            Controller\Plugin\Lang::class=>Factory\Controller\Plugin\LangFactory::class,
         ],
         'aliases' => [
             'getTranslator' => Controller\Plugin\GetTranslator::class,
@@ -96,11 +97,11 @@ return [
                 Container::setDefaultManager($sessionManager);
                 return $sessionManager;
             },
-            "GcNotify"=>'\Application\Factory\GcNotifyFactory',
-            'metadataBuilder' => '\Application\Factory\MetadataBuilderFactory',
+            "GcNotify"=>Factory\GcNotifyFactory::class,
+            'metadataBuilder' => Factory\MetadataBuilderFactory::class,
         ],
         'invokables' => [
-            'breadcrumbs' => '\Application\Model\Breadcrumbs',
+            'breadcrumbs' => Model\Breadcrumbs::class,
         ],
     ],
     'view_helpers' => [
@@ -109,14 +110,14 @@ return [
             'UrlHelper'=>View\Helper\UrlFactory::class,
         ],
         'invokables' => [
-            'stripTags' => '\Application\View\Helper\StripTags',
-            'breadcrumbs' => '\Application\View\Helper\BreadcrumbsHelper',
-            'displayFlashMessages' => '\Application\View\Helper\DisplayFlashMessages',
+            'stripTags' => View\Helper\StripTags::class,
+            'breadcrumbs' => View\Helper\BreadcrumbsHelper::class,
+            'displayFlashMessages' => View\Helper\DisplayFlashMessages::class,
         ],
         'factories' => [
-            "getLangSwitchUrl" => '\Application\View\Helper\Factory\GetLangSwitchUrlFactory',
-            "completeMetadata" => '\Application\View\Helper\Factory\CompleteMetadataFactory',
-            'url-with-lang' => View\Helper\UrlFactory::class,
+            "getLangSwitchUrl" => Factory\View\Helper\GetLangSwitchUrlFactory::class,
+            "completeMetadata" => Factory\View\Helper\CompleteMetadataFactory::class,
+            'url-with-lang' => Factory\View\Helper\UrlFactory::class,
         ],
     ],
     'view_manager' => [
@@ -140,6 +141,8 @@ return [
     ],
     'translator' => [
         'locale' => 'en_CA',
+        // Application will load text from the 'root' /language folder and
+        // assign the domain of 'layout' to those strings
         'translation_file_patterns' => [
             [
                 'type'     => 'gettext',

@@ -1,27 +1,27 @@
 <?php
 namespace UserAuth\Model;
 
+use \PDO;
 use \GcNotify\GcNotify;
+use \Psr\Log\LoggerInterface;
 use \Laminas\Mvc\I18n\Translator as MvcTranslator;
 use \Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack as UrlPlugin;
-use \UserAuth\Exception\UserConfirmException;
 use \Laminas\EventManager\EventManagerInterface as EventManager;
-use \UserAuth\Module as UserAuth;
 use \Laminas\Session\Container;
-use \Psr\Log\LoggerInterface;
+use \UserAuth\Exception\UserException;
+use \UserAuth\Exception\InvalidCredentialsException;
+use \UserAuth\Exception\InvalidPassword;
+use \UserAuth\Exception\UserConfirmException;
+use \UserAuth\Exception\JwtException;
+use \UserAuth\Exception\JwtExpiredException;
+use \UserAuth\Module as UserAuth;
 
 class DbUser extends User implements UserInterface, \ArrayAccess
 {
+    /**
+    * In DbUser, the ID Field is userId
+    */
     protected const ID_FIELD = 'userId';
-
-    protected $defaultPasswordRules=[
-        'minSize'=>12,
-        'atLeastOneLowerCase'=>true,
-        'atLeastOneUpperCase'=>true,
-        'atLeastOneNumber'=>true,
-        'atLeastOneSpecialCharacters'=>true,
-        'pattern'=>'([a-zA-Z0-9\{\}\[\]\(\)\/\\\'"`~,;:\.<>\*\^\-@\$%\+\?&!=#_]{12,})i',
-    ];
 
     public const STATUS_DELETED = 0;
     public const STATUS_ACTIVE = 1;
@@ -35,29 +35,31 @@ class DbUser extends User implements UserInterface, \ArrayAccess
     protected const TOKEN_TYPE_CONFIRM_EMAIL='confirmEmail';
     protected const TOKEN_TYPE_RESET_PASSWORD='resetPassword';
 
-    protected $passwordRules;
-    public function setPasswordRules(array $passwordRules)
-    {
-        $this->passwordRules = array_intersect_key($passwordRules, $this->defaultPasswordRules);
-        return $this;
-    }
-    public function getPasswordRules()
-    {
-        return $this->passwordRules ?? $this->defaultPasswordRules;
-    }
-
-    protected $lastPasswordErrors;
-    public function getLastPasswordErrors()
-    {
-        return $this->lastPasswordErrors;
-    }
+    // default time to live (TTL) for link to confirm email is 2 hours
+    protected const TOKEN_TTL_CONFIRM_EMAIL = 7200;
+    protected const TOKEN_TTL_RESET_PASSWORD = 7200;
 
     protected $defaultValues = ['emailVerified'=>0, 'status'=>1];
-    public function setDefaultValues($key, $value)
+    /**
+    * Set the default values for new user. In this instance we have a
+    * 'emailVerified' = 0 meaning the user did not verified his/her email yet
+    * and 'status' = 1 meaning... whatever you want in your app, the user is active for example
+    *
+    * @param String $key
+    * @param mixed $value
+    * @return DbUser
+    */
+    public function setDefaultValues(String $key, $value)
     {
         $this->defaultValues[$key] = $value;
         return $this;
     }
+    /**
+    * Return the default value of the specific key or the entire array of default values if
+    * no key was provided
+    *
+    * @param mixed $key
+    */
     public function getDefaultValues($key=null)
     {
         if($key) {
@@ -66,74 +68,227 @@ class DbUser extends User implements UserInterface, \ArrayAccess
         return $this->defaultValues;
     }
 
+    /**
+    * @var array
+    * @internal
+    */
+    private $gcNotifyData;
+    /**
+    * set the data used when sending email using GC Notify (used for confirming email and resetting password)
+    *
+    * @param array $data
+    * @return DbUser
+    * @throws \Exception thrown if the data is missing mandatory information (api-key, confirm-email-template and reset-password-template)
+    */
+    public function setGcNotifyData(array $data)
+    {
+        if(!isset($data['api-key']) || !isset($data['confirm-email-template']) || !isset($data['reset-password-template'])) {
+            throw new \Exception('missing GC Notify information');
+        }
+        $this->gcNotifyData = $data;
+        return $this;
+    }
+    protected function getGcNotifyData()
+    {
+        return $this->gcNotifyData;
+    }
+
+    /**
+    * @var UrlPlugin
+    * @internal
+    */
+    private $urlPlugin;
+    /**
+    * Set the ViewPlugin UrlPlugin, this is used when generating the links in the emails
+    *
+    * @param UrlPlugin $url
+    * @return DbUser
+    */
+    public function setUrlPlugin(UrlPlugin $url)
+    {
+        $this->urlPlugin = $url;
+        return $this;
+    }
+    protected function getUrlPlugin()
+    {
+        return $this->urlPlugin;
+    }
+    protected function url()
+    {
+        return $this->getUrlPlugin();
+    }
+
+    /**
+    * @var MvcTranslator
+    * @internal
+    */
+    private $translator=null;
+    /**
+    * Set the MvcTranslator, this is used when generating the links in the emails
+    *
+    * @param MvcTranslator $mvcTranslator
+    * @return DbUser
+    */
+    public function setTranslator(MvcTranslator $mvcTranslator)
+    {
+        $this->translator = $mvcTranslator;
+        return $this;
+    }
+    protected function getTranslator()
+    {
+        return $this->translator;
+    }
+
     protected $parentdb;
-    public function setParentDb(\PDO $db)
+    /**
+    * Set a "parentDb" used when the child class still use a "parent" user that share user between
+    * multiple applications
+    *
+    * @param PDO $db
+    * @return DbUser
+    */
+    public function setParentDb(PDO $db)
     {
         $this->parentdb = $db;
         return $this;
     }
-    /**
-    * @return \PDO
-    */
-    public function getParentDb()
+    protected function getParentDb()
     {
         return $this->parentdb;
     }
 
-    public function authenticate(String $email, String $password)
+    /**
+    * Authenticate/login a user using a database. This particular implementation would use a central
+    * DB for user and each app could have a user param, that's why it uses a parentDb for authenticating
+    *
+    * @param String $email
+    * @param String $password
+    * @return bool, true if successful false otherwise
+    * @throws UserAuth\Exception\InvalidCredentialsException In this implementation, throw exception when credentials are incorrect
+    * @throws UserAuth\Exception\UserException this is thrown when no "parentDb" is defined.
+    */
+    public function authenticate(String $email, String $password) : bool
     {
+        // signal that the login process will start
         $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN.'.pre', $this, ['email'=>$email]);
         $pdo = $this->getParentDb();
-        $prepared = $pdo->prepare("SELECT userId, password, status, emailVerified FROM `user` WHERE email LIKE ?");
-        $prepared->execute([$email]);
-        $data = $prepared->fetch(\PDO::FETCH_ASSOC);
-        if(!$data || !password_verify($password, $data['password'])) {
-            $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN_FAILED, $this, ['email'=>$email, 'userId'=>$data['userId']??null]);
-            return false;
+        if(!$pdo) {
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
         }
+        // get the correct user row from the DB
+        $prepared = $pdo->prepare("SELECT userId, password, status, emailVerified, `user`.* FROM `user` WHERE email LIKE ?");
+        $prepared->execute([$email]);
+        $data = $prepared->fetch(PDO::FETCH_ASSOC);
 
+        // if there is no data/user or if the password does not match...
+        if(!$data || !password_verify($password, $data['password'])) {
+            // signal that the login failed and return false
+            $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN_FAILED, $this, ['email'=>$email, 'userId'=>$data['userId']??null]);
+            throw new InvalidCredentialsException();
+        }
+        // remove the password from the data array for security (it is an hash but still, better safe than sorry)
+        unset($data['password']);
+
+        $this->exchangeArray($data);
+        // save user data in session if config allows
+        // It is much safer to pass the JWT to all request instead of keeping a session
+        // but I know not every use case would work with that.
+        $this->buildLoginSession($data);
+
+        // signal that the login was successful
         $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN, $this, ['email'=>$email, 'userId'=>$data['userId']]);
-        $this->_loadUserById($data['userId']);
-        $this->buildLoginSession($data['userId']);
+
         return true;
     }
 
+    /**
+    * Load a user from the JWT. The expiry time of the JWT should be checked before allowing this.
+    *
+    * @param String $jwt the JavaScript Web Token received from the client
+    * @return bool, true if successful false otherwise
+    * @throws UserAuth\Exception\JwtException If the token is null or invalid
+    * @throws UserAuth\Exception\JwtExpiredException If the token is expired
+    * @throws UserAuth\Exception\UserException if the ID field is not set in the JWT
+    */
+    public function loadFromJwt(?String $jwt) : bool
+    {
+        if($jwt == null) {
+            throw new JwtException('JWT is null');
+        }
+        $data = $this->jwtToData($jwt);
+        if(!isset($data[self::ID_FIELD])) {
+            throw new UserException('ID field ('.self::ID_FIELD.') does not exists in JWT');
+        }
+        return $this->_loadUserById($data[self::ID_FIELD]);
+    }
+
+    /**
+    * Load a user from the Session if the useSession is set to true in userConfig [default false]
+    *
+    * @return bool, true if successful false otherwise
+    * @throws UserAuth\Exception\UserException if the ID field is not set in the JWT
+    */
     public function loadFromSession() : bool
     {
         $container = new Container('UserAuth');
-        if($container->userId) {
-            return $this->_loadUserById($container->userId);
-        } else {
-            return false;
+
+        if(!isset($container[self::ID_FIELD])) {
+            throw new UserException('ID field ('.self::ID_FIELD.') does not exists in Session');
         }
+        return $this->_loadUserById($container[self::ID_FIELD]);
     }
 
+    /**
+    * A method used by loadFromJwt and loadFromSession to load the user without validating credentials
+    *
+    * @param int $id
+    * @return bool
+    */
     protected function _loadUserById(int $id) : bool
     {
         $pdo = $this->getParentDb();
         $prepared = $pdo->prepare("SELECT userId, email, emailVerified, status FROM `user` WHERE userId = ?");
         $prepared->execute([$id]);
-        $data = $prepared->fetch(\PDO::FETCH_ASSOC);
-        if($data) {
-            $this->data = $data;
-            return true;
-        } else {
+        $data = $prepared->fetch(PDO::FETCH_ASSOC);
+        if(!$data) {
             $this->data = [];
             return false;
         }
+
+        // save the data in the user and in the session (if config allows it)
+        $this->exchangeArray($data);
+        $this->buildLoginSession($data);
+        return true;
     }
 
-    public function register(String $email, String $password, ?GcNotify $notify)
+    /**
+    * Register a new user, create a DB entry and send email (depending on config)
+    *
+    * @param String $email
+    * @param String $password
+    * @param GcNotify $notify if sending email is required
+    * @return int status from DbUser::VERIFICATION_*
+    * @throws InvalidPassword thrown if the password does not respect all rules, see getLastPasswordErrors()
+    * @throws UserException thrown if the GcNotify object is not set and an email verification is required
+    * @see getLastPasswordErrors
+    */
+    public function register(String $email, String $password, String $confirmPassword, ?GcNotify $notify)
     {
-        if(!$this->validatePassword($password)) {
-            throw new \Exception('Password is not valid');
-        }
+        // trigger the start of the registration
         $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER.'.pre', $this, ['email'=>$email, 'userId'=>null]);
+
+        // if the password is invalid, the method throws an Exception
+        $this->validatePassword($password, $confirmPassword);
 
         $result = false;
         $pdo = $this->getParentDb();
-        $pdo->beginTransaction();
+        if(!$pdo) {
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
+        }
         try {
+            $pdo->beginTransaction();
             $prepared = $pdo->prepare("INSERT INTO `user` SET email=:email,
                 emailVerified=:emailVerified,
                 password=:password,
@@ -149,13 +304,19 @@ class DbUser extends User implements UserInterface, \ArrayAccess
             $data['userId'] = $pdo->lastInsertId();
 
             if($data['emailVerified']) {
-                $this->buildLoginSession($data['userId']);
+                // if the default value is to that the email is already verified (meaning no need to verify)
+                // log the user in and return the positive status
+                $this->buildLoginSession($data);
+                $this->exchangeArray($data);
                 return self::VERIFICATION_DONE;
             }
             if(!$notify) {
-                throw new \Exception('Handler for GC Notify not specified');
+                // if we need to send a confirmation email but GcNotify is not set, throw an exception
+                throw new UserException('Handler for GC Notify not specified');
             }
-            $token = $this->generateToken($data['userId'], self::TOKEN_TYPE_CONFIRM_EMAIL);
+
+            // generate a token to be used to validate the email
+            $token = $this->generateToken($data['userId'], self::TOKEN_TYPE_CONFIRM_EMAIL, self::TOKEN_TTL_CONFIRM_EMAIL);
             $notifyData = $this->getGcNotifyData();
             $result = $notify->sendEmail(
                 $data['email'],
@@ -167,108 +328,205 @@ class DbUser extends User implements UserInterface, \ArrayAccess
                 $notifyData['api-key']
             );
 
+            // if there was no errors, commit all change to the DB
             $pdo->commit();
+            // trigger the event that the registration is completed
             $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER, $this, ['email'=>$data['email'], 'userId'=>$data['userId']]);
         } catch(\Exception $e){
-            $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER_FAILED, $this, ['email'=>$data['email'], 'userId'=>null]);
+            // roll back anything that was written in the DB
             $pdo->rollBack();
+            // if anything went wrong, trigger the event that registration failed and send the Exception in the event
+            $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER_FAILED, $this, ['email'=>$data['email'], 'userId'=>null, 'exception'=>$e]);
+            // throw the Exception to be caught by the app
             throw $e;
         }
 
         if(!$result) {
+            // if the email could not be sent but the registration was successful...
+            // you can implement that this would also roll back and not accept the registration
             return self::VERIFICATION_COULD_NOT_SEND;
         }
         return self::VERIFICATION_EMAIL_SENT;
     }
 
+    /**
+    * request the reset of a password, this will send an email to registrered user with a reset link
+    *
+    * @param String $email email of the registered user that needs to reset their password
+    * @param GcNotify $notify
+    * @return String|int the token send by email or DbUser::VERIFICATION_COULD_NOT_SEND if email could not be sent
+    * @throws UserException thrown if the GcNotify object is not set and an email verification is required
+    * @throws UserException thrown when the email is not in the DB
+    */
     public function requestResetPassword(String $email, GcNotify $notify)
     {
+        // trigger event that the reset request is starting
         $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_REQUEST, $this, ['email'=>$email]);
         $db = $this->getParentDb();
+        if(!$pdo) {
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
+        }
+
+        // make sure the user exists
         $prepared = $db->prepare("SELECT userId, email FROM `user` WHERE email LIKE ?");
         $prepared->execute([$email]);
-        $data = $prepared->fetch(\PDO::FETCH_ASSOC);
-        if(strtolower($email) == strtolower($data['email'])) {
-            $token = $this->generateToken($data['userId'], self::TOKEN_TYPE_RESET_PASSWORD);
-            if($token && $notify) {
-                $notifyData = $this->getGcNotifyData();
-
-                $result = $notify->sendEmail(
-                    $data['email'],
-                    $notifyData['reset-password-template'],
-                    [
-                        'appName-en'=>'Health Canada auth service',
-                        'appName-fr'=>"Service d'identification de Santé Canada",
-                        'reset-link-en'=>$this->url()->assemble(['locale'=>'en','token'=>$token,], ['name'=>'user/reset-password/handle','force_canonical' => true,]),
-                        'reset-link-fr'=>$this->url()->assemble(['locale'=>'fr','token'=>$token,], ['name'=>'user/reset-password/handle','force_canonical' => true,]),
-                    ],
-                    $notifyData['api-key']
-                );
-            }
-            return $token;
+        $data = $prepared->fetch(PDO::FETCH_ASSOC);
+        if(!$data || strtolower($email) != strtolower($data['email'])) {
+            throw new UserException('User not found');
         }
-        return false;
+
+
+        // generate a token for the reset password link
+        $token = $this->generateToken($data['userId'], self::TOKEN_TYPE_RESET_PASSWORD, self::TOKEN_TTL_RESET_PASSWORD);
+        if(!$token) {
+            // if no token received... throw an Exception
+            throw new \Exception('Unknow error, could not get token');
+        }
+
+        $notifyData = $this->getGcNotifyData();
+        $result = $notify->sendEmail(
+            $data['email'],
+            $notifyData['reset-password-template'],
+            [
+                'appName-en'=>'Health Canada auth service',
+                'appName-fr'=>"Service d'identification de Santé Canada",
+                'reset-link-en'=>$this->url()->assemble(['locale'=>'en','token'=>$token,], ['name'=>'user/reset-password/handle','force_canonical' => true,]),
+                'reset-link-fr'=>$this->url()->assemble(['locale'=>'fr','token'=>$token,], ['name'=>'user/reset-password/handle','force_canonical' => true,]),
+            ],
+            $notifyData['api-key']
+        );
+        if(!$result) {
+            return self::VERIFICATION_COULD_NOT_SEND;
+        }
+
+        return $token;
     }
 
-    public function changePassword(String $token, String $password)
+    /**
+    * Called when the user clicked on the link to reset the password
+    *
+    * @param mixed $token
+    * @param mixed $password
+    * @return bool true if successful, throws exception for any other reason
+    * @throws UserException When token is invalid
+    * @throws UserException Without parentDb
+    */
+    public function resetPassword(String $token, String $password, String $confirm)
     {
-        if(!$this->validatePassword($password)) {
-            throw new \Exception('Password is not valid');
+        $pdo = $this->getParentDb();
+        if(!$pdo) {
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
         }
-        $userId = $this->getUserIdFromToken($token);
-        if($userId) {
-            $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_HANDLED.'.pre', $this, ['email'=>null, 'userId'=>$userId]);
 
-            $pdo = $this->getParentDb();
+        $userId = $this->getUserIdFromToken($token, self::TOKEN_TYPE_RESET_PASSWORD);
+        if(!$userId) {
+            throw new UserException('Invalid token');
+        }
+
+        $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_HANDLED.'.pre', $this, ['email'=>null, 'userId'=>$userId]);
+
+        // validatePassword will try exception if errors are found.
+        $this->validatePassword($password, $confirm);
+
+        try {
             $pdo->beginTransaction();
-            try {
-                $prepared = $pdo->prepare("UPDATE `user` SET password=:password WHERE userId=:userId");
+            $prepared = $pdo->prepare("UPDATE `user` SET password=:password WHERE userId=:userId");
 
-                $prepared->execute([
-                    'password'=>password_hash($password, PASSWORD_DEFAULT),
-                    'userId'=>$userId
-                ]);
-                $this->removeToken($token, $pdo);
-                $pdo->commit();
-                $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_HANDLED, $this, ['email'=>null, 'userId'=>$userId]);
-            } catch(\Exception $e){
-                $pdo->rollBack();
-                throw $e;
-            }
+            $prepared->execute([
+                'password'=>password_hash($password, PASSWORD_DEFAULT),
+                'userId'=>$userId
+            ]);
+            // token is single use, make sure it is deleted
+            $this->removeToken($token);
+            $pdo->commit();
+            $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_HANDLED, $this, ['email'=>null, 'userId'=>$userId]);
             return true;
+        } catch(\Exception $e){
+            $pdo->rollBack();
+            throw $e;
         }
-        return false;
     }
 
+    /**
+    * Called when a user changes his/her password. They must provide the current password
+    *
+    * @param String $email
+    * @param String $existingPassword
+    * @param String $newPassword
+    * @param String $confirmPassword
+    */
+    public function changePassword(String $email, String $existingPassword, String $newPassword, String $confirmPassword)
+    {
+        $pdo = $this->getParentDb();
+        if(!$pdo) {
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
+        }
+
+        $this->getEventManager()->trigger(UserAuth::EVENT_CHANGE_PASSWORD.'.pre', $this, ['email'=>$email, 'userId'=>null]);
+
+        // get the correct user row from the DB
+        $prepared = $pdo->prepare("SELECT userId, password, status, emailVerified, `user`.* FROM `user` WHERE email LIKE ?");
+        $prepared->execute([$email]);
+        $data = $prepared->fetch(PDO::FETCH_ASSOC);
+
+        // if there is no data/user or if the password does not match...
+        if(!$data || !password_verify($existingPassword, $data['password'])) {
+            $this->getEventManager()->trigger(UserAuth::EVENT_CHANGE_PASSWORD.'.err', $this, ['email'=>$email, 'userId'=>$data['userId']??null]);
+            // signal that the login failed and return false
+            throw new InvalidPassword();
+        }
+
+        // validatePassword will try exception if errors are found.
+        $this->validatePassword($newPassword, $confirmPassword);
+
+        try {
+            $pdo->beginTransaction();
+            $prepared = $pdo->prepare("UPDATE `user` SET password=:password WHERE userId=:userId");
+
+            $prepared->execute([
+                'password'=>password_hash($newPassword, PASSWORD_DEFAULT),
+                'userId'=>$data['userId'],
+            ]);
+            // token is single use, make sure it is deleted
+            $this->removeToken($token);
+            $pdo->commit();
+            $this->getEventManager()->trigger(UserAuth::EVENT_CHANGE_PASSWORD, $this, ['email'=>$email, 'userId'=>$data['userId']]);
+            return true;
+        } catch(\Exception $e){
+            $pdo->rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+    * When a user click on the link sent to verify email
+    *
+    * @param String $token
+    * @throws UserException
+    * @throws UserConfirmException
+    * @throws \Exception
+    */
     public function handleVerifyEmailToken(String $token)
     {
         $pdo = $this->getParentDb();
-        $prepared = $pdo->prepare("SELECT token, userId, type, dateCreated, usedOn
-            FROM userToken
-            WHERE token=?
-                AND type='confirmEmail'
-            ;"
-        );
-        $prepared->execute([$token]);
-        $data = $prepared->fetch(\PDO::FETCH_ASSOC);
-        $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.pre', $this, ['email'=>null, 'userId'=>$data['userId']??null]);
-
-        if(count($data) === 0) {
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'token not found', 'errCode'=>UserConfirmException::CODE_TOKEN_NOT_FOUND]);
-            throw new UserConfirmException('token not found', UserConfirmException::CODE_TOKEN_NOT_FOUND);
+        if(!$pdo) {
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
         }
 
-        if($data['usedOn']) {
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'token used already', 'errCode'=>UserConfirmException::CODE_TOKEN_ALREADY_USED]);
-            throw new UserConfirmException('token used already', UserConfirmException::CODE_TOKEN_ALREADY_USED);
+        $userId = $this->getUserIdFromToken($token, self::TOKEN_TYPE_CONFIRM_EMAIL);
+
+        $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.pre', $this, ['token'=>$token, 'userId'=>$userId]);
+
+        if(!$userId) {
+            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'token not found or expired', 'errCode'=>UserConfirmException::CODE_INVALID_TOKEN]);
+            throw new UserConfirmException('token not found', UserConfirmException::CODE_INVALID_TOKEN);
         }
 
-        if(time() > strtotime('+5 DAYS', strtotime($data['dateCreated']))) {
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'token expire', 'errCode'=>UserConfirmException::CODE_TOKEN_EXPIRED]);
-            throw new UserConfirmException('token expire', UserConfirmException::CODE_TOKEN_EXPIRED);
-        }
-
-        if(!$this->_loadUserById($data['userId'])) {
+        if(!$this->_loadUserById($userId)) {
             $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'user does not exists', 'errCode'=>UserConfirmException::CODE_USER_DOES_NOT_EXISTS]);
             throw new UserConfirmException('user does not exists', UserConfirmException::CODE_USER_DOES_NOT_EXISTS);
         }
@@ -288,126 +546,123 @@ class DbUser extends User implements UserInterface, \ArrayAccess
         try {
             $pdo->beginTransaction();
             $prepared = $pdo->prepare("UPDATE `user` SET emailVerified=1 WHERE userId=?");
-            $prepared->execute([$data['userId']]);
-            $this['emailVerified'] = 1;
+            $prepared->execute([$userId]);
 
-            $prepared = $pdo->prepare("UPDATE `userToken` SET usedOn=CURRENT_TIMESTAMP WHERE token=?");
-            $prepared->execute([$token]);
+            $data = $this->getArrayCopy();
+            $data['emailVerified'] = 1;
+            $this->exchangeArray($data);
+            $this->buildLoginSession($data);
+
+            $this->removeToken($token);
+
             $pdo->commit();
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED, $this, ['email'=>null, 'userId'=>$data['userId']??null]);
+            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED, $this, ['email'=>$this['email'], 'userId'=>$this['userId']??null]);
+            return true;
+
         } catch(\Exception $e) {
             $this->logout();
             $pdo->rollBack();
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'Database could not be updated correctly to validated the email', 'errCode'=>0]);
+            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'Database could not be updated correctly to validated the email', 'errCode'=>-1]);
             throw new \Exception('Database could not be updated correctly to validated the email');
         }
-
-        return true;
     }
 
-    public function validateResetPasswordToken(String $token)
+    /**
+    * Delete a token once it was used
+    *
+    * @param String $token
+    * @return bool true if something was delete false otherwise
+    */
+    protected function removeToken(String $token)
     {
-        $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_HANDLED, $this, ['email'=>null, 'userId'=>null]);
-    }
-
-    public function validatePassword(String $password, String $confirmation=null, array $passwordRules=[])
-    {
-        $translator = $this->getTranslator();
-        $passwordRules = array_intersect_key($passwordRules, $this->defaultPasswordRules);
-        if(count($passwordRules) === 0) {
-            $passwordRules = $this->getPasswordRules();
-        }
-
-        $errors=[];
-        if(isset($passwordRules['minSize']) && strlen($password) < $passwordRules['minSize']) {
-            $errors['minSize'] = [
-                'message'=>sprintf($translator->translate('Minimum size of your password must be %d characters.'), $passwordRules['minSize']),
-                'field'=>'password'
-            ];
-        }
-        if(isset($passwordRules['atLeastOneLowerCase']) && !preg_match('([a-z])', $password)) {
-            $errors['atLeastOneLowerCase'] = [
-                'message'=>$translator->translate('Your password must containt at least one lower case letter.'),
-                'field'=>'password'
-            ];
-        }
-        if(isset($passwordRules['atLeastOneUpperCase']) && !preg_match('([A-Z])', $password)){
-            $errors['atLeastOneUpperCase'] = [
-                'message'=>$translator->translate('Your password must containt at least one upper case letter.'),
-                'field'=>'password'
-            ];
-        }
-        if(isset($passwordRules['atLeastOneNumber']) && !preg_match('([0-9])', $password)){
-            $errors['atLeastOneNumber'] = [
-                'message'=>$translator->translate('Your password must containt at least one number.'),
-                'field'=>'password'
-            ];
-        }
-        if(isset($passwordRules['atLeastOneSpecialCharacters']) && !preg_match('(['.preg_quote($passwordRules['atLeastOneSpecialCharacters']).'])', $password)){
-            $errors['atLeastOneSpecialCharacters'] = [
-                'message'=>$translator->translate('Your password must containt at least one special character.'),
-                'field'=>'password'
-            ];
-        }
-        if(isset($passwordRules['additionalRules']) && isset($passwordRules['additionalRulesCallback']) && !call_user_func($passwordRules['additionalRulesCallback'], $password)) {
-            $errors['additionalRules'] = [
-                'message'=>$translator->translate($passwordRules['additionalRulesErrorMsg']??$passwordRules['additionalRules']),
-                'field'=>'password'
-            ];
-        }
-        if($confirmation && $password !== $confirmation) {
-            $errors['confirmDoesNotMatch'] = [
-                'message'=>$translator->translate('The password and confirmation do not match.'),
-                'field'=>'confirmPassword'
-            ];
-        }
-        $this->lastPasswordErrors = $errors;
-        return !count($errors);
-    }
-
-    protected function removeToken($token, ?\PDO $pdo=null)
-    {
+        $pdo = $this->getParentDb();
         if(!$pdo) {
-            $pdo = $this->getParentDb();
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
         }
 
         $prepared = $pdo->prepare("DELETE FROM userToken WHERE token=? LIMIT 1");
         $prepared->execute([$token]);
-        return $prepared->rowCount();
+        return !!$prepared->rowCount();
 
     }
 
-    public function getUserIdFromToken(String $token)
+    /**
+    * Get the userId is the token is valid, still active and of the right type
+    *
+    * @param String $token
+    * @param String $type
+    */
+    public function getUserIdFromToken(String $token, ?String $type)
     {
         $pdo = $this->getParentDb();
-        $prepared = $pdo->prepare("SELECT userId FROM userToken WHERE token=?");
-        $prepared->execute([$token]);
+        if(!$pdo) {
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
+        }
+
+        $prepared = $pdo->prepare("
+            SELECT userId
+            FROM userToken
+            WHERE token=:token
+                AND expiredAt > :time
+                ".($type ? 'AND type LIKE :type':'')."
+        ");
+        $data = ['token'=>$token, 'time'=>time()];
+        if($type) {
+            $data['type'] = $type;
+        }
+        $prepared->execute($data);
         return $prepared->fetchColumn();
     }
 
-    protected function generateToken(int $userId, $type)
+    /**
+    * Generate a new token for a specific type and an optional time to live
+    *
+    * @param int $userId
+    * @param String $type, should be one of DbUser::TOKEN_TYPE_*
+    * @param int $timeToLive in seconds (3600=1hr, 7200=2hrs, 86400=24hrs, 604800=1 week)
+    * @return String a new token for the specific type
+    * @throws UserException if the parentDb is not set
+    */
+    protected function generateToken(int $userId, String $type, ?int $timeToLive)
     {
         $pdo = $this->getParentDb();
-        $token = $this->getDbToken();
-        $prepared = $pdo->prepare("INSERT INTO userToken SET token=:token, userId=:userId, type=:type");
+        if(!$pdo) {
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
+        }
+
+        $token = $this->getNewToken();
+        $expiredAt = $timeToLive ? time()+$timeToLive : null;
+        $prepared = $pdo->prepare("INSERT INTO userToken
+            SET token=:token, userId=:userId, type=:type, expiredAt=:expiredAt
+        ");
         $prepared->execute([
             'token'=>$token,
             'userId'=>$userId,
             'type'=>$type,
+            'expiredAt'=>$expiredAt,
         ]);
         return $token;
     }
 
     /**
-    * generate a unique token
+    * generate a unique token. Not saved in the DB, just return a token not in the DB
     *
     * @return string the token
+    * @throws UserException if the parentDb is not set
     */
-    protected function getDbToken()
+    protected function getNewToken()
     {
         $pdo = $this->getParentDb();
-        $prepared = $pdo->prepare("SELECT 1 FROM userToken WHERE token LIKE ?");
+        if(!$pdo) {
+            // cannot use this method if the parentDb was not set
+            throw new UserException('You cannot use this parent service without a parentDb');
+        }
 
+        // make sure the token is not in the DB already
+        $prepared = $pdo->prepare("SELECT 1 FROM userToken WHERE token LIKE ?");
         do {
             $token = sha1(uniqid(time()));
             $prepared->execute([$token]);

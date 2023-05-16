@@ -1,13 +1,37 @@
 <?php
 namespace TranslationExtractor\Model;
 
+use DirectoryIterator;
+use InvalidArgumentException;
+use RuntimeException;
+use LengthException;
+use Exception;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RegexIterator;
+use RecursiveRegexIterator;
+
+
+/**
+* Class that extracts all the strings from a project (folder)
+* and writes them in a .po file to be used by service like poeditor.com
+*
+* @author Francois Dupras francois.dupras@hc-sc.gc.ca
+* @link poeditor.com
+*/
 class Extractor
 {
     protected $source = null;
     protected $output = null;
     protected $array = array();
 
-    public function setSource($source)
+    /**
+    * Set the source that will be read for extraction
+    *
+    * @param String $source
+    * @return Extractor
+    */
+    public function setSource(String $source)
     {
         if(!is_string($source)) {
             return false;
@@ -19,7 +43,13 @@ class Extractor
         return $this;
     }
 
-    public function setOutput($output)
+    /**
+    * Set the output file
+    *
+    * @param String $output
+    * @return Extractor
+    */
+    public function setOutput(String $output)
     {
         if(!is_string($output)) {
             return false;
@@ -28,7 +58,14 @@ class Extractor
         return $this;
     }
 
-    public function extractAllModules($source = null, $output=null)
+    /**
+    * Extract all modules from a Laminas project (folders inside module/, vendor/ and apps/)
+    *
+    * @param String $source
+    * @param String $output
+    * @return Extractor
+    */
+    public function extractAllModules(String $source = null, String $output=null)
     {
         if(is_null($source)) {
             $source = $this->source;
@@ -45,7 +82,7 @@ class Extractor
         }
 
         foreach(array('module', 'vendor', 'apps') as $baseDir) {
-            $dirs = new \DirectoryIterator($source.DIRECTORY_SEPARATOR.$baseDir);
+            $dirs = new DirectoryIterator($source.DIRECTORY_SEPARATOR.$baseDir);
             foreach($dirs as $dir) {
                 if($dir->isDot()) {
                     continue;
@@ -58,7 +95,14 @@ class Extractor
         return $this;
     }
 
-    public function processFolder($source=null, $output=null)
+    /**
+    * Process a single folder
+    *
+    * @param String $source
+    * @param String $output
+    * @return Extractor
+    */
+    public function processFolder(String $source = null, String $output=null)
     {
         if(is_null($source)) {
             $source = $this->source;
@@ -73,44 +117,61 @@ class Extractor
         return $this;
     }
 
-    public function processFileList(array $list, $output=null)
+    /**
+    * put your comment there...
+    *
+    * @param array $list
+    * @param String $output if null, the default output
+    * @throws InvalidArgumentException when the source is invalid
+    * @throws LengthException When no translation strings are found
+    * @throws Exception
+    * @return Extractor
+    */
+    public function processFileList(array $list, String $output=null)
     {
         if(is_null($output)) {
             $output = $this->output;
         }
 
-        try {
-            $array = array();
-            foreach($list as $file) {
-                if(file_exists($file)) {
-                    $array = array_merge($array, $this->parseFolder($file));
-                }
+        $array = array();
+        foreach($list as $file) {
+            if(file_exists($file)) {
+                $array = array_merge($array, $this->parseFolder($file));
             }
-            $this->writePo($output, $array);
         }
-        catch(\InvalidArgumentException $e) {
-            print "Source is invalid".PHP_EOL;
-        }
-        catch(\LengthException $e) {
-            print "No translated string found".PHP_EOL;
-        }
-        catch(\Exception $e) {
-            print $e->getMessage().PHP_EOL;
-        }
+        $this->writePo($output, $array);
 
         return $this;
     }
 
-    public function writePo($output, array $array)
+    /**
+    * Write the .po file
+    *
+    * @param String $output
+    * @param array $array the array of strings
+    * @throws RuntimeException when output is not writable
+    * @return Extractor
+    */
+    public function writePo(String $output, array $array)
     {
+        // add the extension 'po' if the current filename does not have the right extension
         if(pathinfo($output, PATHINFO_EXTENSION) !== 'po') {
             $output.='.po';
         }
 
-        if(count($array)) {
-            file_put_contents($output, 'msgid ""'.PHP_EOL.'msgstr ""'.PHP_EOL.PHP_EOL);
+        if(!count($array)) {
+            throw new LengthException();
+        }
 
-            array_walk($array, function(&$item, $key, $output) {
+        if(!is_writable($output)) {
+            throw new RuntimeException('Output is not writable');
+        }
+
+        file_put_contents($output, 'msgid ""'.PHP_EOL.'msgstr ""'.PHP_EOL.PHP_EOL);
+
+        array_walk(
+            $array,
+            function(&$item, $key, $output) {
                 $filepath = $item['file'];
                 if(strpos($filepath, __DIR__) === 0) {
                     $filepath = substr($filepath, strlen(__DIR__)+1);
@@ -120,38 +181,49 @@ class Extractor
                     '#: first found in '.$filepath.(isset($item['line']) ? ':'.$item['line'] : '').(isset($item['comment']) ? ' '.$item['comment'] : '').PHP_EOL.
                     'msgid "'.preg_replace('((?<!\\\\)")', '\"', $key).'"'.PHP_EOL.
                     'msgstr "'.preg_replace('((?<!\\\\)")', '\"', $item['msgstr']).'"'.PHP_EOL
-                    , FILE_APPEND);
-                }, $output );
-        }
-        else {
-            throw new \LengthException();
-        }
+                    , FILE_APPEND
+                );
+            },
+            $output
+        );
+
+        return $this;
     }
 
-    public function parseFolder($source)
+    /**
+    * Parse all files in a folder
+    *
+    * @param String $source a directory to scan
+    */
+    public function parseFolder(String $source)
     {
         $array = array();
 
-        if(is_dir($source) || file_exists($source)) {
-            if(is_dir($source)) {
-                $directory = new \RecursiveDirectoryIterator($source);
-                $iterator = new \RecursiveIteratorIterator($directory);
-                $files = new \RegexIterator($iterator, '/^.+\.ph(?:p|tml)$/i', \RecursiveRegexIterator::GET_MATCH);
-                foreach($files as $file) {
-                    $this->parseFile($file[0], $array);
-                }
-            }
-            else {
-                $this->parseFile($source, $array);
-            }
+        if(!file_exists($source) && !is_dir($source)) {
+            throw new InvalidArgumentException('folder '.$source.' not found');
         }
-        else {
-            throw new \InvalidArgumentException('folder '.$source.' not found');
+
+        if(!is_dir($source)) {
+            $this->parseFile($source, $array);
+            return $array;
+        }
+
+        $directory = new RecursiveDirectoryIterator($source);
+        $iterator = new RecursiveIteratorIterator($directory);
+        $files = new RegexIterator($iterator, '/^.+\.ph(?:p|tml)$/i', RecursiveRegexIterator::GET_MATCH);
+        foreach($files as $file) {
+            $this->parseFile($file[0], $array);
         }
         return $array;
     }
 
-    public function parseFile($file, &$array)
+    /**
+    * Parse a single file
+    *
+    * @param String $file
+    * @param array $array
+    */
+    public function parseFile(String $file, array &$array)
     {
         print "parsing '{$file}' ";
         $count = 0;
@@ -193,6 +265,12 @@ class Extractor
         print "found {$count} strings".PHP_EOL;
     }
 
+    /**
+    * Extract the rtanslation terms from all routes in the config file
+    *
+    * @param array $routes
+    * @return array
+    */
     public function getTranslationTermsFromRoutes(array $routes)
     {
         $terms = array();
@@ -202,6 +280,13 @@ class Extractor
         return $terms;
     }
 
+    /**
+    * Parse a single route to find the translation strings
+    *
+    * @param array $route
+    * @param mixed $key
+    * @return array
+    */
     public function getTranslationTermsFromRoute(array $route, $key)
     {
         $found = array();

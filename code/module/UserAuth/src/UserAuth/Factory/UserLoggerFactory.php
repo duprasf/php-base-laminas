@@ -13,7 +13,7 @@ class UserLoggerFactory implements FactoryInterface
     {
         $obj = new $requestName();
 
-        $obj->setDb($container->get('user-pdo'));
+        $obj->setDb($container->get('user-log-pdo'));
         return $obj;
     }
 }

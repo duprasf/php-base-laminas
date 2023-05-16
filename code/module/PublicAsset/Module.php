@@ -6,6 +6,9 @@ use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
 use Laminas\EventManager\Event;
 
+/**
+* @ignore default module class for laminas, no need to have it in the documentation
+*/
 class Module
 {
 	public function onBootstrap(MvcEvent $e)

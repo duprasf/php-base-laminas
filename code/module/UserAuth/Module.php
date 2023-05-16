@@ -1,9 +1,9 @@
 <?php
 namespace UserAuth;
 
-use \Laminas\ModuleManager\Feature\ConfigProviderInterface;
-use \Laminas\Mvc\ModuleRouteListener;
-use \Laminas\Mvc\MvcEvent;
+use Laminas\ModuleManager\Feature\ConfigProviderInterface;
+use Laminas\Mvc\ModuleRouteListener;
+use Laminas\Mvc\MvcEvent;
 
 class Module implements ConfigProviderInterface
 {

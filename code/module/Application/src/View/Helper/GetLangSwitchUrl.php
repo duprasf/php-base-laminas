@@ -1,12 +1,17 @@
 <?php
 namespace Application\View\Helper;
 
-use \Laminas\Router\Http\RouteMatch;
+use Laminas\Router\Http\RouteMatch;
+use Laminas\View\Helper\HelperInterface;
+use Laminas\View\Renderer\RendererInterface;
 
-class GetLangSwitchUrl implements \Laminas\View\Helper\HelperInterface
+/**
+* This class will return the URL for the current page in the other official language
+*/
+class GetLangSwitchUrl implements HelperInterface
 {
     protected $view;
-    public function setView(\Laminas\View\Renderer\RendererInterface $view) {$this->view = $view;}
+    public function setView(RendererInterface $view) {$this->view = $view;}
     public function getView() {return $this->view;}
 
     protected $route;

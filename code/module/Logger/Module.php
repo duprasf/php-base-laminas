@@ -3,6 +3,9 @@ namespace Logger;
 
 use Laminas\ModuleManager\Feature\ConfigProviderInterface;
 
+/**
+* @ignore basic module class for laminas, no need to add it to documentation
+*/
 class Module implements ConfigProviderInterface
 {
     public function getConfig()

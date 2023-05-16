@@ -9,28 +9,38 @@ use Laminas\Ldap\Exception\LdapException;
 
 class ActiveDirectory
 {
-    /*
-    private $ldapConfig;
-    public function setLdapConfig(array $config)
-    {
-        $this->ldapConfig = $config;
-        return $this;
-    }
-    protected function getLdapConfig()
-    {
-        return $this->ldapConfig;
-    }
-    /**/
+    /**
+    * Array of LDAP connection
+    *
+    * @var array
+    * @internal
+    */
     private $ldaps;
+    /**
+    * Set a list of LDAP servers to connect to
+    *
+    * @param array $arrayOfLdap array of Ldap objects
+    * @return ActiveDirectory
+    */
     public function setLdaps(array $arrayOfLdap)
     {
         $this->ldaps = $arrayOfLdap;
         return $this;
     }
+    /**
+    * Get all LDAPs objects
+    *
+    * @return array of LDAPs objects
+    */
     protected function getLdaps()
     {
         return $this->ldaps;
     }
+    /**
+    * Generator that returns each LDAP config one by one
+    *
+    * @return Ldap
+    */
     protected function getLdap()
     {
         foreach($this->ldaps as $ldap) {
@@ -38,7 +48,13 @@ class ActiveDirectory
         }
     }
 
-    public function validateUsername($username)
+    /**
+    * Check if a username exists, return true as soon as a match is found
+    *
+    * @param String $username
+    * @return true if found in one of the LDAP, false otherwise
+    */
+    public function validateUsername(String $username)
     {
         foreach($this->getLdap() as $ldap) {
             try {
@@ -51,7 +67,13 @@ class ActiveDirectory
         return false;
     }
 
-    public function validateCredentials($acctname, $password)
+    /**
+    * Tries to bind to each LDAP using the provided account (DN) and password
+    *
+    * @param String $acctname
+    * @param String $password
+    */
+    public function validateCredentials(String $acctname, String $password)
     {
         foreach($this->getLdap() as $ldap) {
             try {
@@ -67,7 +89,16 @@ class ActiveDirectory
         return false;
     }
 
-    public function getUserByEmailOrUsername($term, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
+    /**
+    * Get the user data from an email or username
+    *
+    * @param String $term
+    * @param array $requestedFieldsMap
+    * @param bool $returnRaw
+    * @param bool $returnFirstElementOnly
+    * @return array
+    */
+    public function getUserByEmailOrUsername(String $term, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
     {
         $data = $this->getByEmail($term, $requestedFieldsMap, $returnRaw, $returnFirstElementOnly);
         if($data) {
@@ -75,11 +106,31 @@ class ActiveDirectory
         }
         return $this->getByUsername($term, $requestedFieldsMap, $returnRaw, $returnFirstElementOnly);
     }
-    public function getUserByEmail($email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
+
+    /**
+    * Synonym of getByEmail()
+    *
+    * @param String $email
+    * @param array $requestedFieldsMap
+    * @param bool $returnRaw
+    * @param bool $returnFirstElementOnly
+    * @return array
+    */
+    public function getUserByEmail(String $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
     {
         return $this->getByEmail($email, $requestedFieldsMap, $returnRaw);
     }
-    public function getByEmail($email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
+
+    /**
+    * Get the user data from an email
+    *
+    * @param String $term
+    * @param array $requestedFieldsMap
+    * @param bool $returnRaw
+    * @param bool $returnFirstElementOnly
+    * @return array[]
+    */
+    public function getByEmail(String $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
     {
         $filters = array();
         if(is_array($email)) {
@@ -108,7 +159,17 @@ class ActiveDirectory
         return $array;
     }
 
-    public function getByUsername($accountName, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
+
+    /**
+    * Get the user data from an username
+    *
+    * @param String $term
+    * @param array $requestedFieldsMap
+    * @param bool $returnRaw
+    * @param bool $returnFirstElementOnly
+    * @return array[]
+    */
+    public function getByUsername(String $accountName, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
     {
         $filters = array();
         if(is_array($accountName)) {
@@ -131,10 +192,17 @@ class ActiveDirectory
         return $array;
     }
 
+    /**
+    * Get data from LDAP using the filter
+    *
+    * @param array $filter array of Laminas\Ldap\Filter
+    * @param array $requestedFieldsMap
+    * @param bool $returnRaw
+    * @return array[]
+    */
     protected function getByFilter($filter, $requestedFieldsMap = array(), $returnRaw = false)
     {
         foreach($this->getLdap() as $ldap) {
-
             $map = array('mail'=>'email',
                 'eti-emailaddress'=>'email-eti', 'mailaddress'=>'email2', 'department'=>'department',
                 'gcMessagingMail'=>'email-gc', 'userPrincipalName'=>'email-primary',
@@ -192,6 +260,13 @@ class ActiveDirectory
         return is_array($data) ? $data : array();
     }
 
+    /**
+    * Convert the LDAP array to a easier array that makes sense
+    *
+    * @param array $raw
+    * @param array $map
+    * @return array[]
+    */
     protected function rawAdDataToArray(array $raw, array $map)
     {
         if(!isset($map['mail'])) {
@@ -242,6 +317,11 @@ class ActiveDirectory
         return $ad;
     }
 
+    /**
+    * Get a group name from DN
+    *
+    * @param String $groupDN
+    */
     protected function getGroupName($groupDN)
     {
         preg_match("(CN=((?:(?!,OU=)(?!,CN=).)*),(?:CN|OU)=)", $groupDN, $out);
