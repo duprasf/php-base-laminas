@@ -129,7 +129,8 @@ class GcNotify {
     * Can you the __invoke to call in Try/Catch or to send an normal email
     * see each functions for specific parameters
     *
-    * @see GcNotify::reportException, GcNotify::reportError
+    * @see reportException
+    * @see reportError
     * @param mixed $data
     */
     public function __invoke(...$data)
