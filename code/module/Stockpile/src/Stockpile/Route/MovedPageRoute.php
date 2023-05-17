@@ -7,6 +7,9 @@ use Laminas\Mvc\Router\Http\RouteMatch;
 use Laminas\Router\Http\Regex;
 use Stockpile\Model\MovedPage;
 
+/**
+* This route will look into a DB for pages that were moved. This can also be used as a URL shortner.
+*/
 class MovedPageRoute extends Regex
 {
     private $movedPageObj;
@@ -25,6 +28,14 @@ class MovedPageRoute extends Regex
         parent::__construct($regex, $spec);
     }
 
+    /**
+    * Try to match the requested page using the MovedPageObj
+    *
+    * @param Request $request
+    * @param mixed $pathOffset
+    *
+    * @return \Laminas\Router\RouteMatch|null
+    */
 	public function match(Request $request, $pathOffset = null)
 	{
 		$match = parent::match($request, $pathOffset);

@@ -31,6 +31,20 @@ class FileSystemRoute extends Regex
         parent::__construct($regex, $spec, $defaults);
     }
 
+    /**
+    * Try to find a sutable file for this path
+    *
+    * Returns the first found out of ($lang = 'en'/'fr', $lang3 = 'eng'/'fra')
+    * $path-$lang.phtml, $path/index-$lang.phtml,
+    * $path-$lang3.phtml, $path/index-$lang3.phtml,
+    * $path-$lang.php, $path/index-$lang.php,
+    * $path-$lang3.php, $path/index-$lang3.php
+    *
+    * @param Request $request
+    * @param mixed $pathOffset
+    *
+    * @return \Laminas\Router\RouteMatch|null
+    */
     public function match(Request $request, $pathOffset = null)
     {
         $match = parent::match($request, $pathOffset);
