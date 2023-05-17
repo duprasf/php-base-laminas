@@ -22,6 +22,7 @@ RUN git clone https://github.com/duprasf/Void.git /var/www/vendor/Void/.
 RUN npm install --global gulp-cli
 RUN npm install
 RUN composer update
+RUN mkdir -p /var/www/data/cache
 RUN chown www-data:www-data -R /var/www/*
 
 RUN rm -Rf html && ln -s public html
