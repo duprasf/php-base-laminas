@@ -31,7 +31,6 @@ return [
             'user-auth-registration-allowed' => true,
             'user-auth-must-verify-email' => true,
             'user-auth-default-user-status' => DbUser::STATUS_ACTIVE,
-            'JWT_SECRET'=>'Secret key for the JWT. The longer the more secure',
         ],
     ),
     'gc-notify-config'=>[
