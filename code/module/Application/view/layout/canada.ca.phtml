@@ -312,6 +312,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                             <p><?=$link['break'];?></p>
                         <?else:?>
                             <p><a href="<?=$link["url"];?>"><?=$link['name'];?></a></p>
+                            <p><a href="<?php print $link["url"];?>"<?=isset($link["openInNewTab"]) && $link["openInNewTab"] ? ' class="in-new-window" target="_blank"':'';?>><?php print $link['name'];?></a></p>
                         <?endif;?>
                     <?endforeach;?>
                     </div>

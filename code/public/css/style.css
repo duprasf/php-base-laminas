@@ -10,3 +10,17 @@
     background-color: var(--brand-color);
     border-color: var(--brand-color);
 }
+
+[target="_blank"].in-new-window::after {
+    content: "\e164";
+    position: relative;
+    top: 1px;
+    margin-left: 0.3em;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
