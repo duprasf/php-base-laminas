@@ -7,6 +7,10 @@ pipeline {
     agent {
         label 'StandardV1'
     }
+    options {
+        // This is required if you want to clean before build
+        skipDefaultCheckout(true)
+    }
     environment {
         containerRegistryCredentials = credentials('ARTIFACTORY_PUBLISH')
         containerRegistry = 'jack.hc-sc.gc.ca'
@@ -17,6 +21,9 @@ pipeline {
 
         stage('appmeta Info') {
             steps {
+                // Clean before build
+                cleanWs()
+                // We need to explicitly checkout from SCM here
                 checkout scm
                 script {
 
@@ -73,6 +80,16 @@ pipeline {
 
     post {
         always {
+            cleanWs(
+                cleanWhenNotBuilt: false,
+                deleteDirs: true,
+                disableDeferredWipeout: true,
+                notFailBuild: true,
+                patterns: [
+                    [pattern: '.gitignore', type: 'INCLUDE'],
+                    [pattern: '.propsfile', type: 'EXCLUDE']
+                ]
+            )
             script {
                 resultString = "None"
             }
