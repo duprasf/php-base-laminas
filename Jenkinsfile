@@ -12,13 +12,11 @@ pipeline {
         skipDefaultCheckout(true)
     }
     environment {
-        containerRegistryCredentials = credentials('ARTIFACTORY_PUBLISH')
         containerRegistry = 'jack.hc-sc.gc.ca'
         containerRegistryPull = 'jack.hc-sc.gc.ca'
     }
 
     stages {
-
         stage('appmeta Info') {
             steps {
                 // Clean before build
@@ -80,16 +78,8 @@ pipeline {
 
     post {
         always {
-            cleanWs(
-                cleanWhenNotBuilt: false,
-                deleteDirs: true,
-                disableDeferredWipeout: true,
-                notFailBuild: true,
-                patterns: [
-                    [pattern: '.gitignore', type: 'INCLUDE'],
-                    [pattern: '.propsfile', type: 'EXCLUDE']
-                ]
-            )
+            // Clean after build
+            cleanWs()
             script {
                 resultString = "None"
             }
