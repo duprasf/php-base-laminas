@@ -47,6 +47,7 @@ $usefulLinks = $layout->usefulLinks;
 $usefulLinksTitle = $layout->usefulLinksTitle ? $layout->usefulLinksTitle : $this->translate('Useful Links');
 $usefulLinksLocation = $layout->usefulLinksLocation;
 
+$this->headScript()->appendFile('/application/js/basescript.js');
 ?>
 <!--[if lt IE 9]><html class="no-js lt-ie9<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr"><![endif]--><!--[if gt IE 8]><!-->
 <html class="no-js<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr">
@@ -82,33 +83,18 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
 
         <meta http-equiv="Content-Security-Policy" content="<?=$this->contentSecurityPolicy;?>">
 
+        <script>
+        // framework placeholder (for user, session timeout, etc.)
+        let laminas = {};
+        </script>
+
         <!-- Google Tag Manager DO NOT REMOVE OR MODIFY - NE PAS SUPPRIMER OU MODIFIER -->
         <script>dataLayer1 = [];</script>
         <!-- End Google Tag Manager -->
         <script src="<?=$cdtsPath;?>/cdts/compiled/soyutils.js" crossorigin="anonymous" integrity="<?=$integrity['/cdts/compiled/soyutils.js']??$integrity['/cdts/compiled/soyutils.js'];?>"></script>
         <script src="<?=$cdtsPath;?>/cdts/compiled/wet-<?=$this->lang;?>.js" crossorigin="anonymous" integrity="<?=$integrity["/cdts/compiled/wet-{$this->lang}.js"]??$integrity["/cdts/compiled/wet-{$this->lang}.js"];?>"></script>
 
-        <style>
-            ol.numbered {
-                display: table;
-            }
-
-            ol.numbered > li {
-                display: table-row;
-            }
-            ol.numbered > li::before {
-                content: attr(data-num) " ";
-                display: table-cell;
-                text-align: right;
-                padding-right: 1em;
-            }
-            ol.unnumbered > li::before {
-                content: none;
-                display: initial;
-                text-align: initial;
-                padding-right: initial;
-            }
-        </style>
+        <link rel="stylesheet" href="/application/css/stylesheets.css">
 
         <noscript>
             <!-- Write closure fall-back static file -->

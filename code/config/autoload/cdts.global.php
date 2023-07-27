@@ -40,6 +40,12 @@ return [
                     //'/css/ie8-theme.min.css'=>"sha384-clzigVbwqYHNkIrKxnU7kvGIA34SJUC0r1A3Q8cUkx3QeoSmxX/SL+9dmwqf+uCD",
                     //'/css/noscript.min.css'=>"sha384-YPGPGgtKCjAbqUw5iFn7pxdtJs4JKg1JM35Wk+/75p+CXi53r8prqn8SACFbXxXG",
                 ],
+                '4_0_47'=>[
+                    '/cdts/compiled/soyutils.js'=>'sha384-hfwnpowMIP7hDqCMoNULlqSq7k2nu8R7zl+zHfYpNc5iokyd+Gbk5NO5ZdJFCv0o',
+                    '/cdts/compiled/wet-en.js'=>'sha384-RFLX8+SNneb1EFE/QS54hYWboakex4rPUwQUyNw3Io0sx1x9MAxq1OHWXUxMWWAj',
+                    '/cdts/compiled/wet-fr.js'=>'sha384-4GQiTOfMlOg47eTT6irR52Shvh1vntK6FPCRpga+5E3SCgSWGiF4aFxyh1VMAnE3',
+                    '/cdts/cdtsfixes.css'=>"sha384-35bOpDzwDZ9ACuQn0HDzR4xmd2A9kSse71KDxuOQGAApvhD2NI+yZW5fRVl/VI+C",
+                ],
             ],
         ],
     ],

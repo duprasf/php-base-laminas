@@ -1,0 +1,26 @@
+ol.numbered {
+    display: table;
+}
+
+ol.numbered > li {
+    display: table-row;
+}
+ol.numbered > li::before {
+    content: attr(data-num) " ";
+    display: table-cell;
+    text-align: right;
+    padding-right: 1em;
+}
+ol.unnumbered > li::before {
+    content: none;
+    display: initial;
+    text-align: initial;
+    padding-right: initial;
+}
+
+#laminas_expireSessionDialog.modal-content {
+    background: #fff;
+}
+#laminas_expireSessionDialog.modal-content::backdrop {
+    background-color: rgba(0,0,0, 0.75);
+}
