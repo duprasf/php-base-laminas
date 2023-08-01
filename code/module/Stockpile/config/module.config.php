@@ -5,6 +5,14 @@ return [
     'router' => [
         'routes' => [
             'moved-pages-admin'=>[
+                'type'=>'literal',
+                'options'=>[
+                    'route'=>'/{moved-pages}',
+                    'defaults'=>[
+                        'controller'=>Controller\AdminController::class,
+                        'action'=>'moved-pages-setup',
+                    ],
+                ],
                 'child_routes' => [
                     'setup'=>[
                         'type'=>'literal',

@@ -119,15 +119,14 @@ class PublicAssetRoute extends Regex {
         $prefix = $config['prefix'] ? $config['prefix'].'/' : '';
         if(is_array($config['path'])) {
             foreach($config['path'] as $realpath) {
-                $filename = $this->doesAssetExists($prefix.$path, $realpath);
+                $filename = $this->doesAssetExists(preg_replace('(^'.$prefix.')', '', $path), $realpath);
                 if($filename) {
                     return $filename;
                 }
             }
+            return null;
         }
-        else {
-            return $this->doesAssetExists($prefix.$path, $config['path']);
-        }
+        return $this->doesAssetExists(preg_replace('(^'.$prefix.')', '', $path), $config['path']);
     }
 
     /**
