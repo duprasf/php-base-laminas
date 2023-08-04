@@ -2,6 +2,7 @@
 return [
     'service_manager' => [
         'services'=> [
+            'cdts-version'=>'4_0_47',
             'cdts-path'=>'https://www.canada.ca/etc/designs/canada/cdts/gcweb/v%s',
             'cdts-integrity'=>[
                 '4_0_24'=>[

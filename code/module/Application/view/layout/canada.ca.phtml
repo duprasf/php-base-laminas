@@ -91,8 +91,8 @@ $this->headScript()->appendFile('/application/js/basescript.js');
         <!-- Google Tag Manager DO NOT REMOVE OR MODIFY - NE PAS SUPPRIMER OU MODIFIER -->
         <script>dataLayer1 = [];</script>
         <!-- End Google Tag Manager -->
-        <script src="<?=$cdtsPath;?>/cdts/compiled/soyutils.js" crossorigin="anonymous" integrity="<?=$integrity['/cdts/compiled/soyutils.js']??$integrity['/cdts/compiled/soyutils.js'];?>"></script>
-        <script src="<?=$cdtsPath;?>/cdts/compiled/wet-<?=$this->lang;?>.js" crossorigin="anonymous" integrity="<?=$integrity["/cdts/compiled/wet-{$this->lang}.js"]??$integrity["/cdts/compiled/wet-{$this->lang}.js"];?>"></script>
+        <script src="<?=$cdtsPath;?>/cdts/compiled/soyutils.js" crossorigin="anonymous" integrity="<?=$integrity['/cdts/compiled/soyutils.js']??'';?>"></script>
+        <script src="<?=$cdtsPath;?>/cdts/compiled/wet-<?=$this->lang;?>.js" crossorigin="anonymous" integrity="<?=$integrity["/cdts/compiled/wet-{$this->lang}.js"]??'';?>"></script>
 
         <link rel="stylesheet" href="/application/css/stylesheets.css">
 
@@ -100,15 +100,15 @@ $this->headScript()->appendFile('/application/js/basescript.js');
             <!-- Write closure fall-back static file -->
             <!--[if gte IE 9 | !IE ]><!-->
             <link href="<?=$cdtsPath;?>/assets/favicon.ico" rel="icon" type="image/x-icon">
-            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/theme.min.css" integrity="<?=$integrity['/css/theme.min.css']??$integrity['/css/theme.min.css'];?>" crossorigin="anonymous">
-            <link rel="stylesheet" href="<?=$cdtsPath;?>/cdts/cdtsfixes.css" integrity="<?=$integrity['/cdts/cdtsfixes.css']??$integrity['/cdts/cdtsfixes.css'];?>" crossorigin="anonymous">
+            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/theme.min.css" integrity="<?=$integrity['/css/theme.min.css']??'';?>" crossorigin="anonymous">
+            <link rel="stylesheet" href="<?=$cdtsPath;?>/cdts/cdtsfixes.css" integrity="<?=$integrity['/cdts/cdtsfixes.css']??'';?>" crossorigin="anonymous">
             <!--<![endif]-->
             <!--[if lt IE 9]>
             <link href="<?=$cdtsPath;?>/assets/favicon.ico" rel="shortcut icon">
-            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/ie8-theme.min.css" integrity="<?=$integrity['/css/ie8-theme.min.css']??$integrity['/css/ie8-theme.min.css'];?>" crossorigin="anonymous">
+            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/ie8-theme.min.css" integrity="<?=$integrity['/css/ie8-theme.min.css']??'';?>" crossorigin="anonymous">
             <![endif]-->
             <!--[if lte IE 9]><![endif]-->
-            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/noscript.min.css" integrity="<?=$integrity['/css/noscript.min.css']??$integrity['/css/noscript.min.css'];?>" crossorigin="anonymous">
+            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/noscript.min.css" integrity="<?=$integrity['/css/noscript.min.css']??'';?>" crossorigin="anonymous">
         </noscript>
         <!-- Write closure template -->
         <script>
