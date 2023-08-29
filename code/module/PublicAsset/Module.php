@@ -1,6 +1,7 @@
 <?php
 namespace PublicAsset;
 
+use Laminas\Stdlib\ArrayUtils;
 use Laminas\ModuleManager\Feature\AutoloaderProviderInterface;
 use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
@@ -24,7 +25,7 @@ class Module
         $config = include __DIR__ . '/config/module.config.php';
         foreach(glob(__DIR__ . '/config/autoload/{,*.}{global,local}.php', GLOB_BRACE) as $file) {
             if(is_readable($file)) {
-                $config = array_merge_recursive($config, include($file));
+                $config = ArrayUtils::merge($config, include($file));
             }
         }
         return $config;
