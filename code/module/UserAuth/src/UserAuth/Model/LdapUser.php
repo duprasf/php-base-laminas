@@ -1,12 +1,14 @@
 <?php
 namespace UserAuth\Model;
 
+use Exception;
 use \Psr\Log\LoggerInterface;
 use \GcNotify\GcNotify;
 use \Laminas\Session\Container;
 use \Laminas\Mvc\I18n\Translator as MvcTranslator;
 use \Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack as UrlPlugin;
 use \Laminas\EventManager\EventManagerInterface as EventManager;
+use \Laminas\Ldap\Exception\LdapException;
 use \UserAuth\Module as UserAuth;
 use \UserAuth\Exception\UserException;
 use \UserAuth\Exception\InvalidCredentialsException;
@@ -49,14 +51,20 @@ class LdapUser extends User
     {
         $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN.'.pre', $this, ['email'=>$email]);
 
-        $ad = $this->getLdap();
-        $data = $ad->getUserByEmailOrUsername($email, returnFirstElementOnly:true);
-        if(!$data || !isset($data['dn']) || !$ad->validateCredentials($data['dn'], $password)) {
-            $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN_FAILED, $this, ['email'=>$email]);
-            // can return false or throw an exception, it depends on your implementation
-            throw new InvalidCredentialsException();
+        try {
+            $ad = $this->getLdap();
+            $data = $ad->getUserByEmailOrUsername($email, returnFirstElementOnly:true);
+            if(!$data || !isset($data['dn']) || !$ad->validateCredentials($data['dn'], $password)) {
+                $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN_FAILED, $this, ['email'=>$email]);
+                // can return false or throw an exception, it depends on your implementation
+                throw new InvalidCredentialsException();
+            }
+        } catch (LdapException $e) {
+            print 'error with LDAP server';
+            exit();
+        } catch (Exception $e) {
+            throw $e;
         }
-
         $this->exchangeArray($data);
         // save user data in session if config allows
         // It is much safer to pass the JWT to all request instead of keeping a session
@@ -194,7 +202,7 @@ class LdapUser extends User
     * @param int $time, the length of time the JWT will be valid. It should not change anything, but just in case...
     * @return array, the data you want to send to client as part of the JWT
     */
-    protected function getDataForJWT($time) : array
+    public function getDataForJWT(int $time = 86400) : array
     {
         $payload=[
             'id' => $this[self::ID_FIELD] ?? null,

@@ -1,0 +1,69 @@
+<?php
+/**
+* @var Laminas\View\Renderer\PhpRenderer $this
+*/
+$this->metadata['title'] = $this->translate('Authorize site');
+?>
+<section class="panel panel-info" id="grant-panel">
+    <div class="panel-body">
+        <p>
+            <?=sprintf($this->translate('The application <strong class="text-success">%s</strong> would like
+            to have access to these permissions'), strip_tags($this->client));?>
+        </p>
+        <?foreach($this->scope as $scope):?>
+            <details>
+                <summary><?=$scope['scope'];?></summary>
+                <?=$scope['reason'];?>
+            </details>
+        <?endforeach;?>
+        <form method="post" action="<?=$this->returnUrl;?>" class="mrgn-tp-lg">
+            <button type="submit" class="btn btn-success btn-lg" id="grant" name="grant" value="grant"><?=$this->translate("Grant access");?></button>
+            <button type="submit" class="btn btn-danger btn-lg" id="deny" name="deny" value="deny"><?=$this->translate("Deny access");?></button>
+        </form>
+    </div>
+</section>
+
+<section class="panel panel-info wb-invisible" hidden id="login-panel">
+    <header class="panel-heading">
+        <h2 class="panel-title"><?=$this->translate("Please login to continue");?></h2>
+    </header>
+    <div class="panel-body">
+        <form method="post" id="grantForm" action="<?=$this->url('oauth-server/login', ['locale'=>$this->lang]);?>">
+            <div class="form-group">
+                <label for="username"><?=$this->translate("Email address");?></label>
+                <input type="email" class="form-control" name="username" value="<?=$this->username;?>">
+            </div>
+            <div class="form-group">
+                <label for="password"><?=$this->translate("Password");?></label>
+                <input type="password" class="form-control" name="password">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary"><?=$this->translate("Login");?></button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+ready(init);
+function init(e) {
+    document.getElementById('grant').addEventListener('click', grant);
+    <?if($this->username):?>
+    grant(e);
+    <?endif;?>
+}
+function grant(e) {
+    e.preventDefault();
+    if(laminas.user.isLoggedIn) {
+        console.log(laminas.user.getJwt());
+    }
+    let grant = document.getElementById('grant-panel');
+    grant.hidden=true;
+    grant.classList.add('wb-invisible');
+
+    let login = document.getElementById('login-panel');
+    login.hidden = false;
+    login.classList.remove('wb-invisible');
+    login.querySelector('input').focus();
+}
+</script>

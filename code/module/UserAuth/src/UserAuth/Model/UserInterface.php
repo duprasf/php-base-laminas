@@ -59,4 +59,15 @@ interface UserInterface
     * @param mixed $time How long the token should be valid for in seconds (86400=24hrs)
     */
     public function getJWT(Int $time = 86400);
+
+    /**
+    * Get the data from the user that should be saved in the token. Remember that
+    * token data is public, the user can see it. Do not put some private or
+    * protected data in JWT!!
+    *
+    * @param $time, in case the length of time the token will live change the data...
+    *
+    * @return array with the data to put in the JWT
+    */
+    public function getDataForJWT(int $time = 86400) : array;
 }

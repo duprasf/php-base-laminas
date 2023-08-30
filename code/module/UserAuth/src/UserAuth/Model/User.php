@@ -1,14 +1,15 @@
 <?php
 namespace UserAuth\Model;
 
-use \GcNotify\GcNotify;
-use \Psr\Log\LoggerInterface;
-use \Laminas\Mvc\I18n\Translator as MvcTranslator;
-use \Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack as UrlPlugin;
-use \Laminas\EventManager\EventManagerInterface as EventManager;
-use \Laminas\Session\Container;
-use \UserAuth\Exception\UserConfirmException;
-use \UserAuth\Module as UserAuth;
+use GcNotify\GcNotify;
+use Psr\Log\LoggerInterface;
+use Laminas\Mvc\I18n\Translator as MvcTranslator;
+use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack as UrlPlugin;
+use Laminas\EventManager\EventManagerInterface as EventManager;
+use Laminas\Session\Container;
+use UserAuth\Exception\UserConfirmException;
+use UserAuth\Model\JWT;
+use UserAuth\Module as UserAuth;
 
 abstract class User extends \ArrayObject implements UserInterface
 {
@@ -459,7 +460,7 @@ abstract class User extends \ArrayObject implements UserInterface
     * @param int $time, the length of time the JWT will be valid. It should not change anything, but just in case...
     * @return array, the data you want to send to client as part of the JWT
     */
-    protected function getDataForJWT($time) : array
+    public function getDataForJWT(int $time = 86400) : array
     {
         $payload = $this->getArrayCopy();
         if(!isset($payload['id'])) {
@@ -476,12 +477,8 @@ abstract class User extends \ArrayObject implements UserInterface
     public function getJWT($time = 86400)
     {
         $jwt = $this->getJwtObj();
-        $header = [
-            'typ' => 'JWT',
-            'alg' => 'HS256'
-        ];
         // get the payload from getDataForJWT() which should be overwritten by the child class
         $payload = $this->getDataForJWT($time);
-        return $jwt->generate($header, $payload, $time);
+        return $jwt->generate($payload, $time);
     }
 }

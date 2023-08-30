@@ -1,0 +1,16 @@
+class OAuth2 {
+    register(btnObj, config) {
+        btnObj.dataset['config'] = JSON.stringify(config);
+        btnObj.addEventListener('click', this.click.bind(this));
+    }
+
+    click(e) {
+        let config = JSON.parse(e.target.dataset['config']);
+        window.location.href="<?=$this->url('oauth-client', ['method'=>'__METHOD__'], ['force_canonical' => true,'query' => ['state'=>'__STATE__',],]);?>"
+            .replace('__METHOD__', config.method)
+            .replace('__STATE__', encodeURIComponent(config.state))
+        ;
+    }
+}
+
+laminas.oauth2 = new OAuth2();

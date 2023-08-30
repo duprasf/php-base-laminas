@@ -37,7 +37,7 @@ $modules = array_merge([
     'Laminas\Di',
     'Laminas\Router',
     'Laminas\Validator',
-    //'LmcUser',
+    'OAuth',
     'UserAuth',
     'ActiveDirectory',
     'Application',

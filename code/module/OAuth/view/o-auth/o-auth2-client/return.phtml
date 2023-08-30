@@ -1,0 +1,17 @@
+<?php
+$this->metadata['title']=$this->translate("Received the token");
+?>
+
+<p>
+    <?=$this->translate("Your application has multiple ways of configuring how to received the token.")?>
+</p>
+<p>
+    <?=$this->translate('You can define a controller aliases named "oauth-callback-controller", if it exists, the token will be sent to that controller with a route that has a "token" parameter');?>
+</p>
+<p>
+    <?=$this->translate('You can also pass a JSON array/object of with "controller" and "params" as the state of your request. This will dispatch to this controller and action (action should be specified in the params), the token will be one of the route params sent during the request.');?>
+</p>
+<p>
+    <?=$this->translate('Lastly, you can overwrite the "o-auth/o-auth2-client/return" view to receive the token your own view.');?>
+</p>
+<div class="well"><?=$this->token;?></div>

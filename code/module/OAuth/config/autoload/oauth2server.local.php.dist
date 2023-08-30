@@ -1,0 +1,30 @@
+<?php
+namespace ExampleModuleWithUserAndApi;
+
+use PDO;
+use UserAuth\Model\LdapUser as User;
+
+return [
+    'service_manager' => [
+        'services' => [
+            'OAuth2Enabled'=>true,
+            // Time To Live of the JWT, 86400 = 24 hours
+            'OAuth2TTL'=>86400,
+            // Time To Live of the refresh token, 31536000 = 1 year (more or less)
+            'OAuth2RefreshTTL'=>31536000,
+        ],
+        'factories'=> [
+            'OAuth2ServerPDO'=> function($sm) {
+                return new PDO(
+                    'mysql:host=hostname.hc-sc.gc.ca;dbname=oauth;',
+                    'username',
+                    '***password***',
+                    array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'')
+                );
+            },
+        ],
+        'aliases' => [
+            'OAuth2ServerUser'=>User::class,
+        ],
+    ],
+];

@@ -4,10 +4,10 @@
  */
 //$this->metadata['title'] = 'User Auth';
 $this->metadata['extra-css']='/application/css/pulse.css';
+$route = $this->route ?? 'user/login';
 ?>
-
 <div class="wb-frmvld">
-    <form action="<?=$this->url('user/login', ['locale'=>$this->lang]);?>" method="post">
+    <form action="<?=$this->url($route, array_merge($this->routeParams ?? [], ['locale'=>$this->lang]));?>" method="post">
         <div class="form-group">
             <label for="email" class="required"><span class="field-name"><?=$this->translate('Email', 'layout');?></span> <strong class="required">(<?=$this->translate('required', 'layout');?>)</strong></label>
             <input class="form-control" id="email" name="email" type="text" autocomplete="email" required="required" />

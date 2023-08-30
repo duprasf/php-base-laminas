@@ -51,10 +51,23 @@ class Module implements ConfigProviderInterface
         $application = $e->getApplication();
         $eventManager = $application->getEventManager()->getSharedManager();
 
+        // get service manager
+        $sm = $application->getServiceManager();
+
         // register listener
-        if($application->getServiceManager()->has('user-pdo')) {
-            $listener = $application->getServiceManager()->get(Model\UserAudit::class);
+        if($application->getServiceManager()->has('user-log-pdo')) {
+            $listener = $sm->get(Model\UserAudit::class);
             $listener->setEventManager($eventManager);
         }
+
+        // get view helper manager
+        $viewHelperManager = $sm->get('ViewHelperManager');
+
+        // get 'head script' plugin
+        $headScript = $viewHelperManager->get('headScript');
+        $headScript->appendFile('/user-auth/js/Session.js');
+        $headScript->appendFile('/user-auth/js/User.js');
     }
+
+
 }

@@ -15,6 +15,7 @@ class JWTFactory implements FactoryInterface
     {
         $obj = new $requestName();
         $obj->setSecret($container->get('JWT_SECRET'));
+        $obj->setIssuer($container->get('domain'));
         return $obj;
     }
 }

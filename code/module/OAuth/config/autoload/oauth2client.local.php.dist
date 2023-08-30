@@ -1,0 +1,45 @@
+<?php
+namespace ExampleModuleWithUserAndApi;
+
+use PDO;
+
+return [
+    'service_manager' => [
+        'services' => [
+            'OAuth2Enabled'=>true,
+            'OAuthCallbackController' => Controller\IndexController::class,
+            'OAuthCallbackAction' => 'return',
+            'OAuth2Config'=> [
+                // name of the default "method" if none is set
+                // no value or missing key would return a 404 when accessing without a method name
+                'default'=>'server-name',
+                // this is the name or "method" of oauth2
+                'server-name'=>[
+                    // the urls of the server where you will login
+                    'url-authorize'=>'https://localdev.hc-sc.gc.ca/oauth/authorize',
+                    // this is the url for transforming code into token. If using local hosts (defined in hosts file)
+                    // this needs to be the name of the docker container (the call is made from the server)
+                    'url-token'=>'http://LaminasExample/oauth',
+                    // the uri where the user should be redirected to (specified during your registration)
+                    'redirect_uri'=>'https://localdev.hc-sc.gc.ca/oauth-login/return',
+                    // your client ID generated when you registered
+                    'client_id'=>'name_of_your_app_in_auth_server',
+                    // your client secret generated when you registered
+                    'client_secret'=>'***secret in plain text***',
+                    // the scope your app with require
+                    'scope'=>json_encode(['identity']),
+                ],
+            ],
+        ],
+        'factories'=> [
+            'OAuth2ClientPDO'=> function($sm) {
+                return new PDO(
+                    'mysql:host=hostname.hc-sc.gc.ca;dbname=oauth;',
+                    'username',
+                    '***password***',
+                    array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'')
+                );
+            },
+        ],
+    ],
+];

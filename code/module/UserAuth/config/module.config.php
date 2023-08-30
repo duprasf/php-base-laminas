@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace UserAuth;
@@ -12,12 +11,11 @@ use Model\User;
 return [
     'router' => [
         'routes' => [
+            /*
             'user' => [
                 'type'    => Segment::class,
                 'options' => [
                     'route'    => '/:locale/{user}',
-                    'defaults' => [
-                    ],
                     'constraints'=>[
                         'locale'=>'en|fr',
                     ],
@@ -33,8 +31,6 @@ return [
                         'options' => [
                             'route'    => '/{login}',
                             'defaults' => [
-                            ],
-                            'defaults' => [
                                 'action'     => 'login',
                             ],
                         ],
@@ -47,8 +43,6 @@ return [
                         'options' => [
                             'route'    => '/{logout}',
                             'defaults' => [
-                            ],
-                            'defaults' => [
                                 'action'     => 'logout',
                             ],
                         ],
@@ -60,8 +54,6 @@ return [
                         'type'    => Segment::class,
                         'options' => [
                             'route'    => '/{register}',
-                            'defaults' => [
-                            ],
                             'defaults' => [
                                 'action'     => 'register',
                             ],
@@ -132,6 +124,7 @@ return [
                     ],
                 ],
             ],
+            /**/
         ],
     ],
     'controllers' => [

@@ -16,6 +16,25 @@ class JWT {
         return $this->secret;
     }
 
+    private $issuer;
+    public function setIssuer(string $iss)
+    {
+        $this->issuer = $iss;
+        return $this;
+    }
+    protected function getIssuer()
+    {
+        return $this->issuer;
+    }
+
+    protected function getDefaultHeaders()
+    {
+        return [
+            'typ' => 'JWT',
+            'alg' => 'HS256'
+        ];
+    }
+
     /**
     * Generation the JWT
     *
@@ -24,15 +43,24 @@ class JWT {
     * @param int $timeToLive time to live (in secondes) 604800 = 7 days
     * @return string Token
     */
-    public function generate(array $header, array $payload, int $timeToLive = 604800): string
+    public function generate(array $payload, int $timeToLive = 604800): string
     {
         if($timeToLive > 0){
             // if $timeToLive is 0, use the value defined in $payload.
             // This is used to confirm the token is valid
             $now = new \DateTime();
+            $payload['iss'] = $this->getIssuer();
             $payload['iat'] = $now->getTimestamp();
             $payload['exp'] = $payload['iat'] + $timeToLive;
+            //audience
+            $payload['aud'] = 'api://default';
+            //subject/userId
+            $payload['sub'] = $payload['userId']??md5(time());
+            //JSON Token ID
+            $payload['jti'] = '';
+
         }
+        $header = $this->getDefaultHeaders();
 
         $base64Header = $this->cleanBase64(base64_encode(json_encode($header)));
         $base64Payload = $this->cleanBase64(base64_encode(json_encode($payload)));
@@ -65,9 +93,9 @@ class JWT {
         $header = $this->getHeader($token);
         $payload = $this->getPart($token, 1);
 
-        $newToken = $this->generate($header, $payload, 0);
+        $newToken = $this->generate($payload, 0);
 
-        return $token === $newToken;
+        return $header === $this->getDefaultHeaders() && $token === $newToken;
     }
 
     /**
