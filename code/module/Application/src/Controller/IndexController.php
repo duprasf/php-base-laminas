@@ -7,15 +7,42 @@ namespace Application\Controller;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\Mvc\I18n\Translator as MvcTranslator;
-use \Application\Model\Breadcrumbs;
+use Application\Model\Breadcrumbs;
 
 class IndexController extends AbstractActionController
 {
+    private $loadBaseScript = true;
+    public function setLoadBaseScript(bool $bool)
+    {
+        $this->loadBaseScript = $bool;
+        return $this;
+    }
+    protected function getLoadBaseScript()
+    {
+        return $this->loadBaseScript;
+    }
+
     public function indexAction()
     {
         $view = new ViewModel();
         $this->_setCommonMetadata($view);
         $view->setVariable('metadata', new \ArrayObject());
+        return $view;
+    }
+
+    public function basescriptAction()
+    {
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaderLine('Content-Type', 'application/javascript');
+        $response->getHeaders()->addHeaderLine('Content-Language', 'en');
+
+        if(!$this->getLoadBaseScript()) {
+            $response->setContent('');
+            return $response;
+        }
+
+        $view = new ViewModel();
+        $view->setTerminal(true);
         return $view;
     }
 

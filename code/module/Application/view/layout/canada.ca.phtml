@@ -46,8 +46,6 @@ $sideMenuLocation = $layout->sideMenuLocation;
 $usefulLinks = $layout->usefulLinks;
 $usefulLinksTitle = $layout->usefulLinksTitle ? $layout->usefulLinksTitle : $this->translate('Useful Links');
 $usefulLinksLocation = $layout->usefulLinksLocation;
-
-$this->headScript()->appendFile('/application/js/basescript.js');
 ?>
 <!--[if lt IE 9]><html class="no-js lt-ie9<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr"><![endif]--><!--[if gt IE 8]><!-->
 <html class="no-js<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr">
@@ -87,6 +85,7 @@ $this->headScript()->appendFile('/application/js/basescript.js');
         // framework placeholder (for user, session timeout, etc.)
         let laminas = {};
         </script>
+        <?=$this->headScript();?>
 
         <!-- Google Tag Manager DO NOT REMOVE OR MODIFY - NE PAS SUPPRIMER OU MODIFIER -->
         <script>dataLayer1 = [];</script>
@@ -400,7 +399,6 @@ $this->headScript()->appendFile('/application/js/basescript.js');
                 <?endif;?>
             </footer>
         </div>
-
         <!-- Write closure template -->
         <script>
             var defTop = document.getElementById("def-top");
@@ -433,7 +431,6 @@ $this->headScript()->appendFile('/application/js/basescript.js');
         <?if($this->vars('extra-js'))foreach($this->vars('extra-js') as $file):?>
             <script src="<?=str_replace('[CDTS]', $cdtsPath, $file);?>" defer="defer"></script>
         <?endforeach;?>
-        <?=$this->headScript();?>
         <?=$this->inlineScript();?>
         <!-- Custom Scripts End -->
     </body>

@@ -27,6 +27,16 @@ return [
                     ],
                 ],
             ],
+            'basescript' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/application]/js/basescript.js',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'basescript',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -50,6 +60,9 @@ return [
                 $route = $sm->get('router')->match($sm->get('Request'));
                 $lang  = $route ? ($route->getParam('locale', 'en') ?: $route->getParam('lang', 'en')) : 'en';
                 return $lang;
+            },
+            'domain'=>function($sm) {
+                return $sm->get('Request')->getHeaders('host')->getFieldValue();
             },
             SessionManager::class => function ($container) {
                 $config = $container->get('config');
