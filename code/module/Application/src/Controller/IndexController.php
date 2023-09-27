@@ -6,7 +6,7 @@ namespace Application\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Laminas\Mvc\I18n\Translator as MvcTranslator;
+use Laminas\View\Model\JsonModel;
 use Application\Model\Breadcrumbs;
 
 class IndexController extends AbstractActionController
@@ -27,6 +27,22 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
         $this->_setCommonMetadata($view);
         $view->setVariable('metadata', new \ArrayObject());
+        return $view;
+    }
+
+    public function cacheAction()
+    {
+        $view = new ViewModel();
+        $this->_setCommonMetadata($view);
+
+        return $view;
+    }
+
+    public function cacheStatusAction()
+    {
+        $view = new JsonModel();
+        $view->setVariables(opcache_get_status());
+
         return $view;
     }
 
@@ -74,9 +90,5 @@ class IndexController extends AbstractActionController
             ]);
         }
         $view->setVariable('breadcrumbItems', $breadcrumbItems);
-
-        //$breadcrumbs = $this->getServiceLocator()->get('ViewHelperManager')->get('setBreadcrumbs');
-        //$breadcrumbs($breadcrumbsItem);
-
     }
 }

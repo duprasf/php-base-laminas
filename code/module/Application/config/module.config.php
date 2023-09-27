@@ -9,7 +9,7 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack;
 
-return [
+$return = [
     'router' => [
         'router_class' => TranslatorAwareTreeRouteStack::class,
         'routes' => [
@@ -171,3 +171,31 @@ return [
         ],
     ],
 ];
+
+// if in dev add a opcache page
+if(getenv('PHP_DEV_ENV') == 1) {
+    $return['router']['routes']['cache'] = [
+        'type'    => Literal::class,
+        'options' => [
+            'route'    => '/cache',
+            'defaults' => [
+                'controller' => Controller\IndexController::class,
+                'action'     => 'cache',
+            ],
+        ],
+        'may_terminate' => true,
+        'child_routes' => [
+            'status'=>[
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/status',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'cache-status',
+                    ],
+                ],
+            ],
+        ],
+    ];
+}
+return $return;

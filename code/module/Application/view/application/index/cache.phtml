@@ -1,0 +1,343 @@
+<?php
+$this->metadata['title'] = 'OPCache and other cache statistics';
+//$this->metadata['extra-css'] = '/application/css/jsonview.bundle.css';
+$this->metadata['extra-js'] = '/application/js/jsonview.js';
+
+$statuses = [
+    'opcache_enabled'=>[
+        'text'=>'OPcache enabled',
+        'true_icon'=>'glyphicon-ok',
+        'false_icon'=>'glyphicon-remove',
+    ],
+    'cache_full'=>[
+        'text'=>'Cache not full',
+        'true_icon'=>'glyphicon-exclamation-sign',
+        'false_icon'=>'glyphicon-ok',
+        'true_text'=>'Cache is full',
+    ],
+    'restart_pending'=>[
+        'text'=>'Pending restart',
+        'true_icon'=>'glyphicon-exclamation-sign',
+        'false_icon'=>'glyphicon-minus-sign',
+        'false_text'=>'No pending restart',
+    ],
+    'restart_in_progress'=>[
+        'text'=>'Restart in progress',
+        'true_icon'=>'glyphicon-exclamation-sign',
+        'false_icon'=>'glyphicon-minus-sign',
+        'false_text'=>'Not restarting',
+    ],
+];
+
+?>
+<style>
+.status {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    margin-top: 3rem;
+}
+.status span {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.status .glyphicon {
+    font-size: 5em;
+}
+.status .glyphicon-ok {
+    color: #079D05;
+}
+.status .glyphicon-remove {
+    color: #CD080B;
+}
+.status .glyphicon-exclamation-sign {
+    color: #CD080B;
+}
+.status .glyphicon-minus-sign {
+    color: #585858;
+}
+.status .memory {
+    /*border-radius:5em;/**/
+    width: 5em;
+    height: 5em;
+    align-items: end;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+.stats div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    position: relative;
+}
+#opcache_hit_rate > span:nth-child(1), #opcache_hit_rate > span:nth-child(2) {
+    position: absolute;
+    top: 0;
+}
+#opcache_hit_rate span.glyphicon-warning-sign{
+    color: #E6AC24;
+    -webkit-text-stroke: 2px black;
+    text-stroke: 2px black;
+}
+#opcache_hit_rate span.glyphicon-exclamation-sign{
+    color: #CD080B;
+    -webkit-text-stroke: 2px black;
+    text-stroke: 2px black;
+}
+.stats div.val-outter {
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    flex-direction: initial;
+    height: 100%;
+}
+.stats div .val-outter .value {
+    background: rgba(255,255,255, 0.85);
+    height: 1em;
+    padding: 14px;
+}
+.stats div .value{
+    width: 100px;
+    height: 110px;
+    text-align: center;
+    font-weight: bold;
+}
+.status .inner-memory {
+    /*
+    border-radius:4.5em;
+    /**/
+    width: 85%;
+    height: 100%;
+    background: #fff;
+    font-size: 0.75em;
+    line-height: 1.05em;
+    align-items: end;
+}
+.status .inner-memory span {
+    display:inline;
+}
+.status .inner-memory > span {
+    margin-bottom: 0.75em;
+    padding-bottom: 0.25em;
+    border-bottom: 3px solid #000;
+}
+.status .inner-memory .free-mem {
+    border-color:rgba(28,226,29,1);
+}
+.status .inner-memory .wasted-mem {
+    border-color:rgba(121,119,119,1);
+}
+.status .inner-memory .used-mem {
+    border-color:rgba(34,59,190,1);
+}
+#dump .json-container {
+    font-family: inherit;
+    font-size: inherit;
+    background-color: transparent;
+    color: #707070;
+}
+.json-container .json-number {
+    color: #a45906;
+}
+.json-container .json-boolean {
+    color: #207b79;
+}
+.json-container .json-string {
+    color: #597939;
+}
+.blink_me {
+  animation: blinker 1s ease-in-out infinite;
+}
+
+@keyframes blinker {
+  50% {opacity: 1;}
+  75% {opacity: 0;}
+}
+
+#live-refresh::before {
+}
+</style>
+<script>
+ready(init);
+let liveRefreshInterval;
+
+function init() {
+    refresh();
+    document.querySelector("#live-refresh").addEventListener('click', setLiveRefresh);
+    document.querySelector("#refresh").addEventListener('click', refresh);
+    document.querySelector("#reset").addEventListener('click', reset);
+}
+
+function setLiveRefresh(e) {
+    e.preventDefault();
+    let btn = document.querySelector("#live-refresh");
+    let el = document.querySelector("#live-refresh .glyphicon");
+    if(btn.dataset['active']) {
+        btn.dataset['active'] = 0
+        clearInterval(liveRefreshInterval);
+        el.classList.remove('glyphicon-check');
+        el.classList.add('glyphicon-unchecked');
+        return;
+    }
+    btn.dataset['active'] = 1;
+    liveRefreshInterval = setInterval(refresh, 1000);
+    el.classList.remove('glyphicon-unchecked');
+    el.classList.add('glyphicon-check');
+}
+
+function reset(e) {
+    e.preventDefault();
+}
+
+function refresh(e) {
+    if(e && e.preventDefault) {
+        e.preventDefault();
+    }
+    fetch('<?=$this->url('cache/status');?>')
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            return response.json();
+        })
+        .then(parse)
+    ;
+}
+
+function parse(data) {
+    const tree = jsonview.create(data);
+    jsonview.render(tree, document.querySelector('#dump'));
+    jsonview.expand(tree);
+
+
+    let usedDec = data.memory_usage.used_memory / (data.memory_usage.used_memory+data.memory_usage.free_memory+data.memory_usage.wasted_memory);
+    let freeDec = data.memory_usage.free_memory / (data.memory_usage.used_memory+data.memory_usage.free_memory+data.memory_usage.wasted_memory);
+    let wastedDec = data.memory_usage.wasted_memory / (data.memory_usage.used_memory+data.memory_usage.free_memory+data.memory_usage.wasted_memory);
+
+    let usedDeg = usedDec*360;
+    let wastedDeg = wastedDec*360;
+    let freeDeg = freeDec*360;
+
+    let usedPerc = usedDec*100;
+    let wastedPerc = wastedDec*100;
+    let freePerc = freeDec*100;
+
+    let el = document.querySelector("#memory .memory");
+    //el.style="background: conic-gradient(rgba(34,59,190,1) "+usedDeg+"deg, rgba(121,119,119,1) "+usedDeg+"deg, rgba(121,119,119,1) "+(usedDeg+wastedDeg)+"deg, rgba(28,226,29,1) "+(usedDeg+wastedDeg)+"deg);";
+
+    el.style="background: linear-gradient(0deg, rgba(34,59,190,1) 0%, rgba(34,59,190,1) "+usedPerc+"%, rgba(121,119,119,1) "+usedPerc+"%, rgba(121,119,119,1) "+wastedPerc+"%, rgba(28,226,29,1) "+wastedPerc+"%);"
+
+    document.querySelector("#memory .inner-memory .free-mem span").innerHTML = Math.round(freePerc)+'%';
+    document.querySelector("#memory .inner-memory .wasted-mem span").innerHTML = Math.round(wastedPerc)+'%';
+    document.querySelector("#memory .inner-memory .used-mem span").innerHTML = Math.round(usedPerc)+'%';
+
+    <?foreach($statuses as $id=>$status):?>
+    if(data.<?=$id;?>) {
+        let el = document.querySelector("#<?=$id;?> span.glyphicon");
+        el.classList.remove('glyphicon-refresh');
+        el.classList.remove('<?=$status['false_icon'];?>');
+        el.classList.add('<?=$status['true_icon'];?>');
+        document.querySelector("#<?=$id;?> span.text").innerHTML='<?=isset($status['true_text']) ? $status['true_text'] : $status['text'];?>';
+    } else {
+        let el = document.querySelector("#<?=$id;?> span.glyphicon");
+        el.classList.remove('glyphicon-refresh');
+        el.classList.remove('<?=$status['true_icon'];?>');
+        el.classList.add('<?=$status['false_icon'];?>');
+        document.querySelector("#<?=$id;?> span.text").innerHTML='<?=isset($status['false_text']) ? $status['false_text'] : $status['text'];?>';
+    }
+    <?endforeach;?>
+
+
+    el = document.querySelector("#start_time span.value");
+    el.classList.remove('glyphicon-refresh');
+    el.classList.remove('<?=$status['true_icon'];?>');
+    el.classList.add('<?=$status['false_icon'];?>');
+
+    var date = new Date(data.opcache_statistics.start_time * 1000);
+    el = document.querySelector("#start_time span.value");
+    el.classList.remove('glyphicon');
+    el.classList.remove('glyphicon-refresh');
+    el.classList.remove('glyphicon-minus-sign');
+    el.innerHTML=date.toDateString();
+
+    el = document.querySelector("#num_cached_scripts span.value");
+    el.classList.remove('glyphicon');
+    el.classList.remove('glyphicon-refresh');
+    el.innerHTML=data.opcache_statistics.num_cached_scripts;
+
+    el = document.querySelector("#num_cached_keys span.value");
+    el.classList.remove('glyphicon');
+    el.classList.remove('glyphicon-refresh');
+    el.innerHTML=data.opcache_statistics.num_cached_keys+'/'+data.opcache_statistics.max_cached_keys;
+
+    el = document.querySelector("#opcache_hit_rate .val-outter");
+    el.hidden = false;
+    el = document.querySelector("#opcache_hit_rate span.value");
+    let percent = Math.round(data.opcache_statistics.opcache_hit_rate*10)/10;
+    el.innerHTML=percent+'%';
+    el = document.querySelector("#opcache_hit_rate span.glyphicon");
+    el.classList.remove('glyphicon-refresh');
+    if(percent < 98) {
+        el.classList.add('glyphicon-warning-sign');
+        el.classList.add('blink_me');
+    } else if(percent < 99) {
+        el.classList.add('glyphicon-exclamation-sign');
+        el.classList.add('blink_me');
+    }
+}
+</script>
+
+<div class="btn-group">
+    <button class="btn btn-default" id="live-refresh"><span class="glyphicon glyphicon-unchecked"></span>&nbsp;Live refresh</button>
+    <button class="btn btn-default" id="refresh">Refresh</button>
+    <button class="btn btn-default" id="reset">Reset cache</button>
+</div>
+
+<div class="status">
+    <?foreach($statuses as $id=>$status):?>
+    <div id="<?=$id;?>">
+        <span class="glyphicon glyphicon-refresh"></span>
+        <span class="text"><?=$status['text'];?></span>
+    </div>
+    <?endforeach;?>
+</div>
+
+<div class="status stats">
+    <div id="memory">
+        <span class="memory" style="">
+            <span class="inner-memory">
+                <span class="free-mem">Free <span></span></span>
+                <span class="wasted-mem">Wasted <span></span></span>
+                <span class="used-mem">Used <span></span></span>
+            </span>
+        </span>
+        <span class="text">Memory</span>
+    </div>
+    <div id="start_time">
+        <span class="value glyphicon glyphicon-refresh"></span>
+        <span class="text">Start time</span>
+    </div>
+    <div id="num_cached_scripts">
+        <span class="value glyphicon glyphicon-refresh"></span>
+        <span class="text">Cached scripts</span>
+    </div>
+    <div id="num_cached_keys">
+        <span class="value glyphicon glyphicon-refresh"></span>
+        <span class="text">Cached keys</span>
+    </div>
+    <div id="opcache_hit_rate">
+        <span class="glyphicon glyphicon-refresh"></span>
+        <div class="val-outter" hidden><span class="value"></span></div>
+        <span class="text">Hit rate</span>
+    </div>
+</div>
+
+<div id="dump" class="well">
+</div>
