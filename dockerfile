@@ -7,11 +7,20 @@ LABEL author = 'Web/Mobile Team (imsd.web-dsgi@hc-sc.gc.ca)'
 LABEL source = 'https://github.hc-sc.gc.ca/hs/php-base-laminas'
 
 # update the OS and install common modules
-RUN apt-get update -y && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get install -y -V nodejs
+RUN set -uex; \
+    apt-get install -y ca-certificates curl gnupg; \
+    mkdir -p /etc/apt/keyrings; \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+     | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg;
+
+RUN NODE_MAJOR=18; \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" \
+     > /etc/apt/sources.list.d/nodesource.list;
+
+RUN apt-get update && apt-get install nodejs -y;
+
 
 WORKDIR /var/www
 COPY code/ /var/www/
@@ -22,6 +31,9 @@ RUN git clone https://github.com/duprasf/Void.git /var/www/vendor/Void/.
 RUN npm install --global gulp-cli
 RUN npm install
 RUN composer update
+
+RUN rm -rf /var/lib/apt/lists/*
+
 RUN mkdir -p /var/www/data/cache
 RUN chown www-data:www-data -R /var/www/*
 
