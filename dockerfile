@@ -39,6 +39,5 @@ RUN chown www-data:www-data -R /var/www/*
 
 RUN rm -Rf html && ln -s public html
 
-COPY go-laminas.sh /go-laminas.sh
-RUN chmod 774 /go-laminas.sh
+COPY --chmod=774 go-laminas.sh /go-laminas.sh
 CMD ["/go-laminas.sh"]

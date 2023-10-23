@@ -5,12 +5,12 @@ return array(
     'router' => array(
         'routes' => array(
             'public-asset-route'=>array(
-                'type'=>'public-asset-route',
+                'type'=>Route\PublicAssetRoute::class,
                 'options'=>array(
                     'regex'=>'(?P<path>/.+)$',
                     'spec'=>'/%lang%/%path%',
                     'defaults'=>array(
-                        'controller'=>'PublicAsset\Controller\Index',
+                        'controller'=>Controller\IndexController::class,
                         'action'=>'index',
                     ),
                     'constraints'=>array(
@@ -23,12 +23,12 @@ return array(
     ),
     'route_manager' => array(
         'factories'=>array(
-            'public-asset-route'=>'PublicAsset\Factory\PublicAssetRouteFactory',
+            Route\PublicAssetRoute::class=>Factory\PublicAssetRouteFactory::class,
         ),
     ),
     'controllers' => array(
-        'invokables' => array(
-            'PublicAsset\Controller\Index' => 'PublicAsset\Controller\IndexController',
+        'factories' => array(
+            Controller\IndexController::class => Factory\Controller\IndexControllerFactory::class,
         ),
     ),
 );
