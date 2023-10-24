@@ -21,6 +21,19 @@ if(!in_array('noAutoLoadApps', $extraModules)) {
     array_splice($extraModules, array_search('noAutoLoadApps', $extraModules), 1);
 }
 
+$envModules = getenv('LAMINAS_LOAD_MODULES');
+if($envModules) {
+    try {
+        $envModules = json_decode($envModules, true);
+
+        if(json_last_error() == JSON_ERROR_NONE) {
+            $extraModules = array_merge($extraModules, $envModules);
+        }
+    } catch(\Exception $e){
+
+    }
+}
+
 $modules = array_merge([
     'Laminas\Mvc\Plugin\FilePrg',
     'Laminas\Mvc\Plugin\FlashMessenger',
