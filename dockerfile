@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install nodejs -y;
 
 
 WORKDIR /var/www
-COPY code/ /var/www/
+COPY --chown=www-data code/ /var/www/
 
 RUN mkdir -p /var/www/vendor/Void
 RUN git clone https://github.com/duprasf/Void.git /var/www/vendor/Void/.
@@ -35,9 +35,9 @@ RUN composer update
 RUN rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /var/www/data/cache
-RUN chown www-data:www-data -R /var/www/*
+RUN chown www-data /var/www/data/cache
 
 RUN rm -Rf html && ln -s public html
 
 COPY --chmod=774 go-laminas.sh /go-laminas.sh
-CMD ["/go-laminas.sh"]
+ENTRYPOINT ["/go-laminas.sh"]

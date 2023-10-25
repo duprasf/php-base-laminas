@@ -115,8 +115,11 @@ class JWT {
     * @param string $token Token
     * @return array Payload
     */
-    public function getPayload(string $token)
+    public function getPayload(?string $token)
     {
+        if(!is_string($token)){
+            throw new JwtException('Token is null or not a string');
+        }
         if(!$this->isToken($token)){
             throw new JwtException('Token not found');
         }

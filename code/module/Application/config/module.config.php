@@ -45,6 +45,9 @@ $return = [
         ],
     ],
     'controller_plugins' => [
+        'invokables' => [
+            Controller\Plugin\SetApiResponseHeaders::class=>Controller\Plugin\SetApiResponseHeaders::class,
+        ],
         'factories' => [
             Controller\Plugin\GetTranslator::class=>Factory\Controller\Plugin\GetTranslatorFactory::class,
             Controller\Plugin\Lang::class=>Factory\Controller\Plugin\LangFactory::class,
@@ -52,6 +55,8 @@ $return = [
         'aliases' => [
             'getTranslator' => Controller\Plugin\GetTranslator::class,
             'lang' => Controller\Plugin\Lang::class,
+            'setApiResponseHeaders'=>Controller\Plugin\SetApiResponseHeaders::class,
+            'setResponseHeaders'=>Controller\Plugin\SetApiResponseHeaders::class,
         ],
     ],
     'service_manager' => [
@@ -119,8 +124,9 @@ $return = [
     ],
     'view_helpers' => [
         'aliases'=> [
-            'url'=>'url-with-lang',
-            'UrlHelper'=>View\Helper\UrlFactory::class,
+            'url'=>View\Helper\Url::class,
+            'url-with-lang'=>View\Helper\Url::class,
+            'UrlHelper'=>View\Helper\Url::class,
         ],
         'invokables' => [
             'stripTags' => View\Helper\StripTags::class,
@@ -130,7 +136,7 @@ $return = [
         'factories' => [
             "getLangSwitchUrl" => Factory\View\Helper\GetLangSwitchUrlFactory::class,
             "completeMetadata" => Factory\View\Helper\CompleteMetadataFactory::class,
-            'url-with-lang' => Factory\View\Helper\UrlFactory::class,
+            View\Helper\Url::class => Factory\View\Helper\UrlFactory::class,
         ],
     ],
     'view_manager' => [

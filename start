@@ -2,16 +2,31 @@
 docker stop php-base-laminas
 docker rm php-base-laminas
 
+USE_TRAEFIK=false
+
+DOMAIN=localdev.hc-sc.gc.ca
+TRAEFIK_RULE='Host(`'$DOMAIN'`)'
+TRAEFIK_TLS_MAIN_DOMAIN=$DOMAIN
+TRAEFIK_TLS_SANS_DOMAIN=$DOMAIN
+
+PORT=""
+if [ ! $USE_TRAEFIK ]; then
+    PORT="-p 80:80"
+fi
+
 docker run -d --name php-base-laminas \
     --net appnet \
     --restart unless-stopped \
     -v /etc/localtime:/etc/localtime:ro \
     -v /etc/timezone:/etc/timezone:ro \
     -e PHP_DEV_ENV=1 \
-    --label traefik.enable=true \
-    --label traefik.http.routers.lessons.rule='Host(`localdev.hc-sc.gc.ca`)' \
-    --label traefik.http.routers.lessons_http.rule='Host(`localdev.hc-sc.gc.ca`)' \
-    --label traefik.http.routers.lessons_http.entrypoints=web \
-    -v /docker/php-base-laminas/code/module/ActiveDirectory:/var/www/module/ActiveDirectory \
-    -v /docker/php-base-laminas/code/module/UserAuth:/var/www/module/UserAuth \
+    $PORT \
+    --label traefik.enable=$USE_TRAEFIK \
+    --label traefik.http.routers.drupalwxt.rule=$TRAEFIK_RULE \
+    --label traefik.http.routers.drupalwxt.entrypoints=websecure \
+    --label traefik.http.routers.drupalwxt.tls=true \
+    --label traefik.http.routers.drupalwxt.tls.domains[0].main=$TRAEFIK_TLS_MAIN_DOMAIN \
+    --label traefik.http.routers.drupalwxt.tls.domains[0].sans=$TRAEFIK_TLS_SANS_DOMAIN \
+    --label traefik.http.routers.drupalwxt_http.rule=$TRAEFIK_RULE \
+    --label traefik.http.routers.drupalwxt_http.entrypoints=web \
     php-base-laminas:latest

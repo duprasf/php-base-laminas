@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Local Configuration Override for DEVELOPMENT MODE.
  *
@@ -23,5 +22,7 @@ return [
     ],
     'module_listener_options' => [
         'config_cache_enabled' => false,
+        'config_glob_paths' => [realpath(__DIR__) . '/autoload/{,*.}{global,local}-development.php'],
+        'module_map_cache_enabled' => false,
     ],
 ];

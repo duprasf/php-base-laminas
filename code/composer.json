@@ -16,8 +16,7 @@
         "laminas/laminas-session": ">2.10.0",
         "laminas/laminas-di": ">3.2.2",
         "laminas/laminas-loader": ">2.7",
-        "laminas/laminas-ldap": "^2.17",
-        "lm-commons/lmc-user": ">3.1"
+        "laminas/laminas-ldap": "^2.17"
     },
     "autoload": {
         "psr-4": {
