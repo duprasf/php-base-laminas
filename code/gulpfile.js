@@ -54,6 +54,7 @@ function css() {
         if(fs.lstatSync("apps/"+folder).isDirectory() && fs.existsSync('apps/'+folder+'/source/postcss/main.pcss')) {
             src('apps/'+folder+'/source/postcss/main.pcss')
                 .pipe(postcss(plugins))
+                .pipe(rename({ extname: '.css' }))
                 .pipe(dest('apps/'+folder+'/public/css'))
             ;
         }
