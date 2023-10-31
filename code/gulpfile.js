@@ -4,6 +4,7 @@ const concat = require('gulp-concat');
 const terser = require('gulp-terser');
 const rename = require('gulp-rename');
 const sourcemaps = require('gulp-sourcemaps');
+const sri = require('gulp-sri');
 const postcss = require('gulp-postcss');
 const cssImport = require('postcss-import');
 const partialImport = require('postcss-partial-import');
@@ -18,6 +19,8 @@ const eachVariables = require('postcss-each-variables');
 const cssFor = require('postcss-for');
 const fs = require("fs");
 
+const camelToDash = str => str.replace(/([a-z])?([A-Z])/g, (match, p1,p2) => (p1?p1+'-':'')+p2.toLowerCase() );
+
 function js() {
     fs.readdirSync("apps/").forEach(folder => {
         if(fs.lstatSync("apps/"+folder).isDirectory() && fs.existsSync('apps/'+folder+'/source/js')) {
@@ -30,6 +33,12 @@ function js() {
                 .pipe(rename({ extname: '.min.js' }))
                 .pipe(sourcemaps.write())
                 .pipe(dest('apps/'+folder+'/public/js'),{ sourcemaps: true })
+                .pipe(sri({
+                    "algorithms":["sha384"],
+                    "formatter": str => str.replace('/apps/'+folder+'/public', camelToDash(folder))
+                }))
+                .pipe(rename({ extname: '.sha' }))
+                .pipe(dest('apps/'+folder+'/public/js'))
             ;
         }
     });
@@ -69,7 +78,7 @@ function both(cb) {
 }
 
 function watchFn() {
-    watch(['apps/*/source/js/*.js', 'apps/*/source/postcss/*.pcss'], both);
+    watch(['apps/*/source/js/*.js', 'apps/*/source/postcss/**/*.pcss'], both);
 };
 exports.default = watchFn;
 exports.both = both;
