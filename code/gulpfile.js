@@ -35,7 +35,13 @@ function js() {
                 .pipe(dest('apps/'+folder+'/public/js'),{ sourcemaps: true })
                 .pipe(sri({
                     "algorithms":["sha384"],
-                    "formatter": str => str.replace('/apps/'+folder+'/public', camelToDash(folder))
+                    "formatter": json => {
+                        let newJson={};
+                        for(let str in json) {
+                            newJson[str.replace('/apps/'+folder+'/public', camelToDash(folder))] = json[str];
+                        }
+                        return JSON.stringify(newJson);
+                    }
                 }))
                 .pipe(rename({ extname: '.sha' }))
                 .pipe(dest('apps/'+folder+'/public/js'))
