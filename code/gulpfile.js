@@ -28,6 +28,7 @@ function js() {
                 .pipe(sourcemaps.init())
                 .pipe(concat('scripts.js'))
                 .pipe(sourcemaps.write())
+                .pipe(rename({ basename: folder }))
                 .pipe(dest('apps/'+folder+'/public/js'),{ sourcemaps: true })
                 .pipe(terser())
                 .pipe(rename({ extname: '.min.js' }))
@@ -38,12 +39,16 @@ function js() {
                     "formatter": json => {
                         let newJson={};
                         for(let str in json) {
-                            newJson[str.replace('/apps/'+folder+'/public', camelToDash(folder))] = json[str];
+                            if(str.indexOf('apps/'+folder+'/public')) {
+                                newJson[str.replace('apps/'+folder+'/public', camelToDash(folder))] = json[str];
+                            } else if(str.indexOf('module/'+folder+'/public')) {
+                                newJson[str.replace('module/'+folder+'/public', camelToDash(folder))] = json[str];
+                            }
                         }
                         return JSON.stringify(newJson);
                     }
                 }))
-                .pipe(rename({ extname: '.sha' }))
+                .pipe(rename({ basename: folder }))
                 .pipe(dest('apps/'+folder+'/public/js'))
             ;
         }
