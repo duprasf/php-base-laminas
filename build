@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
 docker pull jack.hc-sc.gc.ca/php/php-base:latest
+docker pull jack.hc-sc.gc.ca/php/php-base:8.2
+docker pull jack.hc-sc.gc.ca/php/php-base:8.2-mongodb
 
-docker build -t php-base-laminas .
+docker build -t php-base-laminas -f dockerfile .
+docker build -t php-base-laminas-mongodb -f dockerfile-mongodb .

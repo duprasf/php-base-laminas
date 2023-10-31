@@ -31,7 +31,7 @@ pipeline {
                     rootGroup = properties.root_group
                     rootVersion = properties.root_version
                     buildId = env.BUILD_ID
-                    version = rootVersion + "." + (buildId ? buildId : "MANUAL-BUILD")
+                    version = rootVersion + "b" + (buildId ? buildId : "MANUAL-BUILD")
                     module = rootGroup
 
                     // Setup Artifactory connection
@@ -63,6 +63,11 @@ pipeline {
                         docker build -t php-base-laminas:${version} -t php-base-laminas:latest .
                         docker tag php-base-laminas:${version} ${containerRegistry}/php/php-base-laminas:${version}
                         docker tag php-base-laminas:latest ${containerRegistry}/php/php-base-laminas:latest
+
+                        docker build -t php-base-laminas:${version}-mongodb -t php-base-laminas:latest-mongodb . -f dockerfile-mongodb
+                        docker tag php-base-laminas:${version}-mongodb ${containerRegistry}/php/php-base-laminas:${version}-mongodb
+                        docker tag php-base-laminas:latest-mongodb ${containerRegistry}/php/php-base-laminas:latest-mongodb
+
                     """
                 }
                 script {
@@ -70,6 +75,10 @@ pipeline {
                     buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:${version}", 'docker-local'
                     buildInfo.append buildInfoTemp
                     buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:latest", 'docker-local'
+                    buildInfo.append buildInfoTemp
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:${version}-mongodb", 'docker-local'
+                    buildInfo.append buildInfoTemp
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:latest-mongodb", 'docker-local'
                     buildInfo.append buildInfoTemp
                 }
             }
