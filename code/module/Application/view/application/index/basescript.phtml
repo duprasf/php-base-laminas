@@ -9,28 +9,9 @@ function ready(fn) {
 	}
 }
 
-function ucfirst(str) {
-	str += '';
-	var f = str.charAt(0).toUpperCase();
-	return f + str.substr(1);
-}
-
-function dashToCamel(str, firstUpper) {
-    if(firstUpper == undefined) {
-        firstUpper = false;
-    }
-    str += '';
-    str = str.replace(/-([a-z])/gi, function(match) {
-        return match[1].toUpperCase();
-    });
-    if(firstUpper) {
-        var f = str.charAt(0).toUpperCase();
-        return f + str.substr(1);
-    }
-    else {
-        return str;
-    }
-}
+const camelToDash = str => str.replace(/([a-z])?([A-Z])/g, (match, p1,p2) => (p1?p1+'-':'')+p2.toLowerCase() );
+const dashToCamel = (str, useUcfirst) => useUcfirst?ucfirst(str.replace(/\-([a-z])/g, val => val.toUpperCase())) : str.replace(/\-([a-z])/g, val => val.toUpperCase());
+const ucfirst = str => str.charAt(0).toUpperCase()+str.substr(1);
 
 function in_array(needle, haystack, argStrict) {
 	var key = '',strict = !! argStrict;
@@ -577,4 +558,26 @@ function isIterable(obj) {
     return false;
   }
   return typeof obj[Symbol.iterator] === 'function';
+}
+
+/**
+ * Serialize all form data into an object
+ * @param {HTMLFormElement} form The form to serialize
+ * @returns {Object} The serialized form data
+ */
+function formToJson(form) {
+  // Create a new FormData object
+  const formData = new FormData(form);
+  // Create an object to hold the name/value pairs
+  const pairs = {};
+
+  // Add each name/value pair to the object
+  for (const [name, value] of formData) {
+      if(value.trim()) {
+        pairs[name] = value;
+      }
+  }
+
+  // Return the object
+  return pairs;
 }
