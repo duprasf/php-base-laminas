@@ -127,6 +127,7 @@ $return = [
             'url'=>View\Helper\Url::class,
             'url-with-lang'=>View\Helper\Url::class,
             'UrlHelper'=>View\Helper\Url::class,
+            'headScript'=>View\Helper\HeadScript::class,
         ],
         'invokables' => [
             'stripTags' => View\Helper\StripTags::class,
@@ -137,6 +138,7 @@ $return = [
             "getLangSwitchUrl" => Factory\View\Helper\GetLangSwitchUrlFactory::class,
             "completeMetadata" => Factory\View\Helper\CompleteMetadataFactory::class,
             View\Helper\Url::class => Factory\View\Helper\UrlFactory::class,
+            View\Helper\HeadScript::class => Factory\View\Helper\HeadScriptFactory::class,
         ],
     ],
     'view_manager' => [
