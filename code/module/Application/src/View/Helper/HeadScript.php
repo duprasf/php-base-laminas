@@ -28,7 +28,7 @@ class HeadScript extends OriginalHeadScript {
                 continue;
             }
 
-            if(isset($item->attributes['integrity'])) {
+            if(isset($item->attributes['integrity']) || !isset($item->attributes['src'])) {
                 continue;
             }
 
