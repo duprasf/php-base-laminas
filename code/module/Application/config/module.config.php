@@ -55,6 +55,7 @@ $return = [
         'aliases' => [
             'getTranslator' => Controller\Plugin\GetTranslator::class,
             'lang' => Controller\Plugin\Lang::class,
+            'getLang' => Controller\Plugin\Lang::class,
             'setApiResponseHeaders'=>Controller\Plugin\SetApiResponseHeaders::class,
             'setResponseHeaders'=>Controller\Plugin\SetApiResponseHeaders::class,
         ],

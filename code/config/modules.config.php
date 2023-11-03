@@ -58,4 +58,10 @@ $modules = array_merge([
     'TranslationExtractor',
 ], $apps, $extraModules);
 
+if(getenv('PHP_DEV_ENV') && isset($_GET['show_modules'])) {
+    print '<pre>';
+    var_dump($modules);
+    print '</pre>';
+}
+
 return $modules;

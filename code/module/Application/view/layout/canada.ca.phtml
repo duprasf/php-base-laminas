@@ -448,5 +448,9 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         <?endforeach;?>
         <?=$this->inlineScript();?>
         <!-- Custom Scripts End -->
+
+        <?if($this->useAdobeAnalytics || $this->useAdobeAnalyticsWithPersonalInformation):?>
+        <script>_satellite.pageBottom();</script>
+        <?endif;?>
     </body>
 </html>
