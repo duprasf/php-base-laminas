@@ -5,6 +5,7 @@ const terser = require('gulp-terser');
 const rename = require('gulp-rename');
 const sourcemaps = require('gulp-sourcemaps');
 const sri = require('gulp-sri');
+const plumber = require('gulp-plumber');
 const postcss = require('gulp-postcss');
 const cssImport = require('postcss-import');
 const partialImport = require('postcss-partial-import');
@@ -25,6 +26,7 @@ function js() {
     fs.readdirSync("apps/").forEach(folder => {
         if(fs.lstatSync("apps/"+folder).isDirectory() && fs.existsSync('apps/'+folder+'/source/js')) {
             src('apps/'+folder+'/source/js/*.js',{ sourcemaps: true })
+                .pipe(plumber()) // error handling
                 .pipe(sourcemaps.init())
                 .pipe(concat('scripts.js'))
                 .pipe(sourcemaps.write())

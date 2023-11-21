@@ -21,6 +21,7 @@
     "gulp-terser": "*",
     "gulp-sourcemaps": "*",
     "gulp-sri": "*",
+    "gulp-plumber": "*",
     "postcss": "*",
     "postcss-cli": "*",
     "postcss-import": "*",
