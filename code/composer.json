@@ -6,17 +6,16 @@
     "keywords": [
     ],
     "require": {
-        "laminas/laminas-component-installer": ">2.4",
-        "laminas/laminas-development-mode": ">3.2",
-        "laminas/laminas-mvc": ">3.1.1",
-        "laminas/laminas-log": ">2.13.1",
-        "laminas/laminas-cli": ">1.1",
-        "laminas/laminas-mvc-i18n": ">1.2.0",
-        "laminas/laminas-mvc-plugins": ">1.1.0",
-        "laminas/laminas-session": ">2.10.0",
-        "laminas/laminas-di": ">3.2.2",
-        "laminas/laminas-loader": ">2.7",
-        "laminas/laminas-ldap": "^2.17",
+        "laminas/laminas-component-installer": "*",
+        "laminas/laminas-development-mode": "*",
+        "laminas/laminas-mvc": "*",
+        "laminas/laminas-cli": "*",
+        "laminas/laminas-mvc-i18n": "*",
+        "laminas/laminas-mvc-plugins": "*",
+        "laminas/laminas-session": "*",
+        "laminas/laminas-di": "*",
+        "laminas/laminas-loader": "*",
+        "laminas/laminas-ldap": "*",
         "laminas/laminas-crypt": "*"
     },
     "autoload": {

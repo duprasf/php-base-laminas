@@ -13,7 +13,7 @@ pipeline {
     }
     environment {
         containerRegistry = 'jack.hc-sc.gc.ca'
-        containerRegistryPull = 'jack.hc-sc.gc.ca'
+        version = "b" + (env.BUILD_ID ? env.BUILD_ID : "MANUAL-BUILD")
     }
 
     stages {
@@ -24,16 +24,6 @@ pipeline {
                 // We need to explicitly checkout from SCM here
                 checkout scm
                 script {
-
-                    def properties = readProperties  file: 'appmeta.properties'
-
-                    //Get basic meta-data
-                    rootGroup = properties.root_group
-                    rootVersion = properties.root_version
-                    buildId = env.BUILD_ID
-                    version = rootVersion + "b" + (buildId ? buildId : "MANUAL-BUILD")
-                    module = rootGroup
-
                     // Setup Artifactory connection
                     artifactoryServer = Artifactory.server 'default'
                     artifactoryGradle = Artifactory.newGradleBuild()
@@ -45,38 +35,55 @@ pipeline {
 
         stage('Docker Image') {
             when {
-                expression {
-                    BRANCH_NAME == 'master'
-                }
+                branch 'master'
             }
             steps {
-                sh 'rm -rf ./docker/code'
-                sh 'cp -r ./code ./docker'
-
                 withCredentials([
                     usernamePassword(credentialsId:'ARTIFACTORY_PUBLISH', usernameVariable: 'USR', passwordVariable: 'PWD')
                 ]) {
                     sh """
-                        docker login -u ${USR} -p ${PWD} ${
-                            containerRegistry
-                        }
-                        docker build -t php-base-laminas:${version} -t php-base-laminas:latest .
-                        docker tag php-base-laminas:${version} ${containerRegistry}/php/php-base-laminas:${version}
+                        docker login -u ${USR} -p ${PWD} ${containerRegistry}
+
+                        docker build --pull -t php-base-laminas:8.2${version} -t php-base-laminas:82 -f dockerfile82 .
+                        docker tag php-base-laminas:8.2${version} ${containerRegistry}/php/php-base-laminas:8.2${version}
+                        docker tag php-base-laminas:8.2${version} ${containerRegistry}/php/php-base-laminas:8.2
+
+                        docker build --pull -t php-base-laminas:8.3${version} -t php-base-laminas:83 -t php-base-laminas:latest -f dockerfile83 .
+                        docker tag php-base-laminas:8.3${version} ${containerRegistry}/php/php-base-laminas:8.3${version}
+                        docker tag php-base-laminas:8.3 ${containerRegistry}/php/php-base-laminas:8.3
                         docker tag php-base-laminas:latest ${containerRegistry}/php/php-base-laminas:latest
 
-                        docker build -t php-base-laminas:${version}-mongodb -t php-base-laminas:latest-mongodb . -f dockerfile-mongodb
-                        docker tag php-base-laminas:${version}-mongodb ${containerRegistry}/php/php-base-laminas:${version}-mongodb
-                        docker tag php-base-laminas:latest-mongodb ${containerRegistry}/php/php-base-laminas:latest-mongodb
+                        docker build --pull -t php-base-laminas:8.2${version}-mongodb -t php-base-laminas:82-mongodb -f dockerfile82-mongodb .
+                        docker tag php-base-laminas:8.2${version}-mongodb ${containerRegistry}/php/php-base-laminas:8.2${version}-mongodb
+                        docker tag php-base-laminas:8.2${version}-mongodb ${containerRegistry}/php/php-base-laminas:8.2-mongodb
 
+                        docker build --pull -t php-base-laminas:8.3${version}-mongodb -t php-base-laminas:83-mongodb -t php-base-laminas:latest-mongodb -f dockerfile83-mongodb .
+                        docker tag php-base-laminas:8.3${version}-mongodb ${containerRegistry}/php/php-base-laminas:8.3${version}-mongodb
+                        docker tag php-base-laminas:8.3-mongodb ${containerRegistry}/php/php-base-laminas:8.3-mongodb
+                        docker tag php-base-laminas:latest-mongodb ${containerRegistry}/php/php-base-laminas:latest-mongodb
                     """
                 }
                 script {
                     def buildInfoTemp
-                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:${version}", 'docker-local'
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.2", 'docker-local'
                     buildInfo.append buildInfoTemp
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.2${version}", 'docker-local'
+                    buildInfo.append buildInfoTemp
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.2-mongodb", 'docker-local'
+                    buildInfo.append buildInfoTemp
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.2${version}-mongodb", 'docker-local'
+                    buildInfo.append buildInfoTemp
+
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.3", 'docker-local'
+                    buildInfo.append buildInfoTemp
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.3${version}", 'docker-local'
+                    buildInfo.append buildInfoTemp
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.3-mongodb", 'docker-local'
+                    buildInfo.append buildInfoTemp
+                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.3${version}-mongodb", 'docker-local'
+                    buildInfo.append buildInfoTemp
+
                     buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:latest", 'docker-local'
-                    buildInfo.append buildInfoTemp
-                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:${version}-mongodb", 'docker-local'
                     buildInfo.append buildInfoTemp
                     buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:latest-mongodb", 'docker-local'
                     buildInfo.append buildInfoTemp
@@ -113,7 +120,7 @@ pipeline {
             script {
                 jiraIssueSelector(issueSelector: [$class: 'DefaultIssueSelector'])
                         .each {
-                    id -> jiraComment body: "*Build Result ${resultString}* Module: ${module} appmeta: ${version} [Details|${env.BUILD_URL}]", issueKey: id
+                    id -> jiraComment body: "*Build Result ${resultString}* appmeta: ${version} [Details|${env.BUILD_URL}]", issueKey: id
                 }
             }
         }

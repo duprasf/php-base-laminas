@@ -1,6 +1,6 @@
-FROM jack.hc-sc.gc.ca/php/php-base:latest
+FROM jack.hc-sc.gc.ca/php/php-base:82-mongodb
 # when local
-#FROM php-base:latest
+#FROM php-base:latest-mongodb
 
 LABEL title = 'Laminas framework with npm/gulp. Apps going in /apps/'
 LABEL author = 'Web/Mobile Team (imsd.web-dsgi@hc-sc.gc.ca)'
