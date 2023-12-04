@@ -12,8 +12,8 @@ pipeline {
         skipDefaultCheckout(true)
     }
     environment {
-        containerRegistry = 'jack.hc-sc.gc.ca'
-        version = "b" + (env.BUILD_ID ? env.BUILD_ID : "MANUAL-BUILD")
+        containerRegistry='jack.hc-sc.gc.ca'
+        version="b" + (buildId ? buildId : "MANUAL-BUILD")
     }
 
     stages {
