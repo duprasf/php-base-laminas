@@ -44,20 +44,20 @@ pipeline {
                     sh """
                         docker login -u ${USR} -p ${PWD} ${containerRegistry}
 
-                        docker build --pull -t php-base-laminas:8.2${version} -t php-base-laminas:82 -f dockerfile82 .
+                        docker build --pull -t php-base-laminas:8.2${version} -t php-base-laminas:8.2 -f dockerfile82 .
+                        docker tag php-base-laminas:8.2 ${containerRegistry}/php/php-base-laminas:8.2
                         docker tag php-base-laminas:8.2${version} ${containerRegistry}/php/php-base-laminas:8.2${version}
-                        docker tag php-base-laminas:8.2${version} ${containerRegistry}/php/php-base-laminas:8.2
 
-                        docker build --pull -t php-base-laminas:8.3${version} -t php-base-laminas:83 -t php-base-laminas:latest -f dockerfile83 .
-                        docker tag php-base-laminas:8.3${version} ${containerRegistry}/php/php-base-laminas:8.3${version}
+                        docker build --pull -t php-base-laminas:8.3${version} -t php-base-laminas:8.3 -t php-base-laminas:latest -f dockerfile83 .
                         docker tag php-base-laminas:8.3 ${containerRegistry}/php/php-base-laminas:8.3
+                        docker tag php-base-laminas:8.3${version} ${containerRegistry}/php/php-base-laminas:8.3${version}
                         docker tag php-base-laminas:latest ${containerRegistry}/php/php-base-laminas:latest
 
-                        docker build --pull -t php-base-laminas:8.2${version}-mongodb -t php-base-laminas:82-mongodb -f dockerfile82-mongodb .
+                        docker build --pull -t php-base-laminas:8.2${version}-mongodb -t php-base-laminas:8.2-mongodb -f dockerfile82-mongodb .
+                        docker tag php-base-laminas:8.2-mongodb ${containerRegistry}/php/php-base-laminas:8.2-mongodb
                         docker tag php-base-laminas:8.2${version}-mongodb ${containerRegistry}/php/php-base-laminas:8.2${version}-mongodb
-                        docker tag php-base-laminas:8.2${version}-mongodb ${containerRegistry}/php/php-base-laminas:8.2-mongodb
 
-                        docker build --pull -t php-base-laminas:8.3${version}-mongodb -t php-base-laminas:83-mongodb -t php-base-laminas:latest-mongodb -f dockerfile83-mongodb .
+                        docker build --pull -t php-base-laminas:8.3${version}-mongodb -t php-base-laminas:8.3-mongodb -t php-base-laminas:latest-mongodb -f dockerfile83-mongodb .
                         docker tag php-base-laminas:8.3${version}-mongodb ${containerRegistry}/php/php-base-laminas:8.3${version}-mongodb
                         docker tag php-base-laminas:8.3-mongodb ${containerRegistry}/php/php-base-laminas:8.3-mongodb
                         docker tag php-base-laminas:latest-mongodb ${containerRegistry}/php/php-base-laminas:latest-mongodb
