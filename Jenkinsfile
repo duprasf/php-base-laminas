@@ -13,7 +13,6 @@ pipeline {
     }
     environment {
         containerRegistry='jack.hc-sc.gc.ca'
-        version="b" + (buildId ? buildId : "MANUAL-BUILD")
     }
 
     stages {
@@ -24,6 +23,8 @@ pipeline {
                 // We need to explicitly checkout from SCM here
                 checkout scm
                 script {
+                    version="b" + (buildId ? buildId : "MANUAL-BUILD")
+
                     // Setup Artifactory connection
                     artifactoryServer = Artifactory.server 'default'
                     artifactoryGradle = Artifactory.newGradleBuild()
