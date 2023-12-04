@@ -1,4 +1,4 @@
-FROM jack.hc-sc.gc.ca/php/php-base:83-mongodb
+FROM jack.hc-sc.gc.ca/php/php-base:8.3-mongodb
 # when local
 #FROM php-base:latest-mongodb
 
