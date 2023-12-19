@@ -8,6 +8,7 @@
     "require": {
         "laminas/laminas-component-installer": "*",
         "laminas/laminas-development-mode": "*",
+        "laminas/laminas-log": "*",
         "laminas/laminas-mvc": "*",
         "laminas/laminas-cli": "*",
         "laminas/laminas-mvc-i18n": "*",
