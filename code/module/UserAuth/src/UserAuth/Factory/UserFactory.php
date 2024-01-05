@@ -39,6 +39,12 @@ class UserFactory implements FactoryInterface
         if($container->has('user-parent-db') && method_exists($obj, 'setParentDb')) {
             $obj->setParentDb($container->get('user-parent-db'));
         }
+        if($container->has('user-pdo') && method_exists($obj, 'setUserDb')) {
+            $obj->setUserDb($container->get('user-pdo'));
+        }
+        if($container->has('user-mongodb') && method_exists($obj, 'setUserMongoDb')) {
+            $obj->setUserDb($container->get('user-mongodb'));
+        }
 
         if(method_exists($obj, 'setUrlPlugin')) {
             $obj->setUrlPlugin($container->get('router'));
@@ -52,6 +58,13 @@ class UserFactory implements FactoryInterface
         }
         if($container->has('user-auth-default-user-status') && method_exists($obj, 'setDefaultValues')) {
             $obj->setDefaultValues('status', $container->get('user-auth-default-user-status'));
+        }
+        if($container->has('user-auth-token-ttl') && method_exists($obj, 'setTimeToLive')) {
+            $obj->setTimeToLive($container->get('user-auth-token-ttl'));
+        }
+
+        if($container->has('lang') && method_exists($obj, 'setLang')) {
+            $obj->setLang($container->get('lang'));
         }
 
         $obj->setJwtObj($container->get(JWT::class));

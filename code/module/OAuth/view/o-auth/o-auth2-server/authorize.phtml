@@ -54,7 +54,7 @@ function init(e) {
 }
 function grant(e) {
     e.preventDefault();
-    if(laminas.user.isLoggedIn) {
+    if(laminas.user.isLoggedIn()) {
         console.log(laminas.user.getJwt());
     }
     let grant = document.getElementById('grant-panel');

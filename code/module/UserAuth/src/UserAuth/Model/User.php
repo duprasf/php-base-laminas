@@ -18,6 +18,17 @@ abstract class User extends \ArrayObject implements UserInterface
     */
     protected const ID_FIELD = 'email';
 
+    protected $gcNotifyObj;
+    public function setGcNotify(GcNotify $obj) : self
+    {
+        $this->gcNotifyObj = $obj;
+        return $this;
+    }
+    protected function getGcNotify()
+    {
+        return $this->gcNotifyObj;
+    }
+
     /**
     * This is the JWT object that is use when the app is using an API
     *

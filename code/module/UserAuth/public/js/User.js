@@ -6,15 +6,8 @@ class User {
         useSessionTimeout: true
     }
 
-    /**
-    * @return bool, true if logged in and false if not logged in or if the JWT expired
-    */
-    get isLoggedIn() {
-        if(!this.getJwt()) {
-            return false;
-        }
-        let payload = this.getJwtPayload();
-        return payload.exp > (Date.now()/1000);
+    get loggedIn() {
+        return this.isLoggedIn();
     }
     get userId() {
         let payload = this.getJwtPayload();
@@ -45,14 +38,27 @@ class User {
             time = 100;
             this.jwtTimeout = setTimeout(this.jwtExpired.bind(this), time);
         } else {
+            /*
             Session.getSession({
                 expireAt: payload.exp*1000,
                 continueSessionCallback: this.renewSession.bind(this),
                 logoutEvent: this.logout.bind(this)
             });
+            /**/
         }
 
         // (the same timeout is set when a user is logged in and timeout ends on logout)
+    }
+
+    /**
+    * @return bool, true if logged in and false if not logged in or if the JWT expired
+    */
+    isLoggedIn() {
+        if(!this.getJwt()) {
+            return false;
+        }
+        let payload = this.getJwtPayload();
+        return payload.exp > (Date.now()/1000);
     }
 
     handleLogin(jwt, remember) {
@@ -88,11 +94,13 @@ class User {
 
     startSession() {
         let payload = this.getJwtPayload();
+        /*
         Session.getSession({
             expireAt: payload.exp*1000,
             continueSessionCallback: this.renewSession.bind(this),
             logoutEvent: this.logout.bind(this)
         });
+        /**/
     }
 
     renewSession() {
