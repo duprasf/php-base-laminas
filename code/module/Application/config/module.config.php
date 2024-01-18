@@ -118,6 +118,12 @@ $return = [
             },
             "GcNotify"=>Factory\GcNotifyFactory::class,
             'metadataBuilder' => Factory\MetadataBuilderFactory::class,
+            "filesize-suffixes"=>function($sm) {
+                $sz = 'BKMGTPEZYXSD';
+                $extraLetter = $sm->get('lang') == 'fr' ? 'o' : 'B';
+                $array = str_split($sz);
+                return array_map(function($v) use ($extraLetter) { return $v.$extraLetter;}, $array);
+            },
         ],
         'invokables' => [
             'breadcrumbs' => Model\Breadcrumbs::class,
