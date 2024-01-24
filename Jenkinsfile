@@ -102,7 +102,7 @@ pipeline {
         }
         success {
             script {
-                resultString = "Success ☼"
+                resultString = "Success 🌞"
             }
         }
         unstable {

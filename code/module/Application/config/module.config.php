@@ -62,68 +62,12 @@ $return = [
     ],
     'service_manager' => [
         'factories' => [
-            'lang'=>function($sm) {
-                $route = $sm->get('router')->match($sm->get('Request'));
-                $lang  = $route ? ($route->getParam('locale', 'en') ?: $route->getParam('lang', 'en')) : 'en';
-                return $lang;
-            },
-            'domain'=>function($sm) {
-                return $sm->get('Request')->getHeaders('host')->getFieldValue();
-            },
-            SessionManager::class => function ($container) {
-                $config = $container->get('config');
-                if (! isset($config['session'])) {
-                    $sessionManager = new SessionManager();
-                    Container::setDefaultManager($sessionManager);
-                    return $sessionManager;
-                }
-
-                $session = $config['session'];
-
-                $sessionConfig = null;
-                if (isset($session['config'])) {
-                    $class = isset($session['config']['class'])
-                        ?  $session['config']['class']
-                        : SessionConfig::class;
-
-                    $options = isset($session['config']['options'])
-                        ?  $session['config']['options']
-                        : [];
-
-                    $sessionConfig = new $class();
-                    $sessionConfig->setOptions($options);
-                }
-
-                $sessionStorage = null;
-                if (isset($session['storage'])) {
-                    $class = $session['storage'];
-                    $sessionStorage = new $class();
-                }
-
-                $sessionSaveHandler = null;
-                if (isset($session['save_handler'])) {
-                    // class should be fetched from service manager
-                    // since it will require constructor arguments
-                    $sessionSaveHandler = $container->get($session['save_handler']);
-                }
-
-                $sessionManager = new SessionManager(
-                    $sessionConfig,
-                    $sessionStorage,
-                    $sessionSaveHandler
-                );
-
-                Container::setDefaultManager($sessionManager);
-                return $sessionManager;
-            },
+            'lang'=>Factory\LangFactory::class,
+            'domain'=>Factory\DomainFactory::class,
+            SessionManager::class => Factory\SessionManagerFactory::class,
             "GcNotify"=>Factory\GcNotifyFactory::class,
             'metadataBuilder' => Factory\MetadataBuilderFactory::class,
-            "filesize-suffixes"=>function($sm) {
-                $sz = 'BKMGTPEZYXSD';
-                $extraLetter = $sm->get('lang') == 'fr' ? 'o' : 'B';
-                $array = str_split($sz);
-                return array_map(function($v) use ($extraLetter) { return $v.$extraLetter;}, $array);
-            },
+            "filesize-suffixes"=>Factory\FilesizeSuffixesFactory::class,
         ],
         'invokables' => [
             'breadcrumbs' => Model\Breadcrumbs::class,
