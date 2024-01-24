@@ -33,6 +33,44 @@ function in_array(needle, haystack, argStrict) {
 	return false;
 }
 
+/**
+* Load a javascript file dynamically
+*/
+function loadJs (src, integrity) {
+    var js = document.createElement("script");
+    js.src = src;
+    if(integrity) {
+        js.integrity = integrity;
+        js.crossorigin="anonymous";
+    }
+    // js.setAttribute("async", "");
+
+    //js.onload = () => alert("JS loaded ");
+    js.onerror = e => console.error("Error loading JS "+src+' '+e);
+
+    document.head.appendChild(js);
+}
+
+/**
+* Load a CSS stylesheet file dynamically
+*/
+function loadCss(src, integrity) { return loadStylesheet(src, integrity); }
+function loadStylesheet(src, integrity) {
+    let tag = document.createElement("link");
+    tag.href = src;
+    tag.rel = "stylesheet";
+    if(integrity) {
+        tag.integrity = integrity;
+        tag.crossorigin="anonymous";
+    }
+
+    //tag.onload = () => alert("Stylesheet loaded ");
+    tag.onerror = e => console.error("Error loading Stylesheet "+src+' '+e);
+
+    document.head.appendChild(tag);
+}
+
+
 //Array.prototype.forEach
 var $foreach = function(elements, callback) { Array.prototype.forEach.call(elements, callback); }
 
