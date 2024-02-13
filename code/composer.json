@@ -17,7 +17,8 @@
         "laminas/laminas-di": "*",
         "laminas/laminas-loader": "*",
         "laminas/laminas-ldap": "*",
-        "laminas/laminas-crypt": "*"
+        "laminas/laminas-crypt": "*",
+        "dompdf/dompdf": "*"
     },
     "autoload": {
         "psr-4": {

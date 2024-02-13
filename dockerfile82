@@ -4,13 +4,13 @@ LABEL title = 'Laminas framework with npm/gulp. Apps going in /apps/'
 LABEL author = 'Web/Mobile Team (imsd.web-dsgi@hc-sc.gc.ca)'
 LABEL source = 'https://github.hc-sc.gc.ca/hs/php-base-laminas'
 
-# update the OS and install common modules
-RUN apt-get update -y
+RUN set -uex;
 
-RUN set -uex; \
+# update the OS and install common modules
+RUN apt-get update -y; \
     apt-get install -y ca-certificates curl gnupg; \
-    mkdir -p /etc/apt/keyrings; \
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+    mkdir -p /etc/apt/keyrings;
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
      | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg;
 
 RUN NODE_MAJOR=18; \
