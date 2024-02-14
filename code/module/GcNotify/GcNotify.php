@@ -29,7 +29,8 @@ class GcNotify {
     public function setApiKey(String $key)
     {
         $this->apiKey=$key;
-        $this->apiSecretKey = $this->extractApiKey($key);
+        // The long key is now required, it used to not work, now it is required...
+        $this->apiSecretKey = $key;//$this->extractApiKey($key);
         return $this;
     }
 
