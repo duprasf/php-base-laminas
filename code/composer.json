@@ -20,6 +20,10 @@
         "laminas/laminas-crypt": "*",
         "dompdf/dompdf": "*"
     },
+    "require-dev": {
+        "laminas/laminas-test": "*",
+        "phpunit/phpunit": "*"
+    },
     "autoload": {
         "psr-4": {
             "Application\\": "module/Application/src/",
@@ -29,7 +33,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ApplicationTest\\": "module/Application/test/"
+            "ApplicationTest\\": "module/Application/test/",
+            "ActiveDirectoryTest\\": "module/ActiveDirectory/test/"
         }
     },
     "scripts": {

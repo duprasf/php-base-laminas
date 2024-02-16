@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" colors="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd" cacheDirectory=".phpunit.cache">
+  <testsuites>
+    <testsuite name="Application (Laminas)">
+      <directory>module/Application/test</directory>
+    </testsuite>
+    <testsuite name="ActiveDirectory (Laminas)">
+      <directory>module/ActiveDirectory/test</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>
