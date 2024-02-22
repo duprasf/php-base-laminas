@@ -50,10 +50,13 @@ $return = [
         ],
         'factories' => [
             Controller\Plugin\GetTranslator::class=>Factory\Controller\Plugin\GetTranslatorFactory::class,
+            Controller\Plugin\GetUrlHelper::class=>Factory\Controller\Plugin\GetUrlHelperFactory::class,
             Controller\Plugin\Lang::class=>Factory\Controller\Plugin\LangFactory::class,
         ],
         'aliases' => [
             'getTranslator' => Controller\Plugin\GetTranslator::class,
+            'getUrlHelper' => Controller\Plugin\GetUrlHelper::class,
+            'url' => Controller\Plugin\GetUrl::class,
             'lang' => Controller\Plugin\Lang::class,
             'getLang' => Controller\Plugin\Lang::class,
             'setApiResponseHeaders'=>Controller\Plugin\SetApiResponseHeaders::class,
