@@ -69,31 +69,6 @@ class DbUser extends User implements UserInterface, \ArrayAccess
     }
 
     /**
-    * @var array
-    * @internal
-    */
-    private $gcNotifyData;
-    /**
-    * set the data used when sending email using GC Notify (used for confirming email and resetting password)
-    *
-    * @param array $data
-    * @return DbUser
-    * @throws \Exception thrown if the data is missing mandatory information (api-key, confirm-email-template and reset-password-template)
-    */
-    public function setGcNotifyData(array $data)
-    {
-        if(!isset($data['api-key']) || !isset($data['confirm-email-template']) || !isset($data['reset-password-template'])) {
-            throw new \Exception('missing GC Notify information');
-        }
-        $this->gcNotifyData = $data;
-        return $this;
-    }
-    protected function getGcNotifyData()
-    {
-        return $this->gcNotifyData;
-    }
-
-    /**
     * @var UrlPlugin
     * @internal
     */
@@ -317,15 +292,13 @@ class DbUser extends User implements UserInterface, \ArrayAccess
 
             // generate a token to be used to validate the email
             $token = $this->generateToken($data['userId'], self::TOKEN_TYPE_CONFIRM_EMAIL, self::TOKEN_TTL_CONFIRM_EMAIL);
-            $notifyData = $this->getGcNotifyData();
             $result = $notify->sendEmail(
                 $data['email'],
-                $notifyData['confirm-email-template'],
+                'confirm-email-template',
                 [
                     'url-en'=>$this->url()->assemble(['locale'=>'en','token'=>$token,], ['name'=>'user/confirm-email','force_canonical' => true,]),
                     'url-fr'=>$this->url()->assemble(['locale'=>'fr','token'=>$token,], ['name'=>'user/confirm-email','force_canonical' => true,]),
-                ],
-                $notifyData['api-key']
+                ]
             );
 
             // if there was no errors, commit all change to the DB
@@ -384,17 +357,15 @@ class DbUser extends User implements UserInterface, \ArrayAccess
             throw new \Exception('Unknow error, could not get token');
         }
 
-        $notifyData = $this->getGcNotifyData();
         $result = $notify->sendEmail(
             $data['email'],
-            $notifyData['reset-password-template'],
+            'reset-password-template',
             [
                 'appName-en'=>'Health Canada auth service',
                 'appName-fr'=>"Service d'identification de Santé Canada",
                 'reset-link-en'=>$this->url()->assemble(['locale'=>'en','token'=>$token,], ['name'=>'user/reset-password/handle','force_canonical' => true,]),
                 'reset-link-fr'=>$this->url()->assemble(['locale'=>'fr','token'=>$token,], ['name'=>'user/reset-password/handle','force_canonical' => true,]),
-            ],
-            $notifyData['api-key']
+            ]
         );
         if(!$result) {
             return self::VERIFICATION_COULD_NOT_SEND;

@@ -24,7 +24,7 @@ abstract class User extends \ArrayObject implements UserInterface
         $this->gcNotifyObj = $obj;
         return $this;
     }
-    protected function getGcNotify()
+    public function getGcNotify()
     {
         return $this->gcNotifyObj;
     }

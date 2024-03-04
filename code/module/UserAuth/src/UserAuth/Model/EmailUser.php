@@ -33,43 +33,6 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     protected const TOKEN_TTL_CONFIRM_EMAIL = 7200;
 
     /**
-    * @var array
-    * @internal
-    */
-    private $gcNotifyData;
-    /**
-    * set the data used when sending email using GC Notify (used for confirming email and resetting password)
-    *
-    * @param array $data
-    * @return DbUser
-    * @throws \Exception thrown if the data is missing mandatory information (api-key, confirm-email-template and reset-password-template)
-    */
-    public function setGcNotifyData(array $data)
-    {
-        if(!isset($data['api-key']) || !isset($data['login-email-template'])) {
-            throw new \Exception('missing GC Notify information');
-        }
-        $this->gcNotifyData = $data;
-        return $this;
-    }
-    protected function getGcNotifyData()
-    {
-        return $this->gcNotifyData;
-    }
-
-    private $gcNotify;
-    public function setGcNotify(GcNotify $obj) : self
-    {
-        $this->gcNotify = $obj;
-        return $this;
-    }
-    protected function getGcNotify()
-    {
-        return $this->gcNotify;
-    }
-
-
-    /**
     * @var UrlPlugin
     * @internal
     */
@@ -152,7 +115,7 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     }
 
     protected $lang;
-    public function setlang(String $lang)
+    public function setlang(string $lang)
     {
         $this->lang=$lang;
         return $this;
@@ -166,13 +129,13 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     * Authenticate/login a user using a database. This particular implementation would use a central
     * DB for user and each app could have a user param, that's why it uses a parentDb for authenticating
     *
-    * @param String $email
-    * @param String $password
+    * @param string $email
+    * @param string $password
     * @return bool, true if successful false otherwise
     * @throws UserAuth\Exception\InvalidCredentialsException In this implementation, throw exception when credentials are incorrect
     * @throws UserAuth\Exception\UserException this is thrown when no "parentDb" is defined.
     */
-    public function authenticate(String $email, String $password) : bool
+    public function authenticate(string $email, string $password) : bool
     {
         // signal that the login process will start
         $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN.'.pre', $this, ['email'=>$email]);
@@ -207,10 +170,14 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
             $pdo->commit();
         } catch (\Exception $e) {
             $pdo->rollback();
-            return false;
+            throw $e;
         }
         // sending the email.
         $notify = $this->getGcNotify();
+
+        if(!$notify || !$notify->readyToSend()) {
+            throw new MissingComponentException('GcNotify object is not present or not configure correctly');
+        }
 
         $notify(
             $email,
@@ -218,7 +185,7 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
             [
                 'appName'=>$this->getTranslator()->translate('Employee Directory'),
                 'URL'=>$this->url()->assemble(
-                    ['locale'=>'en','token'=>$token,],
+                    ['locale'=>$this->getLang(),'token'=>$token,],
                     ['name'=>'locale/directory/login/validate','force_canonical' => true,]
                 ),
             ]
@@ -229,13 +196,13 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     /**
     * Load a user from the JWT. The expiry time of the JWT should be checked before allowing this.
     *
-    * @param String $jwt the JavaScript Web Token received from the client
+    * @param string $jwt the JavaScript Web Token received from the client
     * @return bool, true if successful false otherwise
     * @throws UserAuth\Exception\JwtException If the token is null or invalid
     * @throws UserAuth\Exception\JwtExpiredException If the token is expired
     * @throws UserAuth\Exception\UserException if the ID field is not set in the JWT
     */
-    public function loadFromJwt(?String $jwt) : bool
+    public function loadFromJwt(?string $jwt) : bool
     {
         if($jwt == null) {
             throw new JwtException('JWT is null');
@@ -289,15 +256,15 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     /**
     * Register a new user, create a DB entry and send email (depending on config)
     *
-    * @param String $email
-    * @param String $password
+    * @param string $email
+    * @param string $password
     * @param GcNotify $notify if sending email is required
     * @return int status from DbUser::VERIFICATION_*
     * @throws InvalidPassword thrown if the password does not respect all rules, see getLastPasswordErrors()
     * @throws UserException thrown if the GcNotify object is not set and an email verification is required
     * @see getLastPasswordErrors
     */
-    public function register(String $email, String $password, String $confirmPassword, ?GcNotify $notify)
+    public function register(string $email, string $password, string $confirmPassword, ?GcNotify $notify=null)
     {
         throw new UserException('cannot call '.__METHOD__.' for user of type EmailUser');
     }
@@ -305,13 +272,13 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     /**
     * request the reset of a password, this will send an email to registrered user with a reset link
     *
-    * @param String $email email of the registered user that needs to reset their password
+    * @param string $email email of the registered user that needs to reset their password
     * @param GcNotify $notify
-    * @return String|int the token send by email or DbUser::VERIFICATION_COULD_NOT_SEND if email could not be sent
+    * @return string|int the token send by email or DbUser::VERIFICATION_COULD_NOT_SEND if email could not be sent
     * @throws UserException thrown if the GcNotify object is not set and an email verification is required
     * @throws UserException thrown when the email is not in the DB
     */
-    public function requestResetPassword(String $email, GcNotify $notify)
+    public function requestResetPassword(string $email, GcNotify $notify)
     {
         throw new UserException('cannot call '.__METHOD__.' for user of type EmailUser');
     }
@@ -325,7 +292,7 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     * @throws UserException When token is invalid
     * @throws UserException Without parentDb
     */
-    public function resetPassword(String $token, String $password, String $confirm)
+    public function resetPassword(string $token, string $password, string $confirm)
     {
         throw new UserException('cannot call '.__METHOD__.' for user of type EmailUser');
     }
@@ -333,12 +300,12 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     /**
     * Called when a user changes his/her password. They must provide the current password
     *
-    * @param String $email
-    * @param String $existingPassword
-    * @param String $newPassword
-    * @param String $confirmPassword
+    * @param string $email
+    * @param string $existingPassword
+    * @param string $newPassword
+    * @param string $confirmPassword
     */
-    public function changePassword(String $email, String $existingPassword, String $newPassword, String $confirmPassword)
+    public function changePassword(string $email, string $existingPassword, string $newPassword, string $confirmPassword)
     {
         throw new UserException('cannot call '.__METHOD__.' for user of type EmailUser');
     }
@@ -346,12 +313,12 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     /**
     * When a user click on the link sent to verify email
     *
-    * @param String $token
+    * @param string $token
     * @throws UserException
     * @throws UserConfirmException
     * @throws \Exception
     */
-    public function handleVerifyEmailToken(String $token)
+    public function handleVerifyEmailToken(string $token)
     {
         $pdo = $this->getUserDb();
         if(!$pdo) {
@@ -384,10 +351,10 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     /**
     * Delete a token once it was used
     *
-    * @param String $token
+    * @param string $token
     * @return bool true if something was delete false otherwise
     */
-    protected function removeToken(String $token)
+    protected function removeToken(string $token)
     {
         $pdo = $this->getUserDb();
         if(!$pdo) {

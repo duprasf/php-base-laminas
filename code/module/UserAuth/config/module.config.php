@@ -133,7 +133,12 @@ return [
         ],
     ],
     'controller_plugins' => [
+        'invokables'=>[
+            'corsSetResponseHeaders' => Controller\Plugin\SetResponseHeaders::class,
+            'returnUserData' => Controller\Plugin\ReturnUserData::class,
+        ],
         'factories' => [
+
         ],
         'aliases' => [
         ],
@@ -146,6 +151,7 @@ return [
             Model\UserAudit::class => Factory\UserAuditFactory::class,
             Model\User::class => Factory\UserFactory::class,
             Model\EmailUser::class => Factory\UserFactory::class,
+            Model\FileEmailUser::class => Factory\UserFactory::class,
             Model\LdapUser::class => Factory\UserFactory::class,
             Model\JWT::class => Factory\JWTFactory::class,
         ],

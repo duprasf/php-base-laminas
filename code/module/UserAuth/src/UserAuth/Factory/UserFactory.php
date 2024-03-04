@@ -6,6 +6,7 @@ namespace UserAuth\Factory;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use GcNotify\GcNotify;
 use UserAuth\Model\User;
 use UserAuth\Model\UserAudit;
 use UserAuth\Model\UserInterface;
@@ -26,12 +27,11 @@ class UserFactory implements FactoryInterface
             $obj->setPasswordRules($container->get('user-auth-password-rules'));
         }
 
-        if($container->has('gc-notify-auth-system-key') && method_exists($obj, 'setGcNotifyData')) {
-            $obj->setGcNotifyData([
-                'api-key'=>$container->get('gc-notify-auth-system-key'),
-                'confirm-email-template'=>$container->get('gc-notify-auth-confirm-email'),
-                'reset-password-template'=>$container->get('gc-notify-auth-reset-password'),
-            ]);
+        $config = $container->get('config');
+        if(isset($config['gc-notify-config']['UserAuth']) && method_exists($obj, 'setGcNotify')) {
+            $notify = $container->get(GcNotify::class);
+            $notify->setConfig($config['gc-notify-config']['UserAuth']);
+            $obj->setGcNotify($notify);
         }
 
         $obj->setEventManager($container->get('EventManager'));

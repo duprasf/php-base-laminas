@@ -46,8 +46,11 @@ class User {
             });
             /**/
         }
-
         // (the same timeout is set when a user is logged in and timeout ends on logout)
+
+        ready(function(){
+            document.body.classList.add('isLoggedIn');
+        });
     }
 
     /**
@@ -82,7 +85,9 @@ class User {
             bubbles: true,
             detail: { },
         });
-        document.body.dispatchEvent(event);
+        ready(function(){
+            document.body.dispatchEvent(event);
+        });
     }
 
     logout() {
