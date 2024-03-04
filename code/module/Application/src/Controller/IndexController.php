@@ -90,5 +90,6 @@ class IndexController extends AbstractActionController
             ]);
         }
         $view->setVariable('breadcrumbItems', $breadcrumbItems);
+        return $view;
     }
 }

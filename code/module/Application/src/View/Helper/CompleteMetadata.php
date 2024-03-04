@@ -32,8 +32,10 @@ class CompleteMetadata implements \Laminas\View\Helper\HelperInterface
             try {
                 //$layout->setVariables($view->getVariables());
                 $metadata = $metadataBuilder->getFullMetadata($view->getVariable('metadata'));
+
                 $layout->setVariables($metadata);
                 $layout->setVariable('breadcrumbItems', $view->breadcrumbItems);
+
                 $layout->setVariable('cdts', $this->getCDTS());
                 if($view->getVariable('switch-lang-url')) {
                     $layout->setVariable('switch-lang-url', $view->getVariable('switch-lang-url'));

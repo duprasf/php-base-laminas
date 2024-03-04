@@ -56,7 +56,6 @@ $return = [
         'aliases' => [
             'getTranslator' => Controller\Plugin\GetTranslator::class,
             'getUrlHelper' => Controller\Plugin\GetUrlHelper::class,
-            'url' => Controller\Plugin\GetUrl::class,
             'lang' => Controller\Plugin\Lang::class,
             'getLang' => Controller\Plugin\Lang::class,
             'setApiResponseHeaders'=>Controller\Plugin\SetApiResponseHeaders::class,
@@ -64,11 +63,14 @@ $return = [
         ],
     ],
     'service_manager' => [
+        'aliases'=>[
+            "GcNotify"=>GcNotify::class,
+        ],
         'factories' => [
             'lang'=>Factory\LangFactory::class,
             'domain'=>Factory\DomainFactory::class,
             SessionManager::class => Factory\SessionManagerFactory::class,
-            "GcNotify"=>Factory\GcNotifyFactory::class,
+            GcNotify::class=>Factory\GcNotifyFactory::class,
             'metadataBuilder' => Factory\MetadataBuilderFactory::class,
             "filesize-suffixes"=>Factory\FilesizeSuffixesFactory::class,
         ],

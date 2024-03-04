@@ -1,4 +1,5 @@
 <?php
+
 namespace GcNotify;
 
 /**
@@ -10,7 +11,8 @@ namespace GcNotify;
 * @link https://notification.canada.ca/
 * @version 1.0
 */
-class GcNotify {
+class GcNotify
+{
     protected $lastPage;
     protected $lastStatus;
     protected $lastError;
@@ -18,7 +20,8 @@ class GcNotify {
     protected $port = 443;
 
     protected $errorReportingSecretKey = null;
-    public function setErrorReportingKey($key) {
+    public function setErrorReportingKey($key)
+    {
         preg_match('([0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$)', $key, $out);
         $this->errorReportingSecretKey = $out[0] ?? null;
         return $this;
@@ -26,44 +29,61 @@ class GcNotify {
 
     protected $apiKey = null;
     protected $apiSecretKey = null;
-    public function setApiKey(String $key)
+    public function setApiKey(string $key)
     {
-        $this->apiKey=$key;
+        $this->apiKey = $key;
         // The long key is now required, it used to not work, now it is required...
         $this->apiSecretKey = $key;//$this->extractApiKey($key);
         return $this;
     }
 
-    public function extractApiKey(String $api)
+    public function extractApiKey(string $api)
     {
         preg_match('([0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$)', $api, $out);
         return isset($out[0]) ? $out[0] : null;
     }
 
-    public function setBaseUrl($url) {
+    public function setBaseUrl($url)
+    {
         $this->baseUrl = $url;
         return $this;
     }
 
-    public function setPort($port) {
+    public function setPort($port)
+    {
         $this->port = $port;
         return $this;
     }
 
     protected $genericErrorTemplate;
-    public function setGenericErrorTemplate($template) {
+    public function setGenericErrorTemplate($template)
+    {
         $this->genericErrorTemplate = $template;
         return $this;
     }
 
     protected $genericErrorEmail;
-    public function setGenericErrorEmail($email) {
+    public function setGenericErrorEmail($email)
+    {
         $this->genericErrorEmail = $email;
         return $this;
     }
 
+    public function setConfig(array $config)
+    {
+        $keys=['appName', 'templates', 'apiKey'];
+        foreach($keys as $key) {
+            if(isset($config[$key])) {
+                call_user_func([$this, 'set'.ucfirst($key)], $config[$key]);
+            }
+        }
+        return $this;
+    }
+
+
     protected $appName;
-    public function setAppName($name) {
+    public function setAppName($name)
+    {
         $this->appName = $name;
         return $this;
     }
@@ -76,7 +96,7 @@ class GcNotify {
     protected $templates;
     public function setTemplates(array $templates)
     {
-        $this->templates=$templates;
+        $this->templates = $templates;
         return $this;
     }
     public function setTemplate($name, $id)
@@ -118,9 +138,9 @@ class GcNotify {
     public function __toString()
     {
         $data = array(
-            'error'=>$this->lastError,
-            'page'=>$this->lastPage,
-            'status'=>$this->lastStatus
+            'error' => $this->lastError,
+            'page' => $this->lastPage,
+            'status' => $this->lastStatus
         );
 
         return json_encode($data);
@@ -140,7 +160,7 @@ class GcNotify {
             return false;
         }
 
-        if($data[0] instanceOf \Exception) {
+        if($data[0] instanceof \Exception) {
             return $this->reportException(...$data);
         } else {
             return $this->sendEmail(...$data);
@@ -157,13 +177,13 @@ class GcNotify {
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function reportException(\Exception $e, ?String $appName=null, ?String $email = null)
+    public function reportException(\Exception $e, ?String $appName = null, ?String $email = null)
     {
         return $this->reportError([
-            'message'=>$e->getMessage(),
-            'file'=>$e->getFile(),
-            'line'=>$e->getLine(),
-            'app-name'=>$appName ?? $this->getAppName(),
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'app-name' => $appName ?? $this->getAppName(),
         ], $email, null, $this->errorReportingSecretKey);
     }
 
@@ -178,7 +198,7 @@ class GcNotify {
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function reportError(array $error, ?String $recipient=null, ?String $template=null, ?String $apiKey=null, ?array $personalisation=[])
+    public function reportError(array $error, ?String $recipient = null, ?String $template = null, ?String $apiKey = null, ?array $personalisation = [])
     {
         $data = [];
         if(!isset($error['message'])) {
@@ -214,7 +234,7 @@ class GcNotify {
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function sendEmail(String $recipient, String $templateId, ?array $personalisation=[], ?String $apiKey=null)
+    public function sendEmail(String $recipient, String $templateId, ?array $personalisation = [], ?String $apiKey = null)
     {
         $data = [];
         $data['template_id'] = $this->templates[$templateId] ?? $templateId;
@@ -274,5 +294,13 @@ class GcNotify {
         curl_close($ch);
 
         return $this->lastStatus >= 200 && $this->lastStatus <= 299;
+    }
+
+    public function readyToSend() : bool
+    {
+        if($this->apiKey && $this->baseUrl && count($this->templates)) {
+            return true;
+        }
+        return false;
     }
 }
