@@ -218,14 +218,13 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     * Load a user from the Session if the useSession is set to true in userConfig [default false]
     *
     * @return bool, true if successful false otherwise
-    * @throws UserAuth\Exception\UserException if the ID field is not set in the JWT
     */
     public function loadFromSession() : bool
     {
         $container = new Container('UserAuth');
 
         if(!isset($container[self::ID_FIELD])) {
-            throw new UserException('ID field ('.self::ID_FIELD.') does not exists in Session');
+            return false;
         }
         return $this->_loadUserById($container[self::ID_FIELD]);
     }
