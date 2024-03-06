@@ -161,6 +161,7 @@ class FileEmailUser extends EmailUser
     */
     public function register(string $email, string $password='', string $confirmPassword='', ?GcNotify $notify=null)
     {
+        $email = strtolower($email);
         // signal that the login process will start
         $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER.'.pre', $this, ['email'=>$email]);
 
@@ -201,7 +202,11 @@ class FileEmailUser extends EmailUser
             ]
         );
 
-        return true;
+        if($return) {
+            return true;
+        }
+
+        throw new UserException($notify->lastPage);
     }
 
     public function handleVerifyEmailToken(string $token)
