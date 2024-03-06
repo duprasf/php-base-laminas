@@ -1,9 +1,8 @@
 <?php
 namespace GcDirectory\Factory\Model;
 
-use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class GcDirectoryFactory implements FactoryInterface
 {
