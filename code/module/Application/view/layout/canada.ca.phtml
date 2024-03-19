@@ -1,8 +1,7 @@
 <?php
+
 use \Application\Model\Breadcrumbs;
-?>
-<?= $this->doctype() ?>
-<?php
+
 $layout = $this->viewModel()->getCurrent();
 
 $this->completeMetadata($layout);
@@ -47,52 +46,81 @@ $usefulLinks = $layout->usefulLinks;
 $usefulLinksTitle = $layout->usefulLinksTitle ? $layout->usefulLinksTitle : $this->translate('Useful Links');
 $usefulLinksLocation = $layout->usefulLinksLocation;
 ?>
+<?= $this->doctype() ?>
 <!--[if lt IE 9]><html class="no-js lt-ie9<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr"><![endif]--><!--[if gt IE 8]><!-->
 <html class="no-js<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr">
     <!--<![endif]-->
     <head>
+
         <meta charset="utf-8">
         <!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
         wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
         <title><?=$this->stripTags($this->title);?></title>
+        <meta property="dcterms:title" content="<?=$this->stripTags($this->title);?>">
+
         <meta content="width=device-width,initial-scale=1" name="viewport">
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <?if(isset($this->basePath)):?>
+        <?php if(isset($this->basePath)):?>
         <base href="<?=$this->basePath;?>">
-        <?endif;?>
+        <?php endif;?>
 
-        <?if($this->description):?>
+        <?php if($this->description):?>
         <meta name="description" content="<?=$this->stripTags($this->description);?>">
         <meta property="dcterms:description" content="<?=$this->stripTags($this->description);?>">
-        <?endif;?>
+        <?php endif;?>
 
-        <?if($this->keywords):?><meta name="keywords" content="<?=is_array($this->keywords)?implode(',',$this->keywords):$this->keywords;?>"><?endif;?>
+        <link rel="alternate" hreflang="<?=$otherLang;?>" href="<?=$this->getLangSwitchUrl();?>">
+
+        <?php if($this->keywords):?>
+        <meta name="keywords" content="<?=is_array($this->keywords)?implode(',',$this->keywords):$this->keywords;?>">
+        <?php endif;?>
 
         <meta name="author" content="<?=$this->author ? $this->translate($this->author) : $this->translate('Government of Canada');?>">
         <meta property="dcterms:creator" content="<?=$this->author ? $this->translate($this->author) : $this->translate('Government of Canada');?>">
 
-        <meta property="dcterms:title" content="<?=$this->stripTags($this->title);?>">
         <meta property="dcterms:language" title="ISO639-2/T" content="<?=$this->lang=='fr' ? 'fra' : 'eng';?>">
-        <?if($this->subject):?><meta property="dcterms:subject" title="gccore" content="<?=is_array($this->subject)?implode('; ',$this->subject):$this->subject;?>"><?endif;?>
+
+        <?php if($this->subject):?>
+        <meta property="dcterms:subject" title="gccore" content="<?=is_array($this->subject)?implode('; ',$this->subject):$this->subject;?>">
+        <?php endif;?>
 
         <meta property="dcterms:issued" title="W3CDTF" content="<?=date('Y-m-d', $this->issuedTimestamp);?>">
         <meta property="dcterms:modified" title="W3CDTF" content="<?=date('Y-m-d', $this->modifiedTimestamp);?>">
 
         <meta http-equiv="Content-Security-Policy" content="<?=$this->contentSecurityPolicy;?>">
 
+        <script src="/application/js/basescript.js"></script>
         <script>
         // framework placeholder (for user, session timeout, etc.)
         let laminas = {};
+        laminas.isApp = '<?=$this->layout()->isApp;?>';
+        ready(function(){
+            <?php if($this->signInCallback):?>
+            laminas.signInCallback = <?=$this->signInCallback;?>;
+            <?php endif;?>
+            <?php if($this->signOutCallback):?>
+            laminas.signOutCallback = <?=$this->signOutCallback;?>;
+            <?php endif;?>
+            <?php if($this->userSettingCallback):?>
+            laminas.userSettingCallback = <?=$this->userSettingCallback;?>;
+            <?php endif;?>
+        });
+        layoutStrings={
+            "Sign in":'<?=$this->translate("Sign in");?>',
+            "Sign out":'<?=$this->translate("Sign out");?>',
+            "Application settings":'<?=$this->translate("Application settings");?>'
+        }
         </script>
         <?=$this->headScript();?>
 
-        <?if($this->useAdobeAnalyticsWithPersonalInformation):?>
+        <?php if($this->useAdobeAnalyticsWithPersonalInformation):?>
             <script src="//assets.adobedtm.com/be5dfd287373/9b9cb7867b5b/launch-59d77766b86a.min.js" integrity="sha384-utOxgQIMl235gMbaRnP9pUcKebDeg4YnICYoRH1+RPnPz0Z5oXGwUiCm+hmTMk1J" crossorigin="anonymous"></script>
-        <?elseif($this->useAdobeAnalytics):?>
+        <?php elseif($this->useAdobeAnalytics):?>
             <script src="//assets.adobedtm.com/be5dfd287373/0127575cd23a/launch-f7c3e6060667.min.js" integrity="sha384-a5QgqXtXXBhal4/RoxAJzMDwizQrPwqt1TZXqugR9DBF0RabFyi6NKD0ydAPd4sI" crossorigin="anonymous"></script>
-        <?endif;?>
-        <?if($this->googleAnalyticsId):?>
+        <?php endif;?>
+
+        <?php if($this->googleAnalyticsId):?>
             <!-- Google tag (gtag.js) -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=<?=$this->googleAnalyticsId;?>"></script>
             <script>
@@ -101,29 +129,32 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                 gtag('js', new Date());
                 gtag('config', '<?=$this->googleAnalyticsId;?>');
             </script>
-        <?endif;?>
+        <?php endif;?>
         <!-- Google Tag Manager DO NOT REMOVE OR MODIFY - NE PAS SUPPRIMER OU MODIFIER -->
         <script>dataLayer1 = [];</script>
         <!-- End Google Tag Manager -->
+
+
         <script src="<?=$cdtsPath;?>/cdts/compiled/soyutils.js" crossorigin="anonymous" integrity="<?=$integrity['/cdts/compiled/soyutils.js']??'';?>"></script>
         <script src="<?=$cdtsPath;?>/cdts/compiled/wet-<?=$this->lang;?>.js" crossorigin="anonymous" integrity="<?=$integrity["/cdts/compiled/wet-{$this->lang}.js"]??'';?>"></script>
 
-        <link rel="stylesheet" href="/application/css/stylesheets.css">
+        <?php if(isset($integrity['/css/theme.min.css'])):?>
+        <link rel="stylesheet" href="<?=$cdtsPath;?>/css/theme.min.css" integrity="<?=$integrity['/css/theme.min.css']??'';?>" crossorigin="anonymous">
+        <?php endif;?>
+
+        <?php if($this->isApp):?>
+        <link rel="stylesheet" href="<?=$cdtsPath;?>/cdts/cdtsapps.css" integrity="<?=$integrity['/cdts/cdtsapps.css']??'';?>" crossorigin="anonymous">
+        <?php endif;?>
+        <link rel="stylesheet" href="<?=$cdtsPath;?>/cdts/cdtsfixes.css" integrity="<?=$integrity['/cdts/cdtsfixes.css']??'';?>" crossorigin="anonymous">
+
+        <?php if($this->useFontAwesome):?>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <?php endif;?>
 
         <noscript>
-            <!-- Write closure fall-back static file -->
-            <!--[if gte IE 9 | !IE ]><!-->
-            <link href="<?=$cdtsPath;?>/assets/favicon.ico" rel="icon" type="image/x-icon">
-            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/theme.min.css" integrity="<?=$integrity['/css/theme.min.css']??'';?>" crossorigin="anonymous">
-            <link rel="stylesheet" href="<?=$cdtsPath;?>/cdts/cdtsfixes.css" integrity="<?=$integrity['/cdts/cdtsfixes.css']??'';?>" crossorigin="anonymous">
-            <!--<![endif]-->
-            <!--[if lt IE 9]>
-            <link href="<?=$cdtsPath;?>/assets/favicon.ico" rel="shortcut icon">
-            <link rel="stylesheet" href="<?=$cdtsPath;?>/css/ie8-theme.min.css" integrity="<?=$integrity['/css/ie8-theme.min.css']??'';?>" crossorigin="anonymous">
-            <![endif]-->
-            <!--[if lte IE 9]><![endif]-->
             <link rel="stylesheet" href="<?=$cdtsPath;?>/css/noscript.min.css" integrity="<?=$integrity['/css/noscript.min.css']??'';?>" crossorigin="anonymous">
         </noscript>
+
         <!-- Write closure template -->
         <script>
             document.write(wet.builder.refTop({
@@ -131,7 +162,9 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                 jqueryEnv: "<?=$cdtsEnv;?>"
             }));
         </script>
+
         <!-- Custom CSS Start -->
+        <link rel="stylesheet" href="/application/css/stylesheets.css">
         <?=$this->headLink();?>
         <?=$this->headStyle();?>
 
@@ -169,7 +202,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                     </section>
                     <div class="row">
                         <div class="brand col-xs-8 col-sm-9 col-md-6">
-                            <a href="https://www.canada.ca/<?=$this->lang;?>.html"><object type="image/svg+xml" tabindex="-1" data="<?=$cdtsPath;?>/assets/sig-blk-<?=$this->lang;?>.svg"></object><span class="wb-inv"> <?=$this->translate('Government of Canada');?></span></a>
+                            <a href="https://www.canada.ca/<?=$this->lang;?>.html"><object type="image/svg+xml" tabindex="-1" data="<?=$cdtsPath;?>/wet-boew/assets/sig-blk-<?=$this->lang;?>.svg"></object><span class="wb-inv"> <?=$this->translate('Government of Canada');?></span></a>
                         </div>
                         <section class="wb-mb-links col-xs-4 col-sm-3 visible-sm visible-xs" id="wb-glb-mn">
                             <h2><?=$this->translate('Search and menus');?></h2>
@@ -244,12 +277,11 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             </header>
         </div>
 
-
         <?if($sideMenu):?>
             <div class="container"><div class="row">
-            <main role="main" property="mainContentOfPage" class="col-md-9 <?=$sideMenuLocation!='right'? ' col-md-push-3':'';?>">
+            <main role="main" property="mainContentOfPage" class="col-md-9 <?=$sideMenuLocation!='right'? ' col-md-push-3':'';?> <?=$this->mainClass;?>" id="<?=$this->mainId;?>">
         <?else:?>
-            <main role="main" property="mainContentOfPage" class="container">
+            <main role="main" property="mainContentOfPage" class="container <?=$this->mainClass;?>" id="<?=$this->mainId;?>">
         <?endif;?>
 
             <?if(!$this->isAppWithoutH1):?>
@@ -368,7 +400,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                                     <a href="#wb-cont">Haut de la page <span class="glyphicon glyphicon-chevron-up"></span></a>
                                 </div>
                                 <div class="col-xs-6 col-md-2 text-right">
-                                    <object type="image/svg+xml" tabindex="-1" role="img" data="<?=$cdtsPath;?>/assets/wmms-blk.svg" aria-label="Symbole du gouvernement du Canada"></object>
+                                    <object type="image/svg+xml" tabindex="-1" role="img" data="<?=$cdtsPath;?>/wet-boew/assets/wmms-blk.svg" aria-label="Symbole du gouvernement du Canada"></object>
                                 </div>
                             </div>
                         </div>
@@ -405,7 +437,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                                     <a href="#wb-cont">Top of Page <span class="glyphicon glyphicon-chevron-up"></span></a>
                                 </div>
                                 <div class="col-xs-6 col-md-2 text-right">
-                                    <object type="image/svg+xml" tabindex="-1" role="img" data="<?=$cdtsPath;?>/assets/wmms-blk.svg" aria-label="Symbol of the Government of Canada"></object>
+                                    <object type="image/svg+xml" tabindex="-1" role="img" data="<?=$cdtsPath;?>/wet-boew/assets/wmms-blk.svg" aria-label="Symbol of the Government of Canada"></object>
                                 </div>
                             </div>
                         </div>
@@ -416,7 +448,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         <!-- Write closure template -->
         <script>
             var defTop = document.getElementById("def-top");
-            defTop.outerHTML = wet.builder.top({
+            defTop.outerHTML = wet.builder.<?=$this->isApp?'appTop':'top';?>({
                 cdnEnv: "<?=$cdtsEnv;?>",
                 topSecMenu: <?=$sideMenu ? 'true':'false';?>,
                 lngLinks: [{
@@ -424,6 +456,10 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                     href: "<?=$this->getLangSwitchUrl();?>",
                     text: "<?=$this->translate('[other language name]');?>"
                 }],
+                <?=$this->appName ? 'appName: '.json_encode([["text"=>$this->appName,"href"=>$this->appUrl?:'#']]).',':'';?>
+                <?=$this->signInUrl || (!$this->signOutUrl && !$this->appSettingsUrl && $this->signInCallback) ? 'signIn: '.json_encode([["href"=>$this->signInUrl]]).',':'';?>
+                <?=$this->signOutUrl ? 'signOut: '.json_encode([["href"=>$this->signOutUrl]]).',':'';?>
+                <?=$this->appSettingsUrl ? 'appSettings: '.json_encode([["href"=>$this->appSettingsUrl]]).',':'';?>
                 breadcrumbs: <?=$view->breadcrumbItems instanceOf Breadcrumbs ? $view->breadcrumbItems->tojson() : '[]';?>
             });
             var defPreFooter = document.getElementById("def-preFooter");
@@ -431,10 +467,11 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                 cdnEnv: "<?=$cdtsEnv;?>",
                 <?php print $this->showShare===false?'showShare: false,':'';?>
                 <?php print $this->showFeedback===false?'showFeedback: false,':'';?>
+                <?php print $this->versionNumber?"versionIdentifier: '".$this->versionNumber."',":'';?>
                 dateModified: '<?=date('Y-m-d', $this->modifiedTimestamp);?>'
             });
             var defFooter = document.getElementById("def-footer");
-            defFooter.outerHTML = wet.builder.footer({
+            defFooter.outerHTML = wet.builder.<?=$this->isApp?'appFooter':'footer';?>({
                 cdnEnv: "<?=$cdtsEnv;?>"
             });
             document.write(wet.builder.refFooter({
@@ -447,6 +484,24 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         <?endforeach;?>
         <?=$this->inlineScript();?>
         <!-- Custom Scripts End -->
+
+        <dialog id="laminas_expireSessionDialog" class="modal-content">
+            <section class="">
+                <header class="modal-header">
+                    <h2 class="modal-title" id="lbx-title"><?=$this->translate("Session timeout warning");?></h2>
+                </header>
+                <div class="modal-body">
+                    <p>
+                        <?=$this->translate('Your session will expire automatically in <span class="min">2</span> min <span class="sec">59</span> sec.<br>
+                        Select "Continue session" to extend your session.');?>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="laminas_expireSessionDialog_logout" class="wb-sessto-confirm btn btn-link"><?=$this->translate("End session now");?></button>
+                    <button type="button" id="laminas_expireSessionDialog_continue" class="wb-sessto-confirm btn btn-primary popup-modal-dismiss"><?=$this->translate("Continue session");?></button>
+                </div>
+            </section>
+        </dialog>
 
         <?if($this->useAdobeAnalytics || $this->useAdobeAnalyticsWithPersonalInformation):?>
         <script>_satellite.pageBottom();</script>

@@ -70,9 +70,6 @@ class IndexController extends AbstractActionController
             "title" => $translator->translate('Home Page'),
             "description"=>$translator->translate("The home page our this web site is not set"),
             "issuedDate"=>date('Y-m-d'),
-            //"extra-css"=>'/css/drug-calculator.css',
-            //"extra-js"=>'/js/basic.js',
-            //"cdts-version"=>'4_0_32',
         )));
 
         $view->setVariable('attribution', 'HC');

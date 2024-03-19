@@ -20,16 +20,14 @@ class CompleteMetadataFactory implements FactoryInterface
         $object = new CompleteMetadata();
         $object->setMetadataBuilder($sm->get('metadataBuilder'));
 
-        $cdtsVersion = $sm->has('cdts-version') ? $sm->get('cdts-version') : '4_0_32';
+        $cdtsVersion = $sm->has('cdts-version') ? $sm->get('cdts-version') : '5_0_0';
         $integrity = $sm->has('cdts-integrity') ? $sm->get('cdts-integrity') :
-            ['4_0_32'=>[
-                '/cdts/compiled/soyutils.js'=>'sha384-32eoaED5PWLqUcm/SmCNYkjyLGbZouGKcA7SqNkg4pw/HO5GQvYe41sFH2Gurff2',
-                '/cdts/compiled/wet-en.js'=>'sha384-suyV59gigqpkF4lJASRU4NSaIhak0d9IdqZzEczs61ndeeFCqzLo2XFdvn6Hi+OF',
-                '/cdts/compiled/wet-fr.js'=>'sha384-lKC/8wV1+9GDCPDDRxMv5fahcReyrn06T7dNJvQGS+Sr/UmQMspvV9mOji5qjWRT',
-                '/css/theme.min.css'=>"sha384-OC8RXMtN4ILge7jffk24K2S+crP681ghM6SMHOeW8MAZ8PT4fLPc+5cBA9JIqnqB",
-                '/cdts/cdtsfixes.css'=>"sha384-No+ATAwkMIc/2e9/908hPv/n6h84qeIT0ujDSDbsLXo3NdWjjOobQjOvQ6PDhuR6",
-                '/css/ie8-theme.min.css'=>"sha384-clzigVbwqYHNkIrKxnU7kvGIA34SJUC0r1A3Q8cUkx3QeoSmxX/SL+9dmwqf+uCD",
-                '/css/noscript.min.css'=>"sha384-YPGPGgtKCjAbqUw5iFn7pxdtJs4JKg1JM35Wk+/75p+CXi53r8prqn8SACFbXxXG",
+            ['5_0_0'=>[
+                '/cdts/compiled/soyutils.js'=>'sha384-hfwnpowMIP7hDqCMoNULlqSq7k2nu8R7zl+zHfYpNc5iokyd+Gbk5NO5ZdJFCv0o',
+                '/cdts/compiled/wet-en.js'=>'sha384-ulFMH1PWenti4HPUhevZkviTg3VIc2X9R19+d2OtnyyBWWiJ5ogSW+G1qjwSS2y7',
+                '/cdts/compiled/wet-fr.js'=>'sha384-6tz+67Lsc1eo99Errrs8Cwu+OiOjIZ00Gb17iAP4O+ZhYZ5u8awc+SEb+h/xzhlc',
+                '/cdts/cdtsfixes.css'=>"sha384-zSpYa4FHx3BrgIDTrj3QGfclWZJ6b3KtRRzwPmcZBEnd1Bl9U5TCUP0DqT/RJYGW",
+                '/cdts/cdtsapps.css'=>"sha384-6fF78tukeGgTIwO3KIWClcj4QTOZUlpI3OGFYb9wKYf6XrWUSgxSdlbUepkvQql1",
             ]]
         ;
         $integrity = $integrity[$cdtsVersion] ?? [];

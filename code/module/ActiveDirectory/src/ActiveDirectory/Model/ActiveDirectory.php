@@ -62,7 +62,8 @@ class ActiveDirectory
                 if($acctname) {
                     return $acctname;
                 }
-            } catch(\Exception $e){}
+            } catch(\Exception $e) {
+            }
         }
         return false;
     }

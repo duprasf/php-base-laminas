@@ -45,15 +45,6 @@ class Module
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
 
-
-        //*****************************************************
-        // get view helper manager
-        $viewHelperManager = $serviceManager->get('ViewHelperManager');
-
-        // get 'head script' plugin
-        $headScript = $viewHelperManager->get('headScript');
-        $headScript->prependFile('/application/js/basescript.js');
-
         $eventManager->attach(MvcEvent::EVENT_DISPATCH, array($this, 'setLocale'), 100000);
         $eventManager->attach(MvcEvent::EVENT_DISPATCH_ERROR, array($this, 'setLocale'), 100000);
 
