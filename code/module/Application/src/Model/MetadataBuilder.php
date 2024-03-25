@@ -136,15 +136,31 @@ class MetadataBuilder
         }
         if(isset($data['extra-css'])) {
             $extra = array();
-            if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $data['extra-css'], $out)) {
-                foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+            if(is_array($data['extra-css'])) {
+                foreach($data['extra-css'] as $val) {
+                    if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $val, $out)) {
+                        foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                    }
+                }
+            } else {
+                if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $data['extra-css'], $out)) {
+                    foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                }
             }
             $data['extra-css'] = $extra;
         }
         if(isset($data['extra-js'])) {
             $extra = array();
-            if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $data['extra-js'], $out)) {
-                foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+            if(is_array($data['extra-js'])) {
+                foreach($data['extra-js'] as $val) {
+                    if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $val, $out)) {
+                        foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                    }
+                }
+            } else {
+                if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $data['extra-js'], $out)) {
+                    foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                }
             }
             $data['extra-js'] = $extra;
         }
