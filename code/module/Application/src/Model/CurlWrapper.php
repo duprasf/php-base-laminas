@@ -1,6 +1,7 @@
 <?php
 namespace Application\CurlWrapper;
 
+use CURLFile;
 use Application\Exception\CurlException;
 
 
@@ -122,10 +123,14 @@ class CurlWrapper
         return $this;
     }
 
-    public function addFile(string $filename, ?string $mime_type = null, ?string $posted_filename = null)
+    public function addFile(string $filename, ?string $posted_filename = null, ?string $mime_type = null)
     {
         // should add validation of location of the file...
-        $this->attachedFiles[] = new CURLFile($filename,$mime_type,$posted_filename);
+        $this->attachedFiles[] = new CURLFile(
+            $filename,
+            $mime_type??mime_content_type($filename),
+            $posted_filename??basename($filename)
+        );
         return $this;
     }
 
@@ -163,16 +168,20 @@ class CurlWrapper
             if(!is_array($this->payload)) {
                 throw new CurlException('The payload could not be converted to an array');
             }
-            foreach($this->attachedFiles as $file) {
+            foreach($this->attachedFiles as $key=>$file) {
                 if(!file_exists($file->getFilename())) {
                     throw new CurlException('File does not exists ', $file->getFilename());
                 }
-                $this->payload[$file->getPostFilename()]=$file;
+                $this->payload['file'.($key?'_'.$key:'')]=$file;
             }
             $includePayload = true;
         }
         if($includePayload && $this->payload) {
-            curl_setopt($this->handle, CURLOPT_POSTFIELDS, $this->payload);
+            $p=$this->payload;
+            if(!count($this->attachedFiles)) {
+                $p=json_encode($this->payload);
+            }
+            curl_setopt($this->handle, CURLOPT_POSTFIELDS, $p);
         }
 
         if($this->returnPage) {
