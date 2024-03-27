@@ -33,14 +33,8 @@ class GcNotify
     {
         $this->apiKey = $key;
         // The long key is now required, it used to not work, now it is required...
-        $this->apiSecretKey = $key;//$this->extractApiKey($key);
+        $this->apiSecretKey = $key;
         return $this;
-    }
-
-    public function extractApiKey(string $api)
-    {
-        preg_match('([0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$)', $api, $out);
-        return isset($out[0]) ? $out[0] : null;
     }
 
     public function setBaseUrl($url)
@@ -258,6 +252,7 @@ class GcNotify
             print 'No API key set for GC Notify';
             return false;
         }
+
         // create a new cURL resource
         $ch = curl_init();
 
@@ -277,7 +272,7 @@ class GcNotify
 
         // pass the API Key
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Authorization: ApiKey-v1 '.$this->extractApiKey($apiKey ?? $this->apiSecretKey),
+            'Authorization: ApiKey-v1 '.($apiKey ?? $this->apiSecretKey),
             'Content-type: application/json',
         ));
         //curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
