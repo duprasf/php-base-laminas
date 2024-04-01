@@ -6,6 +6,8 @@ LABEL title = 'Laminas framework with npm/gulp. Apps going in /apps/'
 LABEL author = 'Web/Mobile Team (imsd.web-dsgi@hc-sc.gc.ca)'
 LABEL source = 'https://github.hc-sc.gc.ca/hs/php-base-laminas'
 
+ENV USING_FRAMEWORK=Laminas \
+    USING_LAMINAS=1
 
 RUN set -uex;
 
@@ -37,6 +39,7 @@ RUN mkdir -p /var/www/data/cache
 RUN chown www-data /var/www/data/cache
 
 RUN rm -Rf html && ln -s public html
+COPY --chmod=622 apm-lite-public-key.pem /var/www/module/AutoStats/config/apm-lite-public-key.pem
 
 COPY --chmod=774 go-laminas.sh /go-laminas.sh
 ENTRYPOINT ["/go-laminas.sh"]

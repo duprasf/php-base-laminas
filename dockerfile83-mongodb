@@ -1,10 +1,13 @@
-FROM jack.hc-sc.gc.ca/php/php-base:8.3-mongodb
+#FROM jack.hc-sc.gc.ca/php/php-base:8.3-mongodb
 # when local
-#FROM php-base:latest-mongodb
+FROM php-base:latest-mongodb
 
 LABEL title = 'Laminas framework with npm/gulp. Apps going in /apps/'
 LABEL author = 'Web/Mobile Team (imsd.web-dsgi@hc-sc.gc.ca)'
 LABEL source = 'https://github.hc-sc.gc.ca/hs/php-base-laminas'
+
+ENV USING_FRAMEWORK=Laminas \
+    USING_LAMINAS=1
 
 RUN set -uex;
 
@@ -34,6 +37,10 @@ RUN rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /var/www/data/cache
 RUN chown www-data /var/www/data/cache
+
+COPY icm-root.crt /usr/local/share/ca-certificates/icm-root.crt
+RUN cat /usr/local/share/ca-certificates/icm-root.crt >> /etc/ssl/certs/ca-certificates.crt
+COPY --chmod=622 apm-lite-public-key.pem /var/www/module/AutoStats/config/apm-lite-public-key.pem
 
 RUN rm -Rf html && ln -s public html
 
