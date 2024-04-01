@@ -1,7 +1,7 @@
 <?php
 namespace Application\Factory\View\Helper;
 
-use Laminas\ServiceManager\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
 use Laminas\Console\Request as ConsoleRequest;
 use Laminas\Mvc\Router\RouteMatch;
@@ -12,19 +12,14 @@ class UrlFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
-        return $this->createService($container, $requestedName, $options);
-    }
-
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        $config = $serviceLocator->get('Config');
+        $config = $container->get('Config');
         $helper = new Url();
 
-        $request = $serviceLocator->get('Request');
+        $request = $container->get('Request');
         $router = $request instanceof ConsoleRequest ? 'Router' : 'HttpRouter';
-        $helper->setRouter($serviceLocator->get($router));
+        $helper->setRouter($container->get($router));
 
-        $match = $serviceLocator
+        $match = $container
             ->get('application')
             ->getMvcEvent()
             ->getRouteMatch()
@@ -34,7 +29,7 @@ class UrlFactory implements FactoryInterface
             $helper->setRouteMatch($match);
         }
 
-        $helper->setLang($serviceLocator->get('lang'));
+        $helper->setLang($container->get('lang'));
 
         return $helper;
     }

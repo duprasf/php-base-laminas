@@ -1,9 +1,11 @@
 <?php
 namespace Application\Factory;
 
-use Laminas\ServiceManager\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
+
+var_dump('This class should not be used anymore');
+exit(basename(__FILE__).':'.__LINE__.PHP_EOL);
 
 class GetLangSwitchUrlFactory implements FactoryInterface
 {

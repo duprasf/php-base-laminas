@@ -22,8 +22,8 @@ class Module
     */
     public function getConfig(): array
     {
-        $config = include __DIR__ . '/../config/module.config.php';
-        foreach(glob(__DIR__ . '/../config/autoload/{,*.}{global,local}.php', GLOB_BRACE) as $file) {
+        $config = include __DIR__ . '/config/module.config.php';
+        foreach(glob(__DIR__ . '/config/autoload/{,*.}{global,local}.php', GLOB_BRACE) as $file) {
             if(is_readable($file)) {
                 $config = ArrayUtils::merge($config, include($file));
             }
@@ -31,6 +31,21 @@ class Module
         return $config;
     }
 
+    public function getAutoloaderConfig()
+    {
+        return [
+            'Laminas\Loader\ClassMapAutoloader' => [
+                __DIR__ . '/autoload_classmap.php',
+            ],
+            'Laminas\Loader\StandardAutoloader' => [
+                'namespaces' => [
+                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                    "CurlWrapper" => __DIR__ . '/src/CurlWrapper',
+                    "GcNotify" => __DIR__ . '/src/GcNotify',
+                ],
+            ],
+        ];
+    }
     /**
     * @ignore default method for Lamnias, no need to be in documentation
     */

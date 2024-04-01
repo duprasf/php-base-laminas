@@ -65,13 +65,14 @@ $return = [
     'service_manager' => [
         'aliases'=>[
             "GcNotify"=>GcNotify::class,
+            'metadataBuilder' => Model\MetadataBuilder::class,
         ],
         'factories' => [
             'lang'=>Factory\LangFactory::class,
             'domain'=>Factory\DomainFactory::class,
+            Model\MetadataBuilder::class => Factory\MetadataBuilderFactory::class,
             SessionManager::class => Factory\SessionManagerFactory::class,
             GcNotify::class=>Factory\GcNotifyFactory::class,
-            'metadataBuilder' => Factory\MetadataBuilderFactory::class,
             "filesize-suffixes"=>Factory\FilesizeSuffixesFactory::class,
         ],
         'invokables' => [

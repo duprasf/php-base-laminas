@@ -186,6 +186,20 @@ class MetadataBuilder
         }
         /**/
 
+        if(isset($data['contactLinks'])) {
+            if(!is_array($data['contactLinks'])) {
+                $data['contactLinks'] = [$data['contactLinks']];
+            }
+            $contact=[];
+            foreach($data['contactLinks'] as $key=>$val) {
+                if(is_numeric($key)) {
+                    $key='href';
+                }
+                $contact[]=[$key=>$val];
+            }
+            $data['contactLinks']=json_encode($contact);
+        }
+
         if(isset($data['no-menu'])) $data['menu'] = self::MENU_NO_MENU;
 
         return $data;

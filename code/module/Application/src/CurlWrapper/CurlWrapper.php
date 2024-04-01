@@ -1,9 +1,10 @@
 <?php
-namespace Application\CurlWrapper;
+namespace CurlWrapper;
 
 use CURLFile;
-use Application\Exception\CurlException;
-
+use OpenSSLAsymmetricKey;
+use OpenSSLCertificate;
+use Exception\CurlException;
 
 class CurlWrapper
 {
@@ -14,6 +15,7 @@ class CurlWrapper
     private $executed;
     private $returnPage;
     private $attachedFiles;
+    private $pubkey;
 
     public const GET='GET';
     public const POST='POST';
@@ -97,6 +99,12 @@ class CurlWrapper
         return $this;
     }
 
+    public function encryptUsingPublicKey(string|OpenSSLAsymmetricKey|OpenSSLCertificate $pubkey)
+    {
+        $this->pubkey=$pubkey;
+        return $this;
+    }
+
     public function credentials($username, $password)
     {
         curl_setopt($this->handle, CURLOPT_USERPWD, "$username:$password");
@@ -132,6 +140,11 @@ class CurlWrapper
             $posted_filename??basename($filename)
         );
         return $this;
+    }
+
+    public function getNeedsToEncrypt()
+    {
+        return !!$this->pubkey;
     }
 
     public function exec()
@@ -177,11 +190,33 @@ class CurlWrapper
             $includePayload = true;
         }
         if($includePayload && $this->payload) {
-            $p=$this->payload;
+            $payload=$this->payload;
             if(!count($this->attachedFiles)) {
-                $p=json_encode($this->payload);
+                $payload=json_encode($this->payload);
+                if($this->getNeedsToEncrypt()) {
+                    throw new CurlException('Encryption of attached file is not implemented at this time');
+                }
             }
-            curl_setopt($this->handle, CURLOPT_POSTFIELDS, $p);
+            if($this->getNeedsToEncrypt()) {
+                $publicKey=$this->pubkey;
+                if(is_string($publicKey)) {
+                    if(file_exists($publicKey)) {
+                        $publicKey=file_get_contents($publicKey);
+                    }
+                    $publicKey=openssl_get_publickey(str_replace('\n', PHP_EOL, $publicKey));
+                }
+
+                if(!openssl_public_encrypt(
+                     $payload,
+                     $encrypted_data,
+                     $publicKey
+                )) {
+                     exit(basename(__FILE__).':'.__LINE__);
+                }
+
+                $payload = base64_encode($encrypted_data);
+            }
+            curl_setopt($this->handle, CURLOPT_POSTFIELDS, $payload);
         }
 
         if($this->returnPage) {
