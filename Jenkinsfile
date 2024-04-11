@@ -5,12 +5,15 @@
 
 pipeline {
     agent {
-        label 'StandardV1'
+        label 'DockerV1'
     }
+
     options {
         // This is required if you want to clean before build
         skipDefaultCheckout(true)
+        disableConcurrentBuilds()
     }
+
     environment {
         containerRegistry='jack.hc-sc.gc.ca'
     }
@@ -95,7 +98,15 @@ pipeline {
     post {
         always {
             // Clean after build
-            cleanWs()
+            cleanWs(cleanWhenNotBuilt: true,
+                deleteDirs: true,
+                disableDeferredWipeout: true,
+                notFailBuild: true,
+                patterns: [
+                    [pattern: '.gitignore', type: 'INCLUDE']
+                ]
+            )
+
             script {
                 resultString = "None"
             }
