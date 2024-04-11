@@ -39,7 +39,6 @@ RUN mkdir -p /var/www/data/cache
 RUN chown www-data /var/www/data/cache
 
 RUN rm -Rf html && ln -s public html
-COPY --chmod=622 apm-lite-public-key.pem /var/www/module/AutoStats/config/apm-lite-public-key.pem
 
 COPY --chmod=774 go-laminas.sh /go-laminas.sh
 ENTRYPOINT ["/go-laminas.sh"]

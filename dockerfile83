@@ -1,5 +1,5 @@
-#FROM jack.hc-sc.gc.ca/php/php-base:8.3
-FROM php-base:8.3
+FROM jack.hc-sc.gc.ca/php/php-base:8.3
+#FROM php-base:8.3
 
 LABEL title = 'Laminas framework with npm/gulp. Apps going in /apps/'
 LABEL author = 'Web/Mobile Team (imsd.web-dsgi@hc-sc.gc.ca)'
@@ -40,7 +40,6 @@ RUN rm -Rf html && ln -s public html
 
 COPY icm-root.crt /usr/local/share/ca-certificates/icm-root.crt
 RUN cat /usr/local/share/ca-certificates/icm-root.crt >> /etc/ssl/certs/ca-certificates.crt
-COPY --chmod=622 apm-lite-public-key.pem /var/www/module/AutoStats/config/apm-lite-public-key.pem
 
 COPY --chmod=774 go-laminas.sh /go-laminas.sh
 ENTRYPOINT ["/go-laminas.sh"]
