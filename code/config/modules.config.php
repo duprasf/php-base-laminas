@@ -56,6 +56,7 @@ $modules = array_merge([
     'Application',
     'PublicAsset',
     'TranslationExtractor',
+    'AutoStats'
 ], $apps, $extraModules);
 
 if(getenv('PHP_DEV_ENV') && isset($_GET['show_modules'])) {

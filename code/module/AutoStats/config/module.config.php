@@ -10,15 +10,6 @@ return [
     'router' => [
         'router_class' => TranslatorAwareTreeRouteStack::class,
         'routes' => [
-            'auto-stats' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/{auto-stats}',
-                    'defaults' => [
-                        'controller' => Controller\AutoStatsController::class,
-                    ],
-                ],
-            ],
             'server-signature' => [
                 'type'    => Segment::class,
                 'options' => [
@@ -33,7 +24,6 @@ return [
     'controllers' => [
         'factories' => [
             Controller\ServerSignatureController::class => Factory\Controller\ServerSignatureControllerFactory::class,
-            Controller\AutoStatsController::class => Factory\Controller\AutoStatsControllerFactory::class,
         ],
     ],
     'controller_plugins' => [

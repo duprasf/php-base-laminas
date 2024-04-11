@@ -472,6 +472,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             });
             var defFooter = document.getElementById("def-footer");
             defFooter.outerHTML = wet.builder.<?=$this->isApp?'appFooter':'footer';?>({
+                <?php print $this->contactLinks?"contactLinks: ".$this->contactLinks.",":'';?>
                 cdnEnv: "<?=$cdtsEnv;?>"
             });
             document.write(wet.builder.refFooter({
