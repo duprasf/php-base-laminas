@@ -110,9 +110,6 @@ class CurlWrapper
 
     public function encryptUsingPublicKey(string|OpenSSLAsymmetricKey|OpenSSLCertificate $pubkey)
     {
-        if(!is_string($pubkey) || get_class($pubkey)!=OpenSSLAsymmetricKey::class || get_class($pubkey)!=OpenSSLCertificate::class) {
-            throw new CurlException('Invalid public key');
-        }
         $this->pubkey=$pubkey;
         return $this;
     }
@@ -142,7 +139,7 @@ class CurlWrapper
         ]);
     }
 
-    public function addFile(string $filename, ?string $posted_filename = null, ?string $mime_type = null, ?string $forceName)
+    public function addFile(string $filename, ?string $posted_filename = null, ?string $mime_type = null, ?string $forceName=null)
     {
         // should add validation of location of the file...
         $cf = new CURLFile(
