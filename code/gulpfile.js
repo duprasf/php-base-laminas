@@ -22,7 +22,7 @@ const fs = require("fs");
 
 const camelToDash = str => str.replace(/([a-z])?([A-Z])/g, (match, p1,p2) => (p1?p1+'-':'')+p2.toLowerCase() );
 
-function js() {
+function js(cb) {
     fs.readdirSync("apps/").forEach(folder => {
         if(fs.lstatSync("apps/"+folder).isDirectory() && fs.existsSync('apps/'+folder+'/source/js')) {
             src('apps/'+folder+'/source/js/*.js',{ sourcemaps: true })
@@ -55,9 +55,13 @@ function js() {
             ;
         }
     });
+
+    if(cb) {
+        cb();
+    }
 };
 
-function css() {
+function css(cb) {
     let plugins = [
         cssImport,
         partialImport({ prefix: '_' }),
@@ -81,6 +85,10 @@ function css() {
             ;
         }
     });
+
+    if(cb) {
+        cb();
+    }
 };
 
 function both(cb) {
@@ -95,3 +103,5 @@ function watchFn() {
 };
 exports.default = watchFn;
 exports.both = both;
+exports.js = js;
+exports.css = css;
