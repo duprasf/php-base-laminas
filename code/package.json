@@ -26,8 +26,6 @@
     "postcss-cli": "*",
     "postcss-import": "*",
     "postcss-partial-import": "*",
-    "postcss-color-function": "*",
-    "postcss-color-mod-function": "*",
     "postcss-simple-vars": "*",
     "postcss-discard-comments": "*",
     "postcss-at-rules-variables": "*",

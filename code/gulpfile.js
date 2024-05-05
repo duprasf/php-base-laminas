@@ -9,9 +9,6 @@ const plumber = require('gulp-plumber');
 const postcss = require('gulp-postcss');
 const cssImport = require('postcss-import');
 const partialImport = require('postcss-partial-import');
-const colorFunction = require('postcss-color-function');
-const colorMod = require('postcss-color-mod-function');
-const simpleVar = require('postcss-simple-vars');
 const discardComments = require('postcss-discard-comments');
 const customMedia = require('postcss-custom-media');
 const nested = require('postcss-nested');
@@ -50,7 +47,6 @@ function js(cb) {
                         return JSON.stringify(newJson);
                     }
                 }))
-                .pipe(rename({ basename: camelToDash(folder) }))
                 .pipe(dest('apps/'+folder+'/public/js'))
             ;
         }
@@ -65,22 +61,20 @@ function css(cb) {
     let plugins = [
         cssImport,
         partialImport({ prefix: '_' }),
-        colorFunction,
-        colorMod,
-        simpleVar,
+        each,
+        eachVariables,
         discardComments,
         customMedia,
         nested,
-        each,
-        eachVariables,
         cssFor
     ];
 
     fs.readdirSync("apps/").forEach(folder => {
         if(fs.lstatSync("apps/"+folder).isDirectory() && fs.existsSync('apps/'+folder+'/source/postcss/main.pcss')) {
             src('apps/'+folder+'/source/postcss/main.pcss')
+                .pipe(plumber()) // error handling
                 .pipe(postcss(plugins))
-                .pipe(rename({ extname: '.css' }))
+                .pipe(rename({ basename: camelToDash(folder), extname: '.css' }))
                 .pipe(dest('apps/'+folder+'/public/css'))
             ;
         }
