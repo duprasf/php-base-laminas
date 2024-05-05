@@ -30,7 +30,7 @@ function js(cb) {
                 .pipe(sourcemaps.init())
                 .pipe(concat('scripts.js'))
                 .pipe(sourcemaps.write())
-                .pipe(rename({ basename: folder }))
+                .pipe(rename({ basename: camelToDash(folder) }))
                 .pipe(dest('apps/'+folder+'/public/js'),{ sourcemaps: true })
                 .pipe(terser())
                 .pipe(rename({ extname: '.min.js' }))
@@ -50,7 +50,7 @@ function js(cb) {
                         return JSON.stringify(newJson);
                     }
                 }))
-                .pipe(rename({ basename: folder }))
+                .pipe(rename({ basename: camelToDash(folder) }))
                 .pipe(dest('apps/'+folder+'/public/js'))
             ;
         }
