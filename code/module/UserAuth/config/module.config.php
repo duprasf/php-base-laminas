@@ -138,9 +138,10 @@ return [
             'returnUserData' => Controller\Plugin\ReturnUserData::class,
         ],
         'factories' => [
-
+            Controller\Plugin\AuthenticateUser::class => Factory\Controller\Plugin\AuthenticateUserFactory::class,
         ],
         'aliases' => [
+            'authenticateUser' => Controller\Plugin\AuthenticateUser::class,
         ],
     ],
     'service_manager' => [

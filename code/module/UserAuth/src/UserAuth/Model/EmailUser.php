@@ -15,22 +15,12 @@ use UserAuth\Exception\JwtException;
 use UserAuth\Exception\JwtExpiredException;
 use UserAuth\Module as UserAuth;
 
-class EmailUser extends User implements UserInterface, \ArrayAccess
+class EmailUser extends DbUser implements UserInterface, \ArrayAccess
 {
     /**
     * In DbUser, the ID Field is userId
     */
     protected const ID_FIELD = 'email';
-
-    public const VERIFICATION_DONE = 1;
-    public const VERIFICATION_COULD_NOT_SEND = 2;
-    public const VERIFICATION_EMAIL_SENT = 3;
-
-    protected const TOKEN_TYPE_CONFIRM_EMAIL='confirmEmail';
-    protected const TOKEN_TYPE_RESET_PASSWORD='resetPassword';
-
-    // default time to live (TTL) for link to confirm email is 2 hours
-    protected const TOKEN_TTL_CONFIRM_EMAIL = 7200;
 
     /**
     * @var UrlPlugin
@@ -153,7 +143,7 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
 
             $token = $this->getNewToken();
             $prepared = $pdo->prepare("
-                INSERT INTO `userEmailLogin`
+                INSERT INTO `".$this->getTableName()."`
                     SET email=:email, token=:token, expiryTimestamp=:expire
                 ON DUPLICATE KEY UPDATE
                     token=VALUES(token), expiryTimestamp=VALUES(expiryTimestamp)
@@ -221,12 +211,24 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     */
     public function loadFromSession() : bool
     {
-        $container = new Container('UserAuth');
-
-        if(!isset($container[self::ID_FIELD])) {
+        if(!parent::loadFromSession()) {
             return false;
         }
-        return $this->_loadUserById($container[self::ID_FIELD]);
+        $container = new Container('UserAuth');
+
+        $pdo = $this->getUserDb();
+        $prepared = $pdo->prepare("SELECT userId, email, status FROM `".$this->getTableName()."` WHERE email = ?");
+        $prepared->execute([$container[self::ID_FIELD]]);
+        $data = $prepared->fetch(PDO::FETCH_ASSOC);
+        if(!$data) {
+            $this->data = [];
+            return false;
+        }
+
+        // save the data in the user and in the session (if config allows it)
+        $this->exchangeArray($data);
+        $this->buildLoginSession($data);
+        return true;
     }
 
     /**
@@ -235,10 +237,10 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
     * @param int $id
     * @return bool
     */
-    protected function _loadUserById(int $id) : bool
+    protected function _loadUserById(int|string $id) : bool
     {
-        $pdo = $this->getParentDb();
-        $prepared = $pdo->prepare("SELECT userId, email, emailVerified, status FROM `user` WHERE userId = ?");
+        $pdo = $this->getUserDb();
+        $prepared = $pdo->prepare("SELECT userId, email, status FROM `".$this->getTableName()."` WHERE email = ?");
         $prepared->execute([$id]);
         $data = $prepared->fetch(PDO::FETCH_ASSOC);
         if(!$data) {
@@ -325,7 +327,7 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
             throw new UserException('You cannot use this parent service without a userDb');
         }
 
-        $prepared = $pdo->prepare("SELECT email, token, expiryTimestamp FROM `userEmailLogin` WHERE token LIKE ?");
+        $prepared = $pdo->prepare("SELECT email, token, expiryTimestamp FROM `".$this->getTableName()."` WHERE token LIKE ?");
         $prepared->execute([$token]);
 
         $data = $prepared->fetch(PDO::FETCH_ASSOC);
@@ -361,7 +363,7 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
             throw new UserException('You cannot use this parent service without a userDb');
         }
 
-        $prepared = $pdo->prepare("DELETE FROM userEmailLogin WHERE token=? LIMIT 1");
+        $prepared = $pdo->prepare("DELETE FROM `".$this->getTableName()."` WHERE token=? LIMIT 1");
         $prepared->execute([$token]);
         return !!$prepared->rowCount();
 
@@ -382,7 +384,7 @@ class EmailUser extends User implements UserInterface, \ArrayAccess
         }
 
         // make sure the token is not in the DB already
-        $prepared = $pdo->prepare("SELECT 1 FROM userEmailLogin WHERE token LIKE ?");
+        $prepared = $pdo->prepare("SELECT 1 FROM `".$this->getTableName()."` WHERE token LIKE ?");
         do {
             $token = UUID::v4();
             $prepared->execute([$token]);

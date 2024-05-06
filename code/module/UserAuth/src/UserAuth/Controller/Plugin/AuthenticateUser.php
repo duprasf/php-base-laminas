@@ -1,0 +1,61 @@
+<?php
+
+namespace UserAuth\Controller\Plugin;
+
+use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Http\Header\Authorization;
+use Laminas\Http\Header\GenericHeader;
+use UserAuth\Model\User;
+use UserAuth\Model\EmailUser;
+use UserAuth\Model\JWT;
+use UserAuth\Exception\JwtExpiredException;
+
+
+class AuthenticateUser extends AbstractPlugin
+{
+    private $user;
+    public function setUser(User $obj)
+    {
+        $this->user=$obj;
+        return $this;
+    }
+    protected function getUser()
+    {
+        return $this->user;
+    }
+
+    private $jwtObj;
+    public function setJwtObj(JWT $obj)
+    {
+        $this->jwtObj=$obj;
+        return $this;
+    }
+    protected function getJwtObj()
+    {
+        return $this->jwtObj;
+    }
+
+    public function __invoke(Authorization|GenericHeader|string|null $auth):string|bool
+    {
+        $jwt=null;
+        if($auth instanceOf Authorization) {
+            $jwt = str_replace('Bearer ', '', $auth->getFieldValue());
+        }
+        if($auth instanceOf GenericHeader) {
+            $jwt = $auth->getFieldValue();
+        }
+        if(is_string($auth)) {
+            $jwt = $auth;
+        }
+
+        if(!$jwt) {
+            return false;
+        }
+        if(!$this->getUser()) {
+            return $this->getJwtObj()->getPayload($jwt);
+        }
+
+        $this->getUser()->loadFromJwt($jwt);
+        return true;
+    }
+}

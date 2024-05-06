@@ -55,7 +55,7 @@ class Session {
         let now = Date.now();
         let time = this.getTime(this.settings.expireAt - now)
         if(this.settings.expireAt <= now) {
-            console.log('Session as expired');
+            console.log('Session has expired');
             clearInterval(this.timer);
             return;
         }

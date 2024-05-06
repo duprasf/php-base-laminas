@@ -132,6 +132,17 @@ class DbUser extends User implements UserInterface, \ArrayAccess
         return $this->parentdb;
     }
 
+    protected $tableName;
+    public function setTableName(string $name) : self
+    {
+        $this->tableName = $name;
+        return $this;
+    }
+    protected function getTableName()
+    {
+        return $this->tableName ?? 'user';
+    }
+
     /**
     * Authenticate/login a user using a database. This particular implementation would use a central
     * DB for user and each app could have a user param, that's why it uses a parentDb for authenticating
@@ -152,7 +163,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
             throw new UserException('You cannot use this parent service without a parentDb');
         }
         // get the correct user row from the DB
-        $prepared = $pdo->prepare("SELECT userId, password, status, emailVerified, `user`.* FROM `user` WHERE email LIKE ?");
+        $prepared = $pdo->prepare("SELECT userId, password, status, emailVerified, `".$this->getTableName()."`.* FROM `".$this->getTableName()."` WHERE email LIKE ?");
         $prepared->execute([$email]);
         $data = $prepared->fetch(PDO::FETCH_ASSOC);
 
@@ -199,21 +210,6 @@ class DbUser extends User implements UserInterface, \ArrayAccess
     }
 
     /**
-    * Load a user from the Session if the useSession is set to true in userConfig [default false]
-    *
-    * @return bool, true if successful false otherwise
-    */
-    public function loadFromSession() : bool
-    {
-        $container = new Container('UserAuth');
-
-        if(!isset($container[self::ID_FIELD])) {
-            return false;
-        }
-        return $this->_loadUserById($container[self::ID_FIELD]);
-    }
-
-    /**
     * A method used by loadFromJwt and loadFromSession to load the user without validating credentials
     *
     * @param int $id
@@ -222,7 +218,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
     protected function _loadUserById(int $id) : bool
     {
         $pdo = $this->getParentDb();
-        $prepared = $pdo->prepare("SELECT userId, email, emailVerified, status FROM `user` WHERE userId = ?");
+        $prepared = $pdo->prepare("SELECT userId, email, emailVerified, status FROM `".$this->getTableName()."` WHERE userId = ?");
         $prepared->execute([$id]);
         $data = $prepared->fetch(PDO::FETCH_ASSOC);
         if(!$data) {
@@ -263,7 +259,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
         }
         try {
             $pdo->beginTransaction();
-            $prepared = $pdo->prepare("INSERT INTO `user` SET email=:email,
+            $prepared = $pdo->prepare("INSERT INTO `".$this->getTableName()."` SET email=:email,
                 emailVerified=:emailVerified,
                 password=:password,
                 status=:status
@@ -341,7 +337,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
         }
 
         // make sure the user exists
-        $prepared = $db->prepare("SELECT userId, email FROM `user` WHERE email LIKE ?");
+        $prepared = $db->prepare("SELECT userId, email FROM `".$this->getTableName()."` WHERE email LIKE ?");
         $prepared->execute([$email]);
         $data = $prepared->fetch(PDO::FETCH_ASSOC);
         if(!$data || strtolower($email) != strtolower($data['email'])) {
@@ -402,7 +398,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
 
         try {
             $pdo->beginTransaction();
-            $prepared = $pdo->prepare("UPDATE `user` SET password=:password WHERE userId=:userId");
+            $prepared = $pdo->prepare("UPDATE `".$this->getTableName()."` SET password=:password WHERE userId=:userId");
 
             $prepared->execute([
                 'password'=>password_hash($password, PASSWORD_DEFAULT),
@@ -438,7 +434,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
         $this->getEventManager()->trigger(UserAuth::EVENT_CHANGE_PASSWORD.'.pre', $this, ['email'=>$email, 'userId'=>null]);
 
         // get the correct user row from the DB
-        $prepared = $pdo->prepare("SELECT userId, password, status, emailVerified, `user`.* FROM `user` WHERE email LIKE ?");
+        $prepared = $pdo->prepare("SELECT userId, password, status, emailVerified, `".$this->getTableName()."`.* FROM `".$this->getTableName()."` WHERE email LIKE ?");
         $prepared->execute([$email]);
         $data = $prepared->fetch(PDO::FETCH_ASSOC);
 
@@ -454,7 +450,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
 
         try {
             $pdo->beginTransaction();
-            $prepared = $pdo->prepare("UPDATE `user` SET password=:password WHERE userId=:userId");
+            $prepared = $pdo->prepare("UPDATE `".$this->getTableName()."` SET password=:password WHERE userId=:userId");
 
             $prepared->execute([
                 'password'=>password_hash($newPassword, PASSWORD_DEFAULT),
@@ -515,7 +511,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
 
         try {
             $pdo->beginTransaction();
-            $prepared = $pdo->prepare("UPDATE `user` SET emailVerified=1 WHERE userId=?");
+            $prepared = $pdo->prepare("UPDATE `".$this->getTableName()."` SET emailVerified=1 WHERE userId=?");
             $prepared->execute([$userId]);
 
             $data = $this->getArrayCopy();

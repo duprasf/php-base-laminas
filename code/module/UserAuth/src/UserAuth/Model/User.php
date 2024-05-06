@@ -57,6 +57,17 @@ abstract class User extends \ArrayObject implements UserInterface
         return $this->jwtObj;
     }
 
+    protected $sessionLength;
+    public function setSessionLength(int $length) : self
+    {
+        $this->sessionLength = $length;
+        return $this;
+    }
+    protected function getSessionLength()
+    {
+        return $this->sessionLength;
+    }
+
     /**
     * @var EventManager
     * @internal
@@ -368,7 +379,13 @@ abstract class User extends \ArrayObject implements UserInterface
         if(!isset($container[self::ID_FIELD])) {
             return false;
         }
-        $this->exchangeArray($container->getArrayCopy());
+        $data=$container->getArrayCopy();
+
+        if($data['exp']<time()) {
+            $container->exchangeArray([]);
+            return false;
+        }
+        $this->exchangeArray($data);
         return true;
     }
 
@@ -380,8 +397,13 @@ abstract class User extends \ArrayObject implements UserInterface
     */
     protected function buildLoginSession(array $data) : self
     {
+
         if($this->getUserConfig('useSession')) {
             $container = new Container('UserAuth');
+            if(!isset($data['exp'])) {
+                $data['iat']=time();
+                $data['exp']=time()+$this->getSessionLength();
+            }
             $container->exchangeArray($data);
         }
 
@@ -419,9 +441,10 @@ abstract class User extends \ArrayObject implements UserInterface
     */
     public function logout() : self
     {
+        $data = $this->getArrayCopy();
         // get the email and user ID
-        $email = $this['email'] ?? null;
-        $userId = $this[self::ID_FIELD];
+        $email = $data['email'] ?? null;
+        $userId = $data[self::ID_FIELD] ?? null;
 
         // trigger an event that the user is about to logout
         $this->getEventManager()->trigger(

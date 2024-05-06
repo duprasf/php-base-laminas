@@ -67,6 +67,10 @@ class UserFactory implements FactoryInterface
             $obj->setLang($container->get('lang'));
         }
 
+        if(method_exists($obj, 'setSessionLength')) {
+            $obj->setSessionLength($container->has('UserAuthSessionLength') ? $container->get('UserAuthSessionLength') :  3600);
+        }
+
         $obj->setJwtObj($container->get(JWT::class));
 
         $this->setLdap($obj, $container);

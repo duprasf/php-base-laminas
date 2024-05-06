@@ -15,42 +15,153 @@ class User {
     }
 
     constructor(options) {
+        this.options={};
         for(let i in options) {
             this.options[i] = options[i];
         }
+
         let payload = this.getJwtPayload();
         if(!payload) {
+            return this.setupAppButtons();
+        }
+
+        ready((function() {
+            document.body.addEventListener("jwt-expired", e=>this.logout.bind(this));
+            // Set a time out for when the JWT expires.
+            // The default behavior does not logout the user automatically in case the
+            // app wants to do something before end. It would be easy to set a call
+            // a few minutes before to alert the user to extends the session for example.
+            let payload = this.getJwtPayload();
+            let time = (payload.exp*1000)-Date.now();
+            if(time < 100) {
+                // a minimum of 100 ms should be used for the call back
+                // if the token is expired
+                time = 100;
+            }
+            // the same timeout is set when a user is logged in and timeout ends on logout
+            this.jwtTimeout = setTimeout(this.jwtExpired.bind(this), time);
+
+            if(time <= 100) {
+                // if not logged in, just exit
+                return;
+            }
+
+            for(var key in payload) {
+                if(!this[key]) {
+                    if(key=='id') {
+                        continue;
+                    }
+                    this[key] = payload[key];
+                }
+            }
+
+            document.body.classList.add('isLoggedIn');
+            this.setupAppButtons();
+
+            if(this.options.useSession) {
+                this.startSession();
+            }
+        }).bind(this));
+    }
+
+    setOption(name, value) {
+        this.options[name] = value;
+        return this;
+    }
+
+    getOption(name) {
+        return this.options[name];
+    }
+
+    setupAppButtons() {
+        if(!laminas.isApp) {
             return;
         }
-        for(var key in payload) {
-            if(!this[key]) {
-                this[key] = payload[key];
+        if(!document.querySelector('ul.app-list-account.list-unstyled')) {
+            // just in case the CDTS is not completely loaded when we arrive here
+            setTimeout(function(){laminas.user.setupAppButtons();}, 100);
+            return;
+        }
+        if(!laminas.user.isLoggedIn()) {
+            if(laminas.signInCallback) {
+                this.addSignInBtn(laminas.signInCallback);
             }
+            return;
         }
-        // Set a time out for when the JWT expires.
-        // The default behavior does not logout the user automatically in case the
-        // app wants to do something before end. It would be easy to set a call
-        // a few minutes before to alert the user to extends the session for example.
-        let time = (payload.exp*1000)-Date.now();
-        if(time < 100) {
-            // a minimum of 100 ms should be used for the call back
-            // if the token is expired
-            time = 100;
-            this.jwtTimeout = setTimeout(this.jwtExpired.bind(this), time);
-        } else {
-            /*
-            Session.getSession({
-                expireAt: payload.exp*1000,
-                continueSessionCallback: this.renewSession.bind(this),
-                logoutEvent: this.logout.bind(this)
-            });
-            /**/
-        }
-        // (the same timeout is set when a user is logged in and timeout ends on logout)
+        this.addUserSettingsBtn(laminas.userSettingCallback);
+        this.addSignOutBtn(laminas.signOutCallback);
+    }
 
-        ready(function(){
-            document.body.classList.add('isLoggedIn');
-        });
+    addSignInBtn(callback) {
+        if(!laminas.signInCallback || typeof(laminas.signInCallback) != 'function') {
+            return;
+        }
+
+        let cdtsSignInBtn = document.getElementById('cdts-signin-btn');
+        if(cdtsSignInBtn.getAttribute("href")=="") {
+            cdtsSignInBtn.parentNode.removeChild(cdtsSignInBtn);
+        } else if(cdtsSignInBtn) {
+            return;
+        }
+
+        let a=document.createElement('a');
+        a.id="cdts-signin-btn";
+        a.classList.add('btn');
+        a.href="#";
+        a.innerHTML='<span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp;'+layoutStrings['Sign in']+'</a>';
+
+        let ul = document.querySelector("ul.app-list-account");
+        let li = document.createElement('li');
+        li.appendChild(a);
+        ul.appendChild(li);
+
+        a.addEventListener('click', callback);
+    }
+
+    addSignOutBtn(callback) {
+        let cdtsSignInBtn = document.getElementById('cdts-signin-btn');
+        if(cdtsSignInBtn) {
+            return;
+        }
+        if(!(laminas.signInCallback && typeof(laminas.signInCallback) == 'function')) {
+            return;
+        }
+
+        let a=document.createElement('a');
+        a.id="cdts-signin-btn";
+        a.classList.add('btn');
+        a.href="#";
+        a.innerHTML='<span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp;'+layoutStrings['Sign in']+'</a>';
+
+        let ul = document.querySelector("ul.app-list-account");
+        let li = document.createElement('li');
+        li.appendChild(a);
+        ul.appendChild(ul);
+
+        a.addEventListener('click', callback);
+    }
+
+    addUserSettingsBtn(callback) {
+        let cdtsSignInBtn = document.getElementById('cdts-signin-btn');
+        if(cdtsSignInBtn) {
+            return;
+        }
+        if(!(laminas.signInCallback && typeof(laminas.signInCallback) == 'function')) {
+            return;
+        }
+
+        let a=document.createElement('a');
+        a.id="cdts-signin-btn";
+        a.classList.add('btn');
+        a.href="#";
+        a.innerHTML='<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;'+layoutStrings['Sign in']+'</a>';
+
+        let ul = document.querySelector("ul.app-list-account");
+        let li = document.createElement('li');
+        li.appendChild(a);
+        ul.appendChild(ul);
+
+        a.addEventListener('click', signInCallback);
     }
 
     /**
@@ -75,6 +186,36 @@ class User {
         }
     }
 
+    ping(pingUrl, remember) {
+        let options = {
+            method: 'get',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Access-Token': laminas.user.getJwt()
+            }
+        };
+        fetch(pingUrl, options)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not OK');
+                }
+                return response.json();
+            })
+            .then( response => {
+                if(laminas.user.getOption('verbose')) {
+                    console.log('ping:', response.jwt);
+                }
+                laminas.user.saveJwt(response.jwt, remember ?? laminas.user.getRemembered())
+                if(laminas.user.getOption('verbose')) {
+                    console.log('ping:', laminas.user.getJwtPayload());
+                }
+            })
+            .catch( error => {
+                console.error(error);
+            }
+        );
+    }
+
     /**
     * Let the app know that the JWT has expired and should take the
     * appropriate actions like logout the user
@@ -91,7 +232,18 @@ class User {
     }
 
     logout() {
+        if(laminas.user.getOption('verbose')) {
+            console.log('laminas.user.logout()');
+        }
         clearTimeout(this.jwtTimeout);
+
+        let payload = this.getJwtPayload();
+        for(var key in payload) {
+            if(!this[key]) {
+                this[key] = payload[key];
+            }
+        }
+
         sessionStorage.removeItem('jwt');
         localStorage.removeItem('jwt');
         this.jwtPayload=null;
@@ -99,27 +251,33 @@ class User {
 
     startSession() {
         let payload = this.getJwtPayload();
-        /*
         Session.getSession({
             expireAt: payload.exp*1000,
             continueSessionCallback: this.renewSession.bind(this),
             logoutEvent: this.logout.bind(this)
         });
-        /**/
     }
 
     renewSession() {
-console.log('User renew Session');
         return false;
     }
 
     saveJwt(jwt, remember) {
+        if(laminas.user.getOption('verbose')) {
+            console.log('laminas.user.saveJwt()');
+            console.log(jwt);
+        }
         if(remember == undefined) {
             remember = localStorage.getItem('jwt') ? true : false;
         }
 
         sessionStorage.removeItem('jwt');
         localStorage.removeItem('jwt');
+
+        if(!jwt) {
+            return;
+        }
+
         if(!remember) {
             // if not "remember" save in session until browser stops
             sessionStorage.setItem('jwt', jwt);
@@ -137,10 +295,14 @@ console.log('User renew Session');
         return localStorage.getItem('jwt') ?? sessionStorage.getItem('jwt') ?? null;
     }
 
+    getRemembered() {
+        return localStorage.getItem('jwt') ? true : (sessionStorage.getItem('jwt') ? false : null);
+    }
+
     getJwtPayload () {
         if(!this.jwtPayload) {
             let token = this.getJwt();
-            if(!token){
+            if(!token || typeof token == 'undefined'){
                 return false;
             }
             let base64Url = token.split('.')[1];
@@ -155,4 +317,6 @@ console.log('User renew Session');
     };
 }
 
-laminas.user = new User();
+laminas.user = new User({
+    useSession:true,
+});

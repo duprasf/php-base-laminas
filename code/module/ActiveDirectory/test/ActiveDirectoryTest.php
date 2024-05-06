@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ActiveDirectoryTest;
 
 use PHPUnit\Framework\TestCase;
+use Laminas\Stdlib\ArrayUtils;
 use ActiveDirectory\Model\ActiveDirectory;
 
 final class ActiveDirectoryTest extends TestCase
@@ -15,20 +16,28 @@ final class ActiveDirectoryTest extends TestCase
         // You can override configuration here with test case specific values,
         // such as sample view templates, path stacks, module_listener_options,
         // etc.
-        $configOverrides = [];
-exit(basename(__FILE__).':'.__LINE__.PHP_EOL);
 
-        $this->setApplicationConfig(ArrayUtils::merge(
-            include dirname(dirname(dirname(dirname(__DIR__)))) . '/config/application.config.php',
+        $configOverrides = [];
+        $config = ArrayUtils::merge(
+            include dirname(dirname(dirname(__DIR__))) . '/config/application.config.php',
             $configOverrides
-        ));
+        );
+
+        $this->setLdaps();
 
         parent::setUp();
     }
 
-    public function testAttributesAreEmptyByDefault(): void
+    public function testValidateUsername(): void
     {
         $element = new ActiveDirectory();
-        self::assertEquals([], $element->getAttributes());
+        self::assertEquals('fdupras', $element->validateUsername('fdupras'));
+    }
+
+    public function testInvalidateUsernames(): void
+    {
+        $element = new ActiveDirectory();
+        self::assertEquals(false, $element->validateUsername('invalide user name'));
+        self::assertEquals(false, $element->validateUsername('invalide user name'));
     }
 }
