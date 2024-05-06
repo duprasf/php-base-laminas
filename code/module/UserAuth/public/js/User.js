@@ -318,5 +318,5 @@ class User {
 }
 
 laminas.user = new User({
-    useSession:true,
+    useSession:false,// disabled until Session is fixed
 });
