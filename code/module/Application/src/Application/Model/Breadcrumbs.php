@@ -1,10 +1,13 @@
 <?php
 namespace Application\Model;
 
+use ArrayObject;
+
+
 /**
 * Simple ArrayObject to handle the Breadcrumbs of a page
 */
-class Breadcrumbs extends \ArrayObject
+class Breadcrumbs extends ArrayObject
 {
     protected $hidden = false;
 

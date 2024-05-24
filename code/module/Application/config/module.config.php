@@ -87,6 +87,8 @@ $return = [
             'headScript'=>View\Helper\HeadScript::class,
         ],
         'invokables' => [
+            'setSwitchLangUrl'=>View\Helper\SetSwitchLangUrl::class,
+            'sideMenu'=>View\Helper\SideMenu::class,
             'stripTags' => View\Helper\StripTags::class,
             'breadcrumbs' => View\Helper\BreadcrumbsHelper::class,
             'displayFlashMessages' => View\Helper\DisplayFlashMessages::class,

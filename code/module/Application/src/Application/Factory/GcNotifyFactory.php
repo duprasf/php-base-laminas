@@ -3,8 +3,7 @@ namespace Application\Factory;
 
 use Exception;
 use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\FactoryInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use GcNotify\GcNotify;
 use GcNotify\GcNotify_PHP5;
 

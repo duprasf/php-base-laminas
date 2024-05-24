@@ -27,7 +27,7 @@ class BreadcrumbsHelper implements HelperInterface
     public function getTranslator() {return $this->translator;}
 
     protected $breadcrumbs;
-    public function setBreadcrumbs(?Breadcrumbs $breadcrumbs)
+    public function setBreadcrumbs(null|array|Breadcrumbs $breadcrumbs=null)
     {
         $this->breadcrumbs = $breadcrumbs;
     }
@@ -36,10 +36,22 @@ class BreadcrumbsHelper implements HelperInterface
         return $this->breadcrumbs ?? new Breadcrumbs();
     }
 
-    public function __invoke(?Breadcrumbs $breadcrumbs) {
+    public function __invoke(null|array|Breadcrumbs $breadcrumbs=null) {
         if($breadcrumbs) {
             $this->setBreadcrumbs($breadcrumbs);
         }
+        return $this;
+    }
+
+    /**
+    * THIS SHOULD NOT BE USED ANYMORE
+    * New rules in the canada.ca publishing guide says that the breadcrumb
+    * should end one level below the current page
+    *
+    */
+    public function addCurrentPage()
+    {
+
         return $this;
     }
 
@@ -51,7 +63,10 @@ class BreadcrumbsHelper implements HelperInterface
     public function __toString()
     {
         $translator = $this->getTranslator();
-        $breadcrumbs = $this->getBreadcrumbs()->getArrayCopy();
+        $breadcrumbs = $this->getBreadcrumbs();
+        if(!is_array($breadcrumbs)) {
+            $breadcrumbs=$breadcrumbs->getArrayCopy();
+        }
         $string = '<nav role="navigation" id="wb-bc" property="breadcrumb">
             <h2>'.$translator->translate('You are here:').'</h2>
                 <div class="container">
