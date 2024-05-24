@@ -52,9 +52,13 @@ class FileSystemRoute extends Regex
             return null;
         }
 
+
         // get page from file system
-        $path = preg_replace('(/+$)', '', $match->getParam('path'));
-        if(strpos($path,'..') !== false) return null;
+        $path = $match->getParam('path') ?? '';
+        $path = preg_replace('(/+$)', '', $path);
+        if(strpos($path,'..') !== false) {
+            return null;
+        }
 
         $path = parse_url($path, PHP_URL_PATH);
         if(pathinfo($path, PATHINFO_EXTENSION) == 'html') {

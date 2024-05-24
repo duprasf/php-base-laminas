@@ -20,6 +20,17 @@ class IndexController extends AbstractActionController
         return $this->translator;
     }
 
+    private $metadata;
+    public function setMetadata(ArrayObject $obj)
+    {
+        $this->metadata=$obj;
+        return $this;
+    }
+    protected function getMetadata()
+    {
+        return $this->metadata;
+    }
+
     public function fileSystemPageAction()
     {
         $view = new ViewModel();
@@ -28,7 +39,8 @@ class IndexController extends AbstractActionController
         $view->setVariable('directPath', $this->params('directPath'));
         $view->setVariable('lang', $this->params('lang'));
 
-        $view->setVariable('metadata', new ArrayObject());
+        $view->setVariable('metadata', $this->getMetadata());
+        $view->setVariable('page', $this->getMetadata());
 
         return $view;
     }

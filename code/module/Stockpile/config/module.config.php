@@ -4,6 +4,23 @@ namespace Stockpile;
 return [
     'router' => [
         'routes' => [
+            'file-system-page'=>[
+                'type'=>Route\FileSystemRoute::class,
+                'options'=>[
+                    'regex'=>'/(?P<lang>en|fr)(?P<path>/.*)?$',
+                    'spec'=>'/%lang%/%path%',
+                    'defaults'=>[
+                        'controller'=>Controller\IndexController::class,
+                        'action'=>'file-system-page',
+                    ],
+                    'constraints'=>[
+                        'path'=>'^[\w\d/-]*$',
+                        'lang'=>'en|fr',
+                    ],
+                ],
+                'may_terminate' => true,
+                'child_routes' => [],
+            ],
             'moved-pages-admin'=>[
                 'type'=>'literal',
                 'options'=>[
@@ -63,6 +80,10 @@ return [
         ],
         'invokables'=>[
             Model\Auth::class => Model\Auth::class,
+            Model\OldHealthCanadaMetadata::class,
+        ],
+        'aliases'=>[
+            'OldHealthCanadaMetadata'=>Model\OldHealthCanadaMetadata::class,
         ],
     ],
     'translator' => [
