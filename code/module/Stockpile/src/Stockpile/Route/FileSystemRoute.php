@@ -97,6 +97,8 @@ class FileSystemRoute extends Regex
         foreach($this->defaults as $k=>$v) {
             $match->setParam($k, $v);
         }
+        $match->setParam('lang', $lang);
+        $match->setParam('locale', $lang);
         $match->setParam('path', $fullpath);
         $match->setParam('directPath', $root.$fullpath);
 
