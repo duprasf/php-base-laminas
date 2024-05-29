@@ -319,7 +319,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                             <?if($this->vars('is-app')):?>
                             <dt><?=$this->translate("Version:");?></dt><dd><?=date('y.md', $this->modifiedTimestamp);?></dd>
                             <?else:?>
-                            <dt><?=$this->translate("Date modified:&#32;");?></dt><dd><time property="dateModified"><?=date('Y-m-d', $this->modifiedTimestamp);?></time></dd>
+                            <dt><?=$this->translate("Date modified:");?></dt><dd><time property="dateModified"><?=date('Y-m-d', $this->modifiedTimestamp);?></time></dd>
                             <?endif;?>
                         </dl>
                     </div>
