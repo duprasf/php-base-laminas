@@ -460,7 +460,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                 <?=$this->signInUrl || (!$this->signOutUrl && !$this->appSettingsUrl && $this->signInCallback) ? 'signIn: '.json_encode([["href"=>$this->signInUrl]]).',':'';?>
                 <?=$this->signOutUrl ? 'signOut: '.json_encode([["href"=>$this->signOutUrl]]).',':'';?>
                 <?=$this->appSettingsUrl ? 'appSettings: '.json_encode([["href"=>$this->appSettingsUrl]]).',':'';?>
-                breadcrumbs: <?=$view->breadcrumbItems instanceOf Breadcrumbs ? $view->breadcrumbItems->tojson() : (is_array($view->breadcrumbItems) ? $view->breadcrumbItems : '[]');?>
+                breadcrumbs: <?=$view->breadcrumbItems instanceOf Breadcrumbs ? $view->breadcrumbItems->tojson() : json_encode(is_array($view->breadcrumbItems) ? $view->breadcrumbItems : '[]');?>
             });
             var defPreFooter = document.getElementById("def-preFooter");
             defPreFooter.outerHTML = wet.builder.preFooter({
