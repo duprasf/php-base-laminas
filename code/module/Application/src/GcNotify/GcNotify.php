@@ -1,15 +1,12 @@
 <?php
-
 namespace GcNotify;
 
 /**
-* Class that sends email using GcNotify, this is the Version 7.1+ of PHP, for verions
-* lower than that see GcNotify_PHP5 on GC/Code
+* Class that sends email using GcNotify (https://notification.canada.ca/)
+* This is the Version 7.1+ of PHP, for verions lower than that see GcNotify_PHP5.php
 *
 * @author Francois Dupras, francois.dupras@canada.ca
-* @link https://gccode.ssc-spc.gc.ca/sustaining-applications/gc-notify
-* @link https://notification.canada.ca/
-* @version 1.0
+* @version 1.1
 */
 class GcNotify
 {
@@ -22,18 +19,14 @@ class GcNotify
     protected $errorReportingSecretKey = null;
     public function setErrorReportingKey($key)
     {
-        preg_match('([0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$)', $key, $out);
-        $this->errorReportingSecretKey = $out[0] ?? null;
+        $this->errorReportingSecretKey = $key;
         return $this;
     }
 
     protected $apiKey = null;
-    protected $apiSecretKey = null;
-    public function setApiKey(string $key)
+    public function setApiKey(String $key)
     {
-        $this->apiKey = $key;
-        // The long key is now required, it used to not work, now it is required...
-        $this->apiSecretKey = $key;
+        $this->apiKey=$key;
         return $this;
     }
 
@@ -49,31 +42,41 @@ class GcNotify
         return $this;
     }
 
-    protected $genericErrorTemplate;
+    protected $genericErrorTemplate='e0b6ac22-6bac-4b76-815a-67423219a16e';
     public function setGenericErrorTemplate($template)
     {
         $this->genericErrorTemplate = $template;
         return $this;
     }
 
-    protected $genericErrorEmail;
+    protected $genericErrorEmail='imsd.web-dsgi@hc-sc.gc.ca';
     public function setGenericErrorEmail($email)
     {
         $this->genericErrorEmail = $email;
         return $this;
     }
 
-    public function setConfig(array $config)
+    protected $overrideEmail;
+    public function setOverrideEmail($email)
     {
-        $keys=['appName', 'templates', 'apiKey'];
-        foreach($keys as $key) {
-            if(isset($config[$key])) {
-                call_user_func([$this, 'set'.ucfirst($key)], $config[$key]);
-            }
-        }
+        $this->overrideEmail=$email;
         return $this;
     }
+    public function getOverrideEmail()
+    {
+        return $this->overrideEmail;
+    }
 
+    /**
+    * The bridge is not setup in version PHP 7 of this class since PHP 7 should support TLS 1.2 by default
+    *
+    * @param mixed $bool
+    * @return GcNotify
+    */
+    public function setUseBridge($bool)
+    {
+        return $this;
+    }
 
     protected $appName;
     public function setAppName($name)
@@ -90,7 +93,7 @@ class GcNotify
     protected $templates;
     public function setTemplates(array $templates)
     {
-        $this->templates = $templates;
+        $this->templates=$templates;
         return $this;
     }
     public function setTemplate($name, $id)
@@ -132,9 +135,9 @@ class GcNotify
     public function __toString()
     {
         $data = array(
-            'error' => $this->lastError,
-            'page' => $this->lastPage,
-            'status' => $this->lastStatus
+            'error'=>$this->lastError,
+            'page'=>$this->lastPage,
+            'status'=>$this->lastStatus
         );
 
         return json_encode($data);
@@ -144,8 +147,7 @@ class GcNotify
     * Can you the __invoke to call in Try/Catch or to send an normal email
     * see each functions for specific parameters
     *
-    * @see reportException
-    * @see reportError
+    * @see GcNotify::reportException, GcNotify::reportError
     * @param mixed $data
     */
     public function __invoke(...$data)
@@ -154,7 +156,7 @@ class GcNotify
             return false;
         }
 
-        if($data[0] instanceof \Exception) {
+        if($data[0] instanceOf \Exception) {
             return $this->reportException(...$data);
         } else {
             return $this->sendEmail(...$data);
@@ -166,19 +168,30 @@ class GcNotify
     * it will be sent to the default admin (should be IMSD Web)
     *
     * @param \Exception $e
+    * @param string $extraMessage some extra info added before the exception
     * @param string $appName the name of the app
     * @param string $email recipient email, default ->genericErrorEmail
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function reportException(\Exception $e, ?String $appName = null, ?String $email = null)
+    public function reportException(\Exception $e, ?String $extraMessage=null, ?String $appName=null, ?String $email = null)
     {
-        return $this->reportError([
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'app-name' => $appName ?? $this->getAppName(),
-        ], $email, null, $this->errorReportingSecretKey);
+        $message=trim($extraMessage.PHP_EOL.$e->getMessage()).PHP_EOL;
+        $previous = $e;
+        while($previous = $previous->getPrevious()) {
+            $message=$previous->getMessage().' ('.basename($previous->getFile()).':'.$previous->getLine().')'.PHP_EOL;
+        }
+        return $this->reportError(
+            [
+                'message'=>$e->getMessage(),
+                'file'=>$e->getFile(),
+                'line'=>$e->getLine(),
+                'app-name'=>$appName ?? $this->getAppName(),
+            ],
+            $email ?? $this->genericErrorEmail,
+            null,
+            $this->errorReportingSecretKey
+        );
     }
 
     /**
@@ -192,7 +205,7 @@ class GcNotify
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function reportError(array $error, ?String $recipient = null, ?String $template = null, ?String $apiKey = null, ?array $personalisation = [])
+    public function reportError(array $error, ?String $recipient=null, ?String $template=null, ?String $apiKey=null, ?array $personalisation=[])
     {
         $data = [];
         if(!isset($error['message'])) {
@@ -228,7 +241,7 @@ class GcNotify
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function sendEmail(String $recipient, String $templateId, ?array $personalisation = [], ?String $apiKey = null)
+    public function sendEmail(String $recipient, String $templateId, ?array $personalisation=[], ?String $apiKey=null)
     {
         $data = [];
         $data['template_id'] = $this->templates[$templateId] ?? $templateId;
@@ -248,11 +261,15 @@ class GcNotify
     */
     protected function makeRequest(String $url, array $postData, ?String $apiKey = null)
     {
-        if(!$apiKey && !$this->apiSecretKey) {
+        if(!$apiKey && !$this->apiKey) {
             print 'No API key set for GC Notify';
             return false;
         }
 
+        // if the override is set, make sure all emails are redirected
+        if($this->getOverrideEmail()) {
+            $postData['email_address'] = $this->getOverrideEmail();
+        }
         // create a new cURL resource
         $ch = curl_init();
 
@@ -272,7 +289,7 @@ class GcNotify
 
         // pass the API Key
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Authorization: ApiKey-v1 '.($apiKey ?? $this->apiSecretKey),
+            'Authorization: ApiKey-v1 '.($apiKey ?? $this->apiKey),
             'Content-type: application/json',
         ));
         //curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
