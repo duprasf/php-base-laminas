@@ -259,6 +259,27 @@ class FileEmailUser extends EmailUser
         return $payload;
     }
 
+    /**
+    * Load a user from the Session if the useSession is set to true in userConfig [default false]
+    *
+    * @return bool, true if successful false otherwise
+    */
+    public function loadFromSession() : bool
+    {
+        $container = new Container('UserAuth');
+        if(!isset($container[self::ID_FIELD])) {
+            return false;
+        }
+        $data=$container->getArrayCopy();
+
+        if($data['exp']<time()) {
+            $container->exchangeArray([]);
+            return false;
+        }
+        $this->exchangeArray($data);
+        return true;
+    }
+
     protected function _loadUserById($id) : bool
     {
         $json = $this->getUserJson();
