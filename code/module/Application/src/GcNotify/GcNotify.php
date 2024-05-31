@@ -143,6 +143,17 @@ class GcNotify
         return json_encode($data);
     }
 
+    public function setConfig(array $config)
+    {
+        $keys=['appName', 'templates', 'apiKey'];
+        foreach($keys as $key) {
+            if(isset($config[$key])) {
+                call_user_func([$this, 'set'.ucfirst($key)], $config[$key]);
+            }
+        }
+        return $this;
+    }
+
     /**
     * Can you the __invoke to call in Try/Catch or to send an normal email
     * see each functions for specific parameters
