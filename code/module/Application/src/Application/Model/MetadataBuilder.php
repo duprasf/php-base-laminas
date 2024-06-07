@@ -91,16 +91,16 @@ class MetadataBuilder
 
             if(!isset($data['issued']) || (isset($data['issued']) && !preg_match('(^\d{4}-\d{2}-\d{2}(?: \d{1,2}:\d{1,2}(?::\d{1,2})?)?$)', $data['issued']))) {
                 $error[] = $this->translate('Issued date is invalid');
-                $data['issued'] = time();
-                $data['issuedTimestamp'] = time();
+                $data['issued'] = getenv('ISSUED_DATE') ? strtotime(getenv('ISSUED_DATE')) : time();
+                $data['issuedTimestamp'] = getenv('ISSUED_DATE') ? strtotime(getenv('ISSUED_DATE')) : time();
             }
             else {
                 $data['issuedTimestamp'] = strtotime($data['issued']);
             }
 
             if(!isset($data['modified']) || !is_string($data['modified']) || $data['modified'] == '') {
-                $data['modified'] = $data['issued'];
-                $data['modifiedTimestamp'] = $data['issuedTimestamp'];
+                $data['modified'] = getenv('LAST_MODIFIED_DATE') ? strtotime(getenv('LAST_MODIFIED_DATE')) : $data['issued'];
+                $data['modifiedTimestamp'] = getenv('LAST_MODIFIED_DATE') ? strtotime(getenv('LAST_MODIFIED_DATE')) : $data['issuedTimestamp'];
             }
             else if(isset($data['modified']) && !preg_match('(^\d{4}-\d{2}-\d{2}(?: \d{1,2}:\d{1,2}(?::\d{1,2})?)?$)', $data['modified'])) {
                 $error[] = $this->translate('Modified date is invalid');
