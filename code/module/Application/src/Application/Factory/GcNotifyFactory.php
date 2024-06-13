@@ -5,20 +5,16 @@ use Exception;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use GcNotify\GcNotify;
-use GcNotify\GcNotify_PHP5;
 
 class GcNotifyFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
         try {
-            if(version_compare(PHP_VERSION, '7.1.0') >= 0) {
-                // loading the GcNotify class for PHP >= 7.1
-                $obj = new GcNotify();
-            } else {
-                // loading the GcNotify class for PHP < 7.1
-                $obj = new GcNotify_PHP5();
+            if(version_compare(PHP_VERSION, '7.1.0') <= 0) {
+                throw new Exception('PHP < 7.1 is no longer supported');
             }
+            $obj = new GcNotify();
             if($container->has('gc-notify-error-generic-template')) {
                 $obj->setGenericErrorTemplate($container->get('gc-notify-error-generic-template'));
             }
@@ -29,7 +25,7 @@ class GcNotifyFactory implements FactoryInterface
                 $obj->setErrorReportingKey($container->get('gc-notify-error-reporting-key'));
             }
         } catch(Exception $e) {
-            print 'Missing GC Notify class';
+            print 'PHP < 7.1 is no longer supported (or GcNotify class is missing)';
             exit();
         }
         return $obj;

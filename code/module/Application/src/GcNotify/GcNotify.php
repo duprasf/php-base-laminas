@@ -252,12 +252,13 @@ class GcNotify
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function sendEmail(String $recipient, String $templateId, ?array $personalisation=[], ?String $apiKey=null)
+    public function sendEmail(string $recipient, string $templateId, ?array $personalisation=[], ?string $apiKey=null)
     {
         $data = [];
         $data['template_id'] = $this->templates[$templateId] ?? $templateId;
         $data['email_address'] = $recipient;
         $data['personalisation'] = $personalisation;
+
         return $this->makeRequest('/v2/notifications/email', $data, $apiKey);
     }
 
@@ -270,7 +271,7 @@ class GcNotify
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    protected function makeRequest(String $url, array $postData, ?String $apiKey = null)
+    protected function makeRequest(string $url, array $postData, ?string $apiKey = null)
     {
         if(!$apiKey && !$this->apiKey) {
             print 'No API key set for GC Notify';
