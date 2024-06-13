@@ -11,6 +11,7 @@ use Laminas\EventManager\EventManagerInterface as EventManager;
 use Laminas\Session\Container;
 use UserAuth\Exception\UserException;
 use UserAuth\Exception\InvalidCredentialsException;
+use UserAuth\Exception\MissingComponentException;
 use UserAuth\Exception\JwtException;
 use UserAuth\Exception\JwtExpiredException;
 use UserAuth\Module as UserAuth;

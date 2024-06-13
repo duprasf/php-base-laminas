@@ -9,15 +9,16 @@ use Laminas\Router\Http\Segment;
 
 class Module implements ConfigProviderInterface
 {
-    public const EVENT_REGISTER='usr_register';
-    public const EVENT_REGISTER_FAILED='usr_register_failed';
-    public const EVENT_LOGIN='usr_login';
-    public const EVENT_LOGOUT='usr_logout';
-    public const EVENT_LOGIN_FAILED='usr_login_failed';
-    public const EVENT_RESET_PASSWORD_REQUEST='usr_reset_pwd_request';
-    public const EVENT_RESET_PASSWORD_HANDLED='usr_reset_pwd_handled';
-    public const EVENT_CONFIRM_EMAIL_HANDLED='usr_confirm_email_handled';
-    public const EVENT_CHANGE_PASSWORD='usr_change_password';
+    public const EVENT_REGISTER='user.register';
+    public const EVENT_REGISTER_FAILED='user.register_failed';
+    public const EVENT_LOGIN='user.login';
+    public const EVENT_LOGOUT='user.logout';
+    public const EVENT_LOGIN_FAILED='user.login_failed';
+    public const EVENT_RESET_PASSWORD_REQUEST='user.reset_pwd_request';
+    public const EVENT_RESET_PASSWORD_HANDLED='user.reset_pwd_handled';
+    public const EVENT_CONFIRM_EMAIL_HANDLED='user.confirm_email_handled';
+    public const EVENT_EMAIL_SENT='user.email_sent';
+    public const EVENT_CHANGE_PASSWORD='user.change_password';
 
 
     public function getConfig()
