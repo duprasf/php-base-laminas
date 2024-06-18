@@ -2,9 +2,10 @@
 
 use Laminas\Mvc\Application;
 
-/**
-* @var Laminas\View\Renderer\PhpRenderer $this
-*/
+$this->metadata=new \ArrayObject([
+    'showShare'=>false,
+    'showFeedback'=>false,
+]);
 
 ?>
 <h1>A 404 error occurred</h1>

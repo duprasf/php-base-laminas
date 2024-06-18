@@ -108,7 +108,7 @@ class User {
         a.id="cdts-signin-btn";
         a.classList.add('btn');
         a.href="#";
-        a.innerHTML='<span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp;'+layoutStrings['Sign in']+'</a>';
+        a.innerHTML='<span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp;'+laminas.strings['Sign in']+'</a>';
 
         let ul = document.querySelector("ul.app-list-account");
         let li = document.createElement('li');
@@ -131,7 +131,7 @@ class User {
         a.id="cdts-signin-btn";
         a.classList.add('btn');
         a.href="#";
-        a.innerHTML='<span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp;'+layoutStrings['Sign in']+'</a>';
+        a.innerHTML='<span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp;'+laminas.strings['Sign in']+'</a>';
 
         let ul = document.querySelector("ul.app-list-account");
         let li = document.createElement('li');
@@ -154,7 +154,7 @@ class User {
         a.id="cdts-signin-btn";
         a.classList.add('btn');
         a.href="#";
-        a.innerHTML='<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;'+layoutStrings['Sign in']+'</a>';
+        a.innerHTML='<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;'+laminas.strings['Sign in']+'</a>';
 
         let ul = document.querySelector("ul.app-list-account");
         let li = document.createElement('li');

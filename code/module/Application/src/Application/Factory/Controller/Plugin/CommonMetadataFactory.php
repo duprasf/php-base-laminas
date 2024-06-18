@@ -28,6 +28,7 @@ class CommonMetadataFactory implements FactoryInterface
                 ->getMvcEvent()
                 ->getRouteMatch()
         );
+        //$obj->setAppMetadata($container->get('commonMetadata'));
 
         return $obj;
     }

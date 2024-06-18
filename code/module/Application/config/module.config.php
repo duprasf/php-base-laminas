@@ -49,6 +49,7 @@ $return = [
             Controller\Plugin\SetApiResponseHeaders::class=>Controller\Plugin\SetApiResponseHeaders::class,
         ],
         'factories' => [
+            Controller\Plugin\CommonMetadata::class=>Factory\Controller\Plugin\CommonMetadataFactory::class,
             Controller\Plugin\GetTranslator::class=>Factory\Controller\Plugin\GetTranslatorFactory::class,
             Controller\Plugin\GetUrlHelper::class=>Factory\Controller\Plugin\GetUrlHelperFactory::class,
             Controller\Plugin\Lang::class=>Factory\Controller\Plugin\LangFactory::class,
