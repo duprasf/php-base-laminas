@@ -68,6 +68,7 @@ $return = [
             'metadataBuilder' => Model\MetadataBuilder::class,
         ],
         'factories' => [
+            Model\Metadata::class => Factory\MetadataFactory::class,
             'lang'=>Factory\LangFactory::class,
             'domain'=>Factory\DomainFactory::class,
             Model\MetadataBuilder::class => Factory\MetadataBuilderFactory::class,

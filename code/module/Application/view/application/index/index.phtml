@@ -3,4 +3,42 @@
  * @var Laminas\View\Renderer\PhpRenderer $this
  */
 $this->metadata['title'] = 'This is the default index page and should be overwritten by the application';
+$this->metadata['description'] = 'Please provide a description for your application';
+$this->metadata['subject'] = 'Subject should be a list of specific term described at';
+$this->metadata['issued'] = date('Y-m-d');
 ?>
+<h2><?=$this->translate("Overwrite this page");?></h2>
+<p>
+<?=$this->translate("To overwrite this page, please create a new route called <code>root</code> that redirects to your controller or anywhere else. This is just to overwrite the route called <code>root</code>.");?>
+</p>
+<h2><?=$this->translate("Use a splash page");?></h2>
+<p>
+<?=$this->translate("If you want to use a splash page, you can change the template in your controller to layout/splash (<code>\$view->setTemplate('layout/splash')</code>).");?>
+</p>
+<h3><?=$this->translate("Variables");?></h3>
+<p>
+<?=$this->translate("The splash page require a few variables to be set, since it a bilingual page, you can pass a translator and some strings, or arrays with both language already set.");?>
+</p>
+
+<dl>
+    <dt>title</dt>
+    <dd><?=$this->translate("The title of your app, very simple usually.");?></dd>
+    <dt>description</dt>
+    <dd><?=$this->translate("Description of the application. The client should provide this.");?></dd>
+    <dt>issued</dt>
+    <dd><?=$this->translate("The date your app was first issued");?></dd>
+    <dt>modified</dt>
+    <dd><?=$this->translate("The date your app was modified the last time. This is optional if, for example, this is the first version of the app. If omitted, the issued date will be used as the modified date.");?></dd>
+    <dt>homeRoute</dt>
+    <dd><?=$this->translate("The name of the route for your app home page (i.e.: locale/directory, or locale/myApp/home). This is the same route you would pass to the URL Helper (\$this->url()) when building a link to the home page.");?></dd>
+    <dt>homeRouteParams</dt>
+    <dd><?=$this->translate("An array of the params required to build your home page route.");?></dd>
+    <dt>termsRoute</dt>
+    <dd><?=$this->translate("The name of the route for the terms and condition page, if your app has a terms and condition page. Otherwise it uses the Canada.ca default.");?></dd>
+    <dt>termsRouteParams</dt>
+    <dd><?=$this->translate("An array of the params required to build your terms and conditions page route.");?></dd>
+
+</dl>
+
+<h3><?=$this->translate("French first?");?></h3>
+<p><?=$this->translate("If you are working in an organization that is French first (their HQ is in Québec), you can use the template 'splash-fr-first', to switch the language order around.");?></p>

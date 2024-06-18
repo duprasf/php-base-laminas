@@ -29,8 +29,9 @@ return [
             'default-metadata' => [
                 'title'=>'Health Canada',
                 'description'=>'Health Canada',
-                'author'=>'Health Canada, Government of Canada',
+                'author'=>'Government of Canada, Health Canada',
                 'issued'=>date("Y-m-d"),
+                'subject'=>['en'=>'GV Government and Politics','fr'=>'GV Gouvernement et vie politique'],
             ],
         ],
     ],

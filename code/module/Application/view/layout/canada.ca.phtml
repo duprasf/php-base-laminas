@@ -4,9 +4,10 @@ use \Application\Model\Breadcrumbs;
 
 $layout = $this->viewModel()->getCurrent();
 
-$this->completeMetadata($layout);
 $views = $layout->getChildren();
 $view = isset($views[0]) ? $views[0] : $layout;
+$this->completeMetadata($layout);
+
 if(!$this->lang) {
     // on error pages, the lang is not defined. Use 'en' as default
     $this->lang = 'en';
@@ -95,6 +96,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         // framework placeholder (for user, session timeout, etc.)
         let laminas = {};
         laminas.isApp = '<?=$this->layout()->isApp;?>';
+        laminas.lang = '<?=$this->lang;?>';
         ready(function(){
             <?php if($this->signInCallback):?>
             laminas.signInCallback = <?=$this->signInCallback;?>;
@@ -106,10 +108,14 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             laminas.userSettingCallback = <?=$this->userSettingCallback;?>;
             <?php endif;?>
         });
-        layoutStrings={
+        laminas.strings={
             "Sign in":'<?=$this->translate("Sign in");?>',
             "Sign out":'<?=$this->translate("Sign out");?>',
-            "Application settings":'<?=$this->translate("Application settings");?>'
+            "Application settings":'<?=$this->translate("Application settings");?>',
+            "required":'<?=$this->translate("required", 'layout');?>',
+            "Submit":'<?=$this->translate("Submit", 'layout');?>',
+            "Cancel":'<?=$this->translate("Cancel", 'layout');?>',
+            "loading":'<?=$this->translate("loading", 'layout');?>',
         }
         </script>
         <?=$this->headScript();?>
@@ -142,10 +148,10 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         <link rel="stylesheet" href="<?=$cdtsPath;?>/css/theme.min.css" integrity="<?=$integrity['/css/theme.min.css']??'';?>" crossorigin="anonymous">
         <?php endif;?>
 
+        <link rel="stylesheet" href="<?=$cdtsPath;?>/cdts/cdtsfixes.css" integrity="<?=$integrity['/cdts/cdtsfixes.css']??'';?>" crossorigin="anonymous">
         <?php if($this->isApp):?>
         <link rel="stylesheet" href="<?=$cdtsPath;?>/cdts/cdtsapps.css" integrity="<?=$integrity['/cdts/cdtsapps.css']??'';?>" crossorigin="anonymous">
         <?php endif;?>
-        <link rel="stylesheet" href="<?=$cdtsPath;?>/cdts/cdtsfixes.css" integrity="<?=$integrity['/cdts/cdtsfixes.css']??'';?>" crossorigin="anonymous">
 
         <?php if($this->useFontAwesome):?>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">

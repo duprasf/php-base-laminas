@@ -1,0 +1,122 @@
+<?php
+// make sure there is no layout since this is a complete page
+$this->layout('layout/no-layout');
+// set variable for translation
+$en='en_CA';$fr='fr-CA';
+// make sure the metadata has all the default and is "complete"
+$this->metadata = $this->completeMetadata($this);
+
+// get the translator
+$translator=$this->plugin('translate')->getTranslator();
+// This will translate the string using an array with ['en'=>'...', 'fr'=>'...'] or using the translator
+$translate = function($string, $lang) use ($translator) {
+    if(is_array($string)) {
+        return $string[$lang]??$string[substr($lang,0,2)]??'Missing string';
+    }
+
+    return $translator->translate($string, 'default', $lang);
+};
+
+// You NEED to provide the homeRoute, if not, show an error. Hopefully this is caught before going to prod
+if(!$this->homeRoute) {
+    print $this->translate("You MUST define a <strong>homeRoute</strong> variable to use the splash page", 'layout');
+    exit();
+}
+
+// if the homeRouteParams is not set or is not an array (why?), then just set an empty array
+if(!$this->homeRouteParams || !is_array($this->homeRouteParams)) {
+    $this->homeRouteParams=[];
+}
+
+// Check if any mandatory metadata is missing.
+$missing=false;
+$mandatoryMetadata=['title','description','author','issued','subject'];
+foreach($mandatoryMetadata as $mm) {
+    if(!isset($this->metadata[$mm])) {
+        $missing=true;
+        print sprintf($this->translate('Missing metadata "%s"', 'layout'), $mm).PHP_EOL.'<br>'.PHP_EOL;
+    }
+}
+// if a mandatory metadata is not found, just exit
+if($missing){
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title><?=$translate($this->metadata['title'], $en).' | '.$translate($this->metadata['title'], $fr);?></title>
+        <link rel="schema.dcterms" href="http://purl.org/dc/terms/" />
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta name="description" content="<?=$translate($this->metadata['description'], $en);?>" />
+        <meta name="dcterms.description" content="<?=$translate($this->metadata['description'], $en);?>" />
+        <meta name="dcterms.creator" content="<?=$translate($this->metadata['author'], $en);?>" />
+        <meta name="dcterms.title" content="<?=$translate($this->metadata['title'], $en);?>" />
+        <meta name="dcterms.issued" title="W3CDTF" content="<?=$this->metadata['issued'];?>" />
+        <meta name="dcterms.modified" title="W3CDTF" content="<?=$this->metadata['modified'];?>" />
+        <meta name="dcterms.subject" content="<?=$translate($this->metadata['subject'], $en);?>" />
+        <meta name="dcterms.language" title="ISO639-2" content="eng" />
+        <meta name="robots" content="noindex, follow" />
+
+        <meta property="dcterms:issued" content="<?=$this->metadata['issued'];?>">
+        <meta property="dcterms:modified" content="<?=$this->metadata['modified'];?>">
+        <meta property="dcterms:title" lang="en" content="<?=$translate($this->metadata['title'], $en);?>" />
+        <meta property="dcterms:creator" lang="en" content="<?=$translate($this->metadata['author'], $en);?>">
+        <meta property="dcterms:subject" lang="en" title="gccore" content="<?=$translate($this->metadata['subject'], $en);?>" />
+        <meta property="dcterms:description" lang="en" content="<?=$translate($this->metadata['description'], $en);?>" />
+        <meta property="dcterms:title" lang="fr" content="<?=$translate($this->metadata['title'], $fr);?>" />
+        <meta property="dcterms:creator" lang="fr" content="<?=$translate($this->metadata['author'], $fr);?>">
+        <meta property="dcterms:subject" lang="fr" title="gccore" content="<?=$translate($this->metadata['subject'], $fr);?>" />
+        <meta property="dcterms:description" lang="fr" content="<?=$translate($this->metadata['description'], $fr);?>" />
+
+        <link href="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/assets/favicon.ico" rel="icon" type="image/x-icon" />
+        <link rel="stylesheet" href="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/css/theme.min.css" />
+        <noscript><link rel="stylesheet" href="https://wet-boew.github.io/themes-dist/GCWeb/wet-boew/css/noscript.min.css" /></noscript>
+        <link rel="stylesheet" href="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/css/messages.min.css" />
+    </head>
+
+    <body class="splash" vocab="http://schema.org/" resource="#wb-webpage" typeof="WebPage">
+        <div id="bg" data-wb-randomize='{ "shuffle": true, "selector": "img", "toggle": "hide" }'><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-1.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-2.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-3.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-4.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-5.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-6.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-7.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-8.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-9.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-10.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-11.jpg" alt="" /><img class="hide" src="https://www.canada.ca/content/dam/canada/splash/sp-bg-12.jpg" alt="" /></div>
+        <main property="mainContentOfPage" resource="#wb-main" typeof="WebPageElement">
+            <div class="sp-hb">
+                <div class="sp-bx col-xs-12">
+                    <h1 property="name" class="wb-inv">Canada.ca</h1>
+                    <div class="row">
+                        <div class="col-xs-11 col-md-8" property="publisher" resource="#wb-publisher" typeof="GovernmentOrganization">
+                            <img src="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/assets/sig-blk-en.svg" width="283" alt="Government of Canada" property="logo" /><span class="wb-inv"> / <span lang="fr">Gouvernement du Canada</span></span>
+                            <meta property="name" content="Government of Canada" />
+                            <meta property="name" lang="fr" content="Gouvernement du Canada"/>
+                            <meta property="areaServed" typeof="Country" content="Canada" />
+                        </div>
+                    </div>
+                    <div class="row wb-eqht-grd">
+                        <section class="col-sm-6 text-sm-right">
+                            <h2 class="hght-inhrt h4"><?=$translate($this->metadata['title'], $en);?></h2>
+                            <p><a href="<?=$this->url($this->homeRoute, $this->homeRouteParams);?>" class="btn btn-primary" translate="no">English</a></p>
+                        </section>
+                        <section class="col-sm-6" lang="fr">
+                            <h2 class="hght-inhrt h4"><?=$translate($this->metadata['title'], $fr);?></h2>
+                            <p><a href="<?=$this->url($this->homeRoute, array_merge(['locale'=>'fr'], $this->homeRouteParams));?>" class="btn btn-primary" translate="no">Français</a></p>
+                        </section>
+                    </div>
+
+                </div>
+                <div class="sp-bx-bt col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-7 col-md-8">
+                            <a href="<?=$this->termsUrl?$this->url($this->termsRoute, $this->termsRouteParams):'https://www.canada.ca/en/transparency/terms.html';?>" class="sp-lk">Terms and conditions</a> <span class="glyphicon glyphicon-asterisk"></span> <a href="<?=$this->termsUrl?$this->url($this->termsRoute, array_merge(['locale'=>'fr'], $this->termsRouteParams)):'https://www.canada.ca/fr/transparence/avis.html';?>" class="sp-lk" lang="fr">Avis</a>
+                        </div>
+                        <div class="col-xs-5 col-md-4 text-right mrgn-bttm-md">
+                            <img src="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/assets/wmms-blk.svg" width="127" alt="Symbol of the Government of Canada" /><span class="wb-inv"> / <span lang="fr">Symbole du gouvernement du Canada</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha384-rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB" crossorigin="anonymous"></script>
+        <script src="https://wet-boew.github.io/themes-dist/GCWeb/wet-boew/js/wet-boew.min.js"></script>
+        <script src="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/js/theme.min.js"></script>
+    </body>
+</html>

@@ -5,13 +5,14 @@ use Exception;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Application\View\Helper\CompleteMetadata;
+use Application\Model\Metadata;
+
 
 class CompleteMetadataFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $sm, $requestedName, ?array $options = null)
     {
         $object = new CompleteMetadata();
-        $object->setMetadataBuilder($sm->get('metadataBuilder'));
 
         if(!$sm->has('cdts-integrity')) {
             throw new Exception('You must specify a cdts integrity array');
@@ -26,6 +27,8 @@ class CompleteMetadataFactory implements FactoryInterface
             'path'=>sprintf($sm->has('cdts-path') ? $sm->get('cdts-path') : 'https://www.canada.ca/etc/designs/canada/cdts/gcweb/v%s', $cdtsVersion),
             'env'=>$sm->has('cdts-env') ? $sm->get('cdts-env') : 'dev',
         ]);
+
+        $object->setMetadataObj($sm->get(Metadata::class));
         return $object;
     }
 }

@@ -3,6 +3,9 @@ namespace Application\Model;
 
 use Laminas\Mvc\I18n\Translator;
 
+exit('MetadataBuilder class should not be used anymore. The Metadata class should be used instead. '.basename(__FILE__).':'.__LINE__.PHP_EOL);
+
+
 /**
 * Build the metadata and adds the default values if any or missing
 */
