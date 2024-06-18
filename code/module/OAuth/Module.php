@@ -171,7 +171,7 @@ class Module implements ConfigProviderInterface
 
         // get 'head script' plugin
         $headScript = $viewHelperManager->get('headScript');
-        $headScript->appendFile('/oauth/js/oauth2.js');
+        //$headScript->appendFile('/oauth/js/oauth2.js');
 
     }
 }
