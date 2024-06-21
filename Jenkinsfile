@@ -106,6 +106,10 @@ pipeline {
                     [pattern: '.gitignore', type: 'INCLUDE']
                 ]
             )
+            sh """
+                docker system prune --all --force
+                docker image ls
+            """
 
             script {
                 resultString = "None"
