@@ -11,12 +11,35 @@ use Laminas\Session\Config\SessionConfig;
 use Laminas\Session\Container;
 use Laminas\Session\Validator;
 use Laminas\View\Model\JsonModel;
+use Laminas\ModuleManager\ModuleManager;
+use GcNotify\GcNotify;
+
 
 /**
 * Base configuration class for the Application module. This is the namespace for generic features
 */
 class Module
 {
+    public function init(ModuleManager $manager)
+    {
+        // Get event manager.
+        $eventManager = $manager->getEventManager();
+        $sharedEventManager = $eventManager->getSharedManager();
+        // Register the event listener method.
+        $sharedEventManager->attach(
+            '*',
+            MvcEvent::EVENT_RENDER_ERROR,
+            [$this, 'onError'],
+            100
+        );
+        $sharedEventManager->attach(
+            '*',
+            MvcEvent::EVENT_DISPATCH_ERROR,
+            [$this, 'onError'],
+            100
+        );
+    }
+
     /**
     * @ignore default method for Lamnias, no need to be in documentation
     */
@@ -46,6 +69,7 @@ class Module
             ],
         ];
     }
+
     /**
     * @ignore default method for Lamnias, no need to be in documentation
     */
@@ -218,4 +242,38 @@ class Module
             $layout->setVariable('contentSecurityPolicy', $service->has('contentSecurityPolicy') ? $service->get('contentSecurityPolicy') : null);
         }
     }
+
+    // Event listener method.
+    public function onError(MvcEvent $event)
+    {
+        if(getenv('PHP_DEV_ENV')) {
+            // do not report in dev
+            return;
+        }
+
+        if(!getenv('GC_NOTIFY_ERROR_REPORTING_API_KEY')) {
+            // we do not have the GC Notify Key for reporting errors :(
+            return;
+        }
+
+        $notify = new GcNotify();
+        $notify->setErrorReportingKey(getenv('GC_NOTIFY_ERROR_REPORTING_API_KEY'));
+        $notify->setAppName(getenv('GC_NOTIFY_ERROR_REPORTING_APP_NAME'));
+
+        $exception = $event->getParam('exception');
+        if ($exception) {
+            $notify->reportException($exception);
+            return;
+        }
+        $errorMessage = $event->getError();
+        $controllerName = $event->getController();
+        $notify->reportError([
+            'message'=>$event->getError().PHP_EOL.'___'.PHP_EOL.preg_replace('(#(\d+))', '\1)', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)),
+            'file'=>$event->getController(),
+        ]);
+
+        return;
+    }
+
+
 }

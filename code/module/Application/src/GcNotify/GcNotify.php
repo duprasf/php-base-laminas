@@ -1,12 +1,14 @@
 <?php
 namespace GcNotify;
 
+use Exception;
+
+
 /**
 * Class that sends email using GcNotify (https://notification.canada.ca/)
-* This is the Version 7.1+ of PHP, for verions lower than that see GcNotify_PHP5.php
 *
 * @author Francois Dupras, francois.dupras@canada.ca
-* @version 1.1
+* @version 1.2
 */
 class GcNotify
 {
@@ -195,6 +197,7 @@ class GcNotify
         return $this->reportError(
             [
                 'message'=>$e->getMessage(),
+                'stacktrace'=>preg_replace('(#(\d+))', '\1)', $e->getTraceAsString()).PHP_EOL,
                 'file'=>$e->getFile(),
                 'line'=>$e->getLine(),
                 'app-name'=>$appName ?? $this->getAppName(),
@@ -230,6 +233,9 @@ class GcNotify
         }
         if(!isset($error['app-name'])) {
             $error['app-name'] = $this->appName ?? 'No application name specified';
+        }
+        if(!isset($error['stacktrace'])) {
+            $error['stacktrace'] = '';
         }
 
         if(!isset($data['template_id'])) {
