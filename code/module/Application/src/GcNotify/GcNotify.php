@@ -61,10 +61,18 @@ class GcNotify
     protected $overrideEmail;
     public function setOverrideEmail($email)
     {
+        return $this->setOverwriteEmail($email);
+    }
+    public function setOverwriteEmail($email)
+    {
         $this->overrideEmail=$email;
         return $this;
     }
     public function getOverrideEmail()
+    {
+        return $this->getOverwriteEmail();
+    }
+    public function getOverwriteEmail()
     {
         return $this->overrideEmail;
     }

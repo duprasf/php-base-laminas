@@ -15,15 +15,48 @@ class GcNotifyFactory implements FactoryInterface
                 throw new Exception('PHP < 7.1 is no longer supported');
             }
             $obj = new GcNotify();
-            if($container->has('gc-notify-error-generic-template')) {
-                $obj->setGenericErrorTemplate($container->get('gc-notify-error-generic-template'));
+
+            if(getenv('GC_NOTIFY_TEMPATES')) {
+                $templates=json_decode(getenv('GC_NOTIFY_TEMPATES'), true);
+                if(json_last_error()==JSON_ERROR_NONE) {
+                    $obj->setTemplates($templates);
+                }
             }
-            if($container->has('gc-notify-error-generic-email')) {
-                $obj->setGenericErrorEmail($container->get('gc-notify-error-generic-email'));
+            if($container->has('gc-notify-templates')) {
+                $obj->setTemplates($container->get('gc-notify-templates'));
+            }
+
+            if(getenv('GC_NOTIFY_API_KEY')) {
+                $obj->setApiKey(getenv('GC_NOTIFY_API_KEY'));
+            }
+            if($container->has('gc-notify-error-reporting-key')) {
+                $obj->setApiKey($container->get('gc-notify-error-reporting-key'));
+            }
+
+            if(getenv('GC_NOTIFY_ERROR_REPORTING_API_KEY')) {
+                $obj->setErrorReportingKey(getenv('GC_NOTIFY_ERROR_REPORTING_API_KEY'));
             }
             if($container->has('gc-notify-error-reporting-key')) {
                 $obj->setErrorReportingKey($container->get('gc-notify-error-reporting-key'));
             }
+
+            if(getenv('GC_NOTIFY_ERROR_REPORTING_APP_NAME')) {
+                $obj->setAppName(getenv('GC_NOTIFY_ERROR_REPORTING_APP_NAME'));
+            }
+            if(getenv('GC_NOTIFY_APP_NAME')) {
+                $obj->setAppName(getenv('GC_NOTIFY_APP_NAME'));
+            }
+            if($container->has('gc-notify-error-reporting-app-name')) {
+                $obj->setAppName($container->get('gc-notify-error-reporting-app-name'));
+            }
+
+            if(getenv('GC_NOTIFY_OVERWRITE_ALL_EMAIL')) {
+                $obj->setOverwriteEmail(getenv('GC_NOTIFY_OVERWRITE_ALL_EMAIL'));
+            }
+            if($container->has('gc-notify-overwrite_all_email')) {
+                $obj->setOverwriteEmail($container->get('gc-notify-overwrite_all_email'));
+            }
+
         } catch(Exception $e) {
             print 'PHP < 7.1 is no longer supported (or GcNotify class is missing)';
             exit();
