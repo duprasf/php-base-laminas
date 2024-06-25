@@ -69,6 +69,7 @@ $return = [
             'metadataBuilder' => Model\MetadataBuilder::class,
         ],
         'factories' => [
+            Command\Cronjob::class=>Factory\Command\CronjobCommandFactory::class,
             Model\Metadata::class => Factory\MetadataFactory::class,
             'lang'=>Factory\LangFactory::class,
             'domain'=>Factory\DomainFactory::class,
@@ -137,6 +138,11 @@ $return = [
                 'base_dir' => __DIR__ . '/../language',
                 'pattern'  => '%s.mo',
             ],
+        ],
+    ],
+    'laminas-cli' => [
+        'commands' => [
+            'cronjob' => Command\Cronjob::class,
         ],
     ],
 ];
