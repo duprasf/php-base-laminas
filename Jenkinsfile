@@ -107,8 +107,17 @@ pipeline {
                 ]
             )
             sh """
-                docker system prune --all --force
-                docker image ls
+                docker rmi php-base-laminas:8.2
+                docker rmi php-base-laminas:8.2${version}
+                docker rmi php-base-laminas:8.3
+                docker rmi php-base-laminas:8.3${version}
+                docker rmi php-base-laminas:latest
+                docker rmi php-base-laminas:8.2-mongodb
+                docker rmi php-base-laminas:8.2${version}-mongodb
+                docker rmi php-base-laminas:8.3${version}-mongodb
+                docker rmi php-base-laminas:8.3-mongodb
+                docker rmi php-base-laminas:latest-mongodb
+                docker rmi node:18-slim
             """
 
             script {
