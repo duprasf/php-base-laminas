@@ -117,7 +117,7 @@ pipeline {
                 docker rmi php-base-laminas:8.3${version}-mongodb
                 docker rmi php-base-laminas:8.3-mongodb
                 docker rmi php-base-laminas:latest-mongodb
-                docker rmi node:18-slim
+                docker image ls
             """
 
             script {
