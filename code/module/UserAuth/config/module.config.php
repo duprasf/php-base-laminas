@@ -155,9 +155,13 @@ return [
             Model\FileEmailUser::class => Factory\UserFactory::class,
             Model\LdapUser::class => Factory\UserFactory::class,
             Model\JWT::class => Factory\JWTFactory::class,
+            Listener\UserAuthListener::class => Factory\Listener\UserAuthListenerFactory::class,
         ],
         'aliases' => [
         ],
+    ],
+    'listeners'=>[
+        Listener\UserAuthListener::class,
     ],
     'view_helpers' => [
         'invokables' => [

@@ -35,8 +35,8 @@ class SessionManagerFactory implements FactoryInterface
         }
 
         $sessionStorage = null;
-        if (isset($session['storage'])) {
-            $class = $session['storage'];
+        if (isset($session['session_storage'])) {
+            $class = $session['session_storage'];
             $sessionStorage = new $class();
         }
 

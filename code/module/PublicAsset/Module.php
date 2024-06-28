@@ -12,13 +12,9 @@ use Laminas\EventManager\Event;
 */
 class Module
 {
-	public function onBootstrap(MvcEvent $e)
-	{
-		$eventManager        = $e->getApplication()->getEventManager();
-		$moduleRouteListener = new ModuleRouteListener();
-		$moduleRouteListener->attach($eventManager);
-	}
-
+    /**
+    * @ignore this is a default method for Lamnias, no need to be in documentation
+    */
     public function getConfig(): array
     {
         /** @var array $config */
@@ -31,7 +27,9 @@ class Module
         return $config;
     }
 
-
+    /**
+    * @ignore this is a default method for Lamnias, no need to be in documentation
+    */
 	public function getAutoloaderConfig()
 	{
 		return array(

@@ -77,10 +77,14 @@ $return = [
             SessionManager::class => Factory\SessionManagerFactory::class,
             GcNotify::class=>Factory\GcNotifyFactory::class,
             "filesize-suffixes"=>Factory\FilesizeSuffixesFactory::class,
+            Listener\ApplicationSetupListener::class=>Factory\Listener\ApplicationSetupListenerFactory::class,
         ],
         'invokables' => [
             'breadcrumbs' => Model\Breadcrumbs::class,
         ],
+    ],
+    'listeners' => [
+        Listener\ApplicationSetupListener::class,
     ],
     'view_helpers' => [
         'aliases'=> [

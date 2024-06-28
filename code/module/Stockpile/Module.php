@@ -9,6 +9,9 @@ use Laminas\ModuleManager\Feature\ConfigProviderInterface;
 */
 class Module implements ConfigProviderInterface
 {
+    /**
+    * @ignore this is a default method for Lamnias, no need to be in documentation
+    */
     public function getConfig()
     {
         $config = include __DIR__ . '/config/module.config.php';
@@ -20,6 +23,9 @@ class Module implements ConfigProviderInterface
         return $config;
     }
 
+    /**
+    * @ignore this is a default method for Lamnias, no need to be in documentation
+    */
     public function getAutoloaderConfig()
     {
         return [

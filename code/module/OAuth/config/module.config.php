@@ -30,11 +30,15 @@ return [
         'invokables'=>[
         ],
         'factories' => [
+            Listener\OAuthSetupListener::class=>Factory\Listener\OAuthSetupListenerFactory::class,
             Model\OAuth2Client::class => Factory\OAuth2ClientFactory::class,
             Model\OAuth2Server::class => Factory\OAuth2ServerFactory::class,
         ],
         'aliases' => [
         ],
+    ],
+    'listeners'=>[
+        Listener\OAuthSetupListener::class,
     ],
     'view_helpers' => [
         'invokables' => [

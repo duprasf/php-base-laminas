@@ -10,6 +10,9 @@ use Laminas\Router\Http\Literal;
 
 class Module implements ConfigProviderInterface
 {
+    /**
+    * @ignore this is a default method for Lamnias, no need to be in documentation
+    */
     public function getConfig()
     {
         $config = include __DIR__ . '/config/module.config.php';
@@ -21,6 +24,9 @@ class Module implements ConfigProviderInterface
         return $config;
     }
 
+    /**
+    * @ignore this is a default method for Lamnias, no need to be in documentation
+    */
     public function getAutoloaderConfig()
     {
         return [
@@ -33,145 +39,5 @@ class Module implements ConfigProviderInterface
                 ],
             ],
         ];
-    }
-
-    public function onBootstrap(MvcEvent $e)
-    {
-        $application    = $e->getApplication();
-        $sm = $application->getServiceManager();
-        $eventManager   = $application->getEventManager();
-
-        $router = $sm->get('router');
-        $router->addRoute(
-            'oauth-server',
-            [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:locale]/oauth',
-                    'defaults' => [
-                        'controller' => Controller\OAuth2ServerController::class,
-                        'action'     => 'token',
-                        'locale'     => 'en',
-                    ],
-                    'contraints'=> [
-                        'locale' => 'en|fr',
-                    ],
-                ],
-                'may_terminate' => true,
-                'child_routes'=>[
-                    'login' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/login',
-                            'defaults' => [
-                                'action' => 'authorize-login',
-                            ],
-                        ],
-                    ],
-                    'authorize' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/authorize',
-                            'defaults' => [
-                                'action' => 'authorize',
-                            ],
-                        ],
-                    ],
-                    'revoke'    => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/revoke',
-                            'defaults' => [
-                                'action' => 'revoke',
-                            ],
-                        ],
-                    ],
-                    'resource'  => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/resource',
-                            'defaults' => [
-                                'action' => 'resource',
-                            ],
-                        ],
-                    ],
-                    'code'      => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/receivecode',
-                            'defaults' => [
-                                'action' => 'receiveCode',
-                            ],
-                        ],
-                    ],
-                    'admin'      => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/admin',
-                            'defaults' => [
-                                'action' => 'admin',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            -8999
-        );
-        $router->addRoute(
-            'oauth-client',
-            [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/oauth-login[/:method]',
-                    'constraints'=>[
-                        'method'=>'(?!return).*',
-                    ],
-                    'defaults' => [
-                        'controller' => Controller\OAuth2ClientController::class,
-                        'action'     => 'index',
-                        'method'     => '',
-                    ],
-                ],
-                'may_terminate' => true,
-                'child_routes'=>[
-                    'return' => [
-                        'type'    => Segment::class,
-                        'options' => [
-                            'route'    => '/return',
-                            'defaults' => [
-                                'action'     => 'return',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            -9000
-        );
-        $router->addRoute(
-            'oauth-js',
-            [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/oauth]/js/oauth2.js',
-                    'constraints'=>[
-                        'method'=>'(?!return).*',
-                    ],
-                    'defaults' => [
-                        'controller' => Controller\OAuth2ClientController::class,
-                        'action'     => 'js',
-                    ],
-                ],
-            ],
-            -9000
-        );
-
-        //*****************************************************
-        // get view helper manager
-        $viewHelperManager = $sm->get('ViewHelperManager');
-
-        // get 'head script' plugin
-        $headScript = $viewHelperManager->get('headScript');
-        //$headScript->appendFile('/oauth/js/oauth2.js');
-
     }
 }
