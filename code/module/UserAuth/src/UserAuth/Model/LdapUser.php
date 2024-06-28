@@ -2,22 +2,22 @@
 namespace UserAuth\Model;
 
 use Exception;
-use \Psr\Log\LoggerInterface;
-use \GcNotify\GcNotify;
-use \Laminas\Session\Container;
-use \Laminas\Mvc\I18n\Translator as MvcTranslator;
-use \Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack as UrlPlugin;
-use \Laminas\EventManager\EventManagerInterface as EventManager;
-use \Laminas\Ldap\Exception\LdapException;
-use \UserAuth\Module as UserAuth;
-use \UserAuth\Exception\UserException;
-use \UserAuth\Exception\InvalidCredentialsException;
-use \UserAuth\Exception\InvalidPassword;
-use \UserAuth\Exception\UserConfirmException;
-use \UserAuth\Exception\UserMethodUnavailable;
-use \UserAuth\Exception\JwtException;
-use \UserAuth\Exception\JwtExpiredException;
-use \ActiveDirectory\Model\ActiveDirectory;
+use Psr\Log\LoggerInterface;
+use GcNotify\GcNotify;
+use Laminas\Session\Container;
+use Laminas\Mvc\I18n\Translator as MvcTranslator;
+use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack as UrlPlugin;
+use Laminas\EventManager\EventManagerInterface as EventManager;
+use Laminas\Ldap\Exception\LdapException;
+use ActiveDirectory\Model\ActiveDirectory;
+use UserAuth\UserEvent;
+use UserAuth\Exception\UserException;
+use UserAuth\Exception\InvalidCredentialsException;
+use UserAuth\Exception\InvalidPassword;
+use UserAuth\Exception\UserConfirmException;
+use UserAuth\Exception\UserMethodUnavailable;
+use UserAuth\Exception\JwtException;
+use UserAuth\Exception\JwtExpiredException;
 
 class LdapUser extends User
 {
@@ -49,13 +49,13 @@ class LdapUser extends User
     */
     public function authenticate(String $email, String $password) : bool
     {
-        $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN.'.pre', $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN.'.pre', $this, ['email'=>$email]);
 
         try {
             $ad = $this->getLdap();
             $data = $ad->getUserByEmailOrUsername($email, returnFirstElementOnly:true);
             if(!$data || !isset($data['dn']) || !$ad->validateCredentials($data['dn'], $password)) {
-                $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN_FAILED, $this, ['email'=>$email]);
+                $this->getEventManager()->trigger(UserEvent::LOGIN_FAILED, $this, ['email'=>$email]);
                 // can return false or throw an exception, it depends on your implementation
                 throw new InvalidCredentialsException();
             }
@@ -71,7 +71,7 @@ class LdapUser extends User
         // but I know not every use case would work with that.
         $this->buildLoginSession($data);
 
-        $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN, $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email'=>$email]);
 
         return true;
     }

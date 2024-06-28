@@ -15,7 +15,7 @@ use UserAuth\Exception\UserException;
 use UserAuth\Exception\InvalidCredentialsException;
 use UserAuth\Exception\JwtException;
 use UserAuth\Exception\JwtExpiredException;
-use UserAuth\Module as UserAuth;
+use UserAuth\UserEvent;
 
 class FileEmailUser extends EmailUser
 {
@@ -163,7 +163,7 @@ class FileEmailUser extends EmailUser
     {
         $email = strtolower($email);
         // signal that the login process will start
-        $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER.'.pre', $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::REGISTER.'.pre', $this, ['email'=>$email]);
 
 
         // as a email user, we don't "authenticate" we add the email in the file with a token
@@ -240,7 +240,7 @@ class FileEmailUser extends EmailUser
         $this->buildLoginSession($data);
 
         // signal that the login was successful
-        $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN, $this, ['email'=>$data['email']]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email'=>$data['email']]);
 
         return true;
     }

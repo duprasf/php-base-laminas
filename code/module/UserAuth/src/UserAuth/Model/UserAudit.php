@@ -1,10 +1,10 @@
 <?php
 namespace UserAuth\Model;
 
-use \Laminas\EventManager\SharedEventManager;
-use \UserAuth\Module as UserAuth;
-use \Psr\Log\LoggerInterface;
-use \Psr\Log\LogLevel;
+use Psr\Log\LogLevel;
+use Psr\Log\LoggerInterface;
+use Laminas\EventManager\SharedEventManager;
+use UserAuth\UserEvent;
 
 class UserAudit
 {
@@ -42,33 +42,33 @@ class UserAudit
         $message = '[USER_AUTH] ';
 
         switch($e->getName()) {
-            case UserAuth::EVENT_LOGIN:
+            case UserEvent::LOGIN:
                 $message.='[LOGIN] {username} ({userId}) has login successfully from {ip} using {userAgent}.';
                 break;
-            case UserAuth::EVENT_LOGIN_FAILED:
+            case UserEvent::LOGIN_FAILED:
                 $level = LogLevel::WARNING;
                 $message.='[LOGIN_FAILED] A failed login attempt for {username} ({userId}) was attempted from {ip} using {userAgent}.';
                 break;
-            case UserAuth::EVENT_LOGOUT:
+            case UserEvent::LOGOUT:
                 $message.='[LOGOUT] {username} ({userId}) logged out.';
                 break;
-            case UserAuth::EVENT_RESET_PASSWORD_REQUEST:
+            case UserEvent::RESET_PASSWORD_REQUEST:
                 $message.='[RESET_PASS_REQUEST] A password reset was requested for {username} ({userId}) from {ip} using {userAgent} sent to {email}.';
                 break;
-            case UserAuth::EVENT_RESET_PASSWORD_HANDLED:
+            case UserEvent::RESET_PASSWORD_HANDLED:
                 $message.='[RESET_PASS_HANDLED] A password reset link was used for {username} ({userId}) from {ip} using {userAgent}.';
                 break;
-            case UserAuth::EVENT_CONFIRM_EMAIL_HANDLED:
+            case UserEvent::CONFIRM_EMAIL_HANDLED:
                 $message.='[CONFIRM_EMAIL_SENT] A confirmation email was sent to {email} for user {username} ({userId}).';
                 break;
-            case UserAuth::EVENT_REGISTER:
+            case UserEvent::REGISTER:
                 $message.='[REGISTER] A new user, {username} ({userId}), has registered from {ip} using {userAgent}.';
                 break;
-            case UserAuth::EVENT_REGISTER_FAILED:
+            case UserEvent::REGISTER_FAILED:
                 $level = LogLevel::ALERT;
                 $message.='[REGISTER_FAILED] A failed registration was detected with username {username} from {ip} using {userAgent}.';
                 break;
-            case UserAuth::EVENT_CHANGE_PASSWORD:
+            case UserEvent::CHANGE_PASSWORD:
                 $message.='[PASSWORD_CHANGED] A password was successfully changed for {username} ({userId}) from {ip} using {userAgent}.';
                 break;
             default:

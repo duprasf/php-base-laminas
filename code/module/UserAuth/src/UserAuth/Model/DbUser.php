@@ -1,20 +1,20 @@
 <?php
 namespace UserAuth\Model;
 
-use \PDO;
-use \GcNotify\GcNotify;
-use \Psr\Log\LoggerInterface;
-use \Laminas\Mvc\I18n\Translator as MvcTranslator;
-use \Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack as UrlPlugin;
-use \Laminas\EventManager\EventManagerInterface as EventManager;
-use \Laminas\Session\Container;
-use \UserAuth\Exception\UserException;
-use \UserAuth\Exception\InvalidCredentialsException;
-use \UserAuth\Exception\InvalidPassword;
-use \UserAuth\Exception\UserConfirmException;
-use \UserAuth\Exception\JwtException;
-use \UserAuth\Exception\JwtExpiredException;
-use \UserAuth\Module as UserAuth;
+use PDO;
+use GcNotify\GcNotify;
+use Psr\Log\LoggerInterface;
+use Laminas\Mvc\I18n\Translator as MvcTranslator;
+use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack as UrlPlugin;
+use Laminas\EventManager\EventManagerInterface as EventManager;
+use Laminas\Session\Container;
+use UserAuth\Exception\UserException;
+use UserAuth\Exception\InvalidCredentialsException;
+use UserAuth\Exception\InvalidPassword;
+use UserAuth\Exception\UserConfirmException;
+use UserAuth\Exception\JwtException;
+use UserAuth\Exception\JwtExpiredException;
+use UserAuth\UserEvent;
 
 class DbUser extends User implements UserInterface, \ArrayAccess
 {
@@ -156,7 +156,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
     public function authenticate(String $email, String $password) : bool
     {
         // signal that the login process will start
-        $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN.'.pre', $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN.'.pre', $this, ['email'=>$email]);
         $pdo = $this->getParentDb();
         if(!$pdo) {
             // cannot use this method if the parentDb was not set
@@ -170,7 +170,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
         // if there is no data/user or if the password does not match...
         if(!$data || !password_verify($password, $data['password'])) {
             // signal that the login failed and return false
-            $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN_FAILED, $this, ['email'=>$email, 'userId'=>$data['userId']??null]);
+            $this->getEventManager()->trigger(UserEvent::LOGIN_FAILED, $this, ['email'=>$email, 'userId'=>$data['userId']??null]);
             throw new InvalidCredentialsException();
         }
         // remove the password from the data array for security (it is an hash but still, better safe than sorry)
@@ -183,7 +183,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
         $this->buildLoginSession($data);
 
         // signal that the login was successful
-        $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN, $this, ['email'=>$email, 'userId'=>$data['userId']]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email'=>$email, 'userId'=>$data['userId']]);
 
         return true;
     }
@@ -246,7 +246,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
     public function register(String $email, String $password, String $confirmPassword, ?GcNotify $notify)
     {
         // trigger the start of the registration
-        $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER.'.pre', $this, ['email'=>$email, 'userId'=>null]);
+        $this->getEventManager()->trigger(UserEvent::REGISTER.'.pre', $this, ['email'=>$email, 'userId'=>null]);
 
         // if the password is invalid, the method throws an Exception
         $this->validatePassword($password, $confirmPassword);
@@ -299,12 +299,12 @@ class DbUser extends User implements UserInterface, \ArrayAccess
             // if there was no errors, commit all change to the DB
             $pdo->commit();
             // trigger the event that the registration is completed
-            $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER, $this, ['email'=>$data['email'], 'userId'=>$data['userId']]);
+            $this->getEventManager()->trigger(UserEvent::REGISTER, $this, ['email'=>$data['email'], 'userId'=>$data['userId']]);
         } catch(\Exception $e){
             // roll back anything that was written in the DB
             $pdo->rollBack();
             // if anything went wrong, trigger the event that registration failed and send the Exception in the event
-            $this->getEventManager()->trigger(UserAuth::EVENT_REGISTER_FAILED, $this, ['email'=>$data['email'], 'userId'=>null, 'exception'=>$e]);
+            $this->getEventManager()->trigger(UserEvent::REGISTER_FAILED, $this, ['email'=>$data['email'], 'userId'=>null, 'exception'=>$e]);
             // throw the Exception to be caught by the app
             throw $e;
         }
@@ -329,7 +329,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
     public function requestResetPassword(String $email, GcNotify $notify)
     {
         // trigger event that the reset request is starting
-        $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_REQUEST, $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::RESET_PASSWORD_REQUEST, $this, ['email'=>$email]);
         $db = $this->getParentDb();
         if(!$pdo) {
             // cannot use this method if the parentDb was not set
@@ -391,7 +391,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
             throw new UserException('Invalid token');
         }
 
-        $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_HANDLED.'.pre', $this, ['email'=>null, 'userId'=>$userId]);
+        $this->getEventManager()->trigger(UserEvent::RESET_PASSWORD_HANDLED.'.pre', $this, ['email'=>null, 'userId'=>$userId]);
 
         // validatePassword will try exception if errors are found.
         $this->validatePassword($password, $confirm);
@@ -407,7 +407,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
             // token is single use, make sure it is deleted
             $this->removeToken($token);
             $pdo->commit();
-            $this->getEventManager()->trigger(UserAuth::EVENT_RESET_PASSWORD_HANDLED, $this, ['email'=>null, 'userId'=>$userId]);
+            $this->getEventManager()->trigger(UserEvent::RESET_PASSWORD_HANDLED, $this, ['email'=>null, 'userId'=>$userId]);
             return true;
         } catch(\Exception $e){
             $pdo->rollBack();
@@ -431,7 +431,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
             throw new UserException('You cannot use this parent service without a parentDb');
         }
 
-        $this->getEventManager()->trigger(UserAuth::EVENT_CHANGE_PASSWORD.'.pre', $this, ['email'=>$email, 'userId'=>null]);
+        $this->getEventManager()->trigger(UserEvent::CHANGE_PASSWORD.'.pre', $this, ['email'=>$email, 'userId'=>null]);
 
         // get the correct user row from the DB
         $prepared = $pdo->prepare("SELECT userId, password, status, emailVerified, `".$this->getTableName()."`.* FROM `".$this->getTableName()."` WHERE email LIKE ?");
@@ -440,7 +440,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
 
         // if there is no data/user or if the password does not match...
         if(!$data || !password_verify($existingPassword, $data['password'])) {
-            $this->getEventManager()->trigger(UserAuth::EVENT_CHANGE_PASSWORD.'.err', $this, ['email'=>$email, 'userId'=>$data['userId']??null]);
+            $this->getEventManager()->trigger(UserEvent::CHANGE_PASSWORD.'.err', $this, ['email'=>$email, 'userId'=>$data['userId']??null]);
             // signal that the login failed and return false
             throw new InvalidPassword();
         }
@@ -459,7 +459,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
             // token is single use, make sure it is deleted
             $this->removeToken($token);
             $pdo->commit();
-            $this->getEventManager()->trigger(UserAuth::EVENT_CHANGE_PASSWORD, $this, ['email'=>$email, 'userId'=>$data['userId']]);
+            $this->getEventManager()->trigger(UserEvent::CHANGE_PASSWORD, $this, ['email'=>$email, 'userId'=>$data['userId']]);
             return true;
         } catch(\Exception $e){
             $pdo->rollBack();
@@ -485,27 +485,27 @@ class DbUser extends User implements UserInterface, \ArrayAccess
 
         $userId = $this->getUserIdFromToken($token, self::TOKEN_TYPE_CONFIRM_EMAIL);
 
-        $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.pre', $this, ['token'=>$token, 'userId'=>$userId]);
+        $this->getEventManager()->trigger(UserEvent::CONFIRM_EMAIL_HANDLED.'.pre', $this, ['token'=>$token, 'userId'=>$userId]);
 
         if(!$userId) {
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'token not found or expired', 'errCode'=>UserConfirmException::CODE_INVALID_TOKEN]);
+            $this->getEventManager()->trigger(UserEvent::CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'token not found or expired', 'errCode'=>UserConfirmException::CODE_INVALID_TOKEN]);
             throw new UserConfirmException('token not found', UserConfirmException::CODE_INVALID_TOKEN);
         }
 
         if(!$this->_loadUserById($userId)) {
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'user does not exists', 'errCode'=>UserConfirmException::CODE_USER_DOES_NOT_EXISTS]);
+            $this->getEventManager()->trigger(UserEvent::CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'user does not exists', 'errCode'=>UserConfirmException::CODE_USER_DOES_NOT_EXISTS]);
             throw new UserConfirmException('user does not exists', UserConfirmException::CODE_USER_DOES_NOT_EXISTS);
         }
 
         if($this['emailVerified']) {
             $this->logout();
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'email already confirmed', 'errCode'=>UserConfirmException::CODE_EMAIL_ALREADY_CONFIRMED]);
+            $this->getEventManager()->trigger(UserEvent::CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'email already confirmed', 'errCode'=>UserConfirmException::CODE_EMAIL_ALREADY_CONFIRMED]);
             throw new UserConfirmException('email already confirmed', UserConfirmException::CODE_EMAIL_ALREADY_CONFIRMED);
         }
 
         if($this['status'] == self::STATUS_BLOCKED_BY_ADMIN || $this['status'] == self::STATUS_DELETED || $this['status'] == self::STATUS_INACTIVE) {
             $this->logout();
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'User is blocked', 'errCode'=>UserConfirmException::CODE_USER_IS_BLOCKED]);
+            $this->getEventManager()->trigger(UserEvent::CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'User is blocked', 'errCode'=>UserConfirmException::CODE_USER_IS_BLOCKED]);
             throw new UserConfirmException('User is blocked', UserConfirmException::CODE_USER_IS_BLOCKED);
         }
 
@@ -522,13 +522,13 @@ class DbUser extends User implements UserInterface, \ArrayAccess
             $this->removeToken($token);
 
             $pdo->commit();
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED, $this, ['email'=>$this['email'], 'userId'=>$this['userId']??null]);
+            $this->getEventManager()->trigger(UserEvent::CONFIRM_EMAIL_HANDLED, $this, ['email'=>$this['email'], 'userId'=>$this['userId']??null]);
             return true;
 
         } catch(\Exception $e) {
             $this->logout();
             $pdo->rollBack();
-            $this->getEventManager()->trigger(UserAuth::EVENT_CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'Database could not be updated correctly to validated the email', 'errCode'=>-1]);
+            $this->getEventManager()->trigger(UserEvent::CONFIRM_EMAIL_HANDLED.'.err', $this, ['token'=>$token, 'error'=>'Database could not be updated correctly to validated the email', 'errCode'=>-1]);
             throw new \Exception('Database could not be updated correctly to validated the email');
         }
     }

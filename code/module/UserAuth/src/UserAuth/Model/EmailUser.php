@@ -14,7 +14,7 @@ use UserAuth\Exception\InvalidCredentialsException;
 use UserAuth\Exception\MissingComponentException;
 use UserAuth\Exception\JwtException;
 use UserAuth\Exception\JwtExpiredException;
-use UserAuth\Module as UserAuth;
+use UserAuth\UserEvent;
 
 class EmailUser extends DbUser implements UserInterface, \ArrayAccess
 {
@@ -129,7 +129,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
     public function authenticate(string $email, string $password) : bool
     {
         // signal that the login process will start
-        $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN.'.pre', $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN.'.pre', $this, ['email'=>$email]);
 
         $pdo = $this->getUserDb();
         if(!$pdo) {
@@ -345,7 +345,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
         $this->buildLoginSession($data);
 
         // signal that the login was successful
-        $this->getEventManager()->trigger(UserAuth::EVENT_LOGIN, $this, ['email'=>$data['email']]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email'=>$data['email']]);
 
         return true;
     }
