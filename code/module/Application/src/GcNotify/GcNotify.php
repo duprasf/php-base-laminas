@@ -2,6 +2,7 @@
 namespace GcNotify;
 
 use Exception;
+use GcNotify\Exception\GcNotifyException;
 
 
 /**
@@ -17,6 +18,17 @@ class GcNotify
     protected $lastError;
     protected $baseUrl = 'https://api.notification.canada.ca';
     protected $port = 443;
+
+    protected $useException=false;
+    public function setUseException(bool $bool)
+    {
+        $this->useException=$bool;
+        return $this;
+    }
+    protected function getUseException()
+    {
+        return $this->useException;
+    }
 
     protected $errorReportingSecretKey = null;
     public function setErrorReportingKey($key)
@@ -331,7 +343,12 @@ class GcNotify
         $this->lastError = curl_errno($ch);
         curl_close($ch);
 
-        return $this->lastStatus >= 200 && $this->lastStatus <= 299;
+        $success = $this->lastStatus >= 200 && $this->lastStatus <= 299;
+        if($this->getUseException() && !$success) {
+            throw new GcNotifyException('Status code not in the 200 '.$page);
+        }
+
+        return $success;
     }
 
     public function readyToSend() : bool
