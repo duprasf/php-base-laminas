@@ -87,102 +87,17 @@ class GcDirectory
 
 		// if $limitToOrg is true, limited the search to INFC
 		$baseDn = $limitToOrg ? "ou=HC-SC, o=GC, c=CA" : "";
-$data = $this->makeRequest('employees',
-    [
-        "searchField"=>self::SEARCH_FIELD_EMAIL,
-        "searchCriterion"=>self::SEARCH_EXACT,
-        "maxEntries"=>1,
-        "returnOrganizationInformation"=>"yes",
-        "returnMyProfileInformation"=>"no",
-        "returnExtraInformation"=>"no",
-    ], $requestLang
-);
-return $data;
-exit(basename(__FILE__).':'.__LINE__);
-
-		// if the term is numeric (with (, ), - or spaces) look for a phone number
-		if(preg_match('(^[\(\)\d\-\s]+$)',$term)) {
-			$post = array(
-				"requestID" => "S02",
-				"requestSettings"=> array(
-					"searchValue"     => preg_replace('(\D)', '', $term),
-					"baseDN"          => $baseDn,
-					"maxEntries"      => $numRecords,
-					"pagedResults"    => FALSE,
-					"searchField"     => 3,
-					"searchCriterion" => 2,
-				),
-			);
-			$data = $this->makeRequest($post, $requestLang);
-			$numReceived = array_sum($data['listEntryCount']);
-			if($numReceived) {
-				foreach($data['personList'] as $person) {
-					$results[$person['dn']] = $person;
-				}
-			}
-		}
-		else {
-            $data = array('listEntryCount'=>array());
-			// search using "begins with"
-            if(isset($params['searchField']) && $params['searchField'] != 7) {
-			    $post = array(
-				    "requestID" => "S01",
-				    "requestSettings"=> array(
-					    "searchValue"     => $term,
-                        "searchField"     => isset($params['searchField']) ? $params['searchField'] : 0,
-					    "baseDN"          => $baseDn,
-					    "maxEntries"      => $numRecords,
-					    "pagedResults"    => FALSE,
-					    "searchCriterion" => 0
-				    ),
-			    );
-			    $data = $this->makeRequest($post, $requestLang);
-			    if(!is_array($data['listEntryCount'])) {
-				    var_dump($this->lastPage);exit();
-			    }
-            }
-			$numReceived = array_sum($data['listEntryCount']);
-			if($numReceived) {
-				foreach($data['personList'] as $person) {
-					$results[$person['dn']] = $person;
-				}
-			}
-			// if there is less results than wanted, also search using "contains"
-			if($numReceived < $numRecords) {
-				$post = array(
-					"requestID" => "S02",
-					"requestSettings"=> array(
-						"searchValue"     => $term,
-                        "searchField"     => isset($params['searchField']) ? $params['searchField'] : 0,
-						"baseDN"          => $baseDn,
-						"maxEntries"      => $numRecords-$numReceived,
-						"pagedResults"    => FALSE,
-						"searchCriterion" => 2
-					),
-				);
-
-				$data = $this->makeRequest($post, $requestLang);
-				$numReceived = isset($data['listEntryCount']) && is_array($data['listEntryCount']) ? array_sum($data['listEntryCount']) : 0;
-				if($numReceived) {
-					foreach($data['personList'] as $person) {
-						$results[$person['dn']] = $person;
-					}
-				}
-			}
-		}
-        if(count($results) > $numRecordsRequested) {
-            foreach($results as $cr) {
-                if($cr['mail'] == $term || $cr['gcMail'] == $term){
-                    return array($cr);
-                    break;
-                }
-            }
-            if(count($results) > 1) {
-                $results = array_shift($results);
-            }
-            $results['moreRecords'] = true;
-        }
-		return $results;
+        $data = $this->makeRequest('employees',
+            [
+                "searchField"=>self::SEARCH_FIELD_EMAIL,
+                "searchCriterion"=>self::SEARCH_EXACT,
+                "maxEntries"=>1,
+                "returnOrganizationInformation"=>"yes",
+                "returnMyProfileInformation"=>"no",
+                "returnExtraInformation"=>"no",
+            ], $requestLang
+        );
+        return $data;
 	}
 
     /**
