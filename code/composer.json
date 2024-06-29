@@ -18,6 +18,7 @@
         "laminas/laminas-loader": "*",
         "laminas/laminas-ldap": "*",
         "laminas/laminas-crypt": "*",
+        "psr/log": "*",
         "dompdf/dompdf": "*"
     },
     "require-dev": {

@@ -47,6 +47,7 @@ function js(cb) {
                         return JSON.stringify(newJson);
                     }
                 }))
+                .pipe(rename({ basename: camelToDash(folder) }))
                 .pipe(dest('apps/'+folder+'/public/js'))
             ;
         }

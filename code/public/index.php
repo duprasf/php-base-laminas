@@ -6,7 +6,6 @@ use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 
 
-date_default_timezone_set('America/Toronto');
 $root = getenv('LAMINAS_ROOT_PATH') ?: dirname(__DIR__);//'/var/www';
 /**
  * This makes our life easier when dealing with paths. Everything is relative

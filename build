@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 docker build -t php-base-laminas:latest -f dockerfile83 .
-docker build -t php-base-laminas-mongodb:latest -f dockerfile83-mongodb .
+docker build -t php-base-laminas:latest-mongodb -f dockerfile83-mongodb .
