@@ -30,7 +30,7 @@ class Encode extends Command
     *
     * @param InputInterface $input
     * @param OutputInterface $screen
-    * @return {int|mixed}
+    * @return int|mixed
     */
     protected function execute(InputInterface $input, OutputInterface $screen): int
     {

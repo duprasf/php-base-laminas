@@ -46,25 +46,20 @@ class Cronjob extends Command
     {
         $this->setName(self::$defaultName)
             ->setDescription('Trigger a cronjob even that can be picked up by other modules.')
-            //->addArgument('input',InputArgument::REQUIRED,'The name of the file to load')
         ;
-        //$this->addOption('input', null, InputOption::VALUE_REQUIRED, 'Input folder');
-        //$this->addOption('output', null, InputOption::VALUE_REQUIRED, 'Output file name');
     }
 
     /**
     * @param InputInterface $input
     * @param OutputInterface $screen
-    * @return {int|mixed}
+    * @return int|mixed
     */
     protected function execute(InputInterface $input, OutputInterface $screen): int
     {
         try {
-            //$file = $input->getArgument('input');
             $screen->writeln('Triggering cronjob for all modules');
 
-            // trigger an event that the user is about to logout
-
+            // trigger an event for the cronjob
             $this->getEventManager()->trigger(
                 'cronjob',
                 $this,
