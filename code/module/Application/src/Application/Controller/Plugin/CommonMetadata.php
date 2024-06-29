@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
@@ -7,10 +8,9 @@ use Laminas\Mvc\I18n\Translator as MvcTranslator;
 use Application\Model\Metadata;
 use Application\Model\Breadcrumbs;
 
-
 class CommonMetadata extends AbstractPlugin
 {
-    protected $translator=null;
+    protected $translator = null;
     public function setTranslator(MvcTranslator $mvcTranslator)
     {
         $this->translator = $mvcTranslator;
@@ -24,7 +24,7 @@ class CommonMetadata extends AbstractPlugin
     protected $lang;
     public function setLang($lang)
     {
-        $this->lang=$lang;
+        $this->lang = $lang;
         return $this;
     }
     public function getLang()
@@ -35,7 +35,7 @@ class CommonMetadata extends AbstractPlugin
     protected $url;
     public function setUrlObj($obj)
     {
-        $this->url=$obj;
+        $this->url = $obj;
         return $this;
     }
     public function getUrlObj()
@@ -68,7 +68,7 @@ class CommonMetadata extends AbstractPlugin
     protected $metadata;
     public function setMetadataObj(Metadata $obj)
     {
-        $this->metadata=$obj;
+        $this->metadata = $obj;
         return $this;
     }
     public function getMetadataObj()
@@ -79,12 +79,12 @@ class CommonMetadata extends AbstractPlugin
     private $appMetadata;
     public function setAppMetadata(array $metadata)
     {
-        $this->appMetadata=$metadata;
+        $this->appMetadata = $metadata;
         return $this;
     }
     protected function getAppMetadata()
     {
-        return $this->appMetadata??[];
+        return $this->appMetadata ?? [];
     }
 
     public function __invoke(ViewModel $view)
@@ -92,21 +92,21 @@ class CommonMetadata extends AbstractPlugin
         $translator = $this->getTranslator();
         $lang = $this->getLang();
         $url = $this->getUrlObj();
-        $array=[
+        $array = [
             "title" => $translator->translate('Default Application'),
-            "appName"=>$translator->translate('Default Application'),
+            "appName" => $translator->translate('Default Application'),
             "description" => $translator->translate("Default Application"),
             "versionNumber" => '1.0',
-            "isApp"=>false,
-            "contactLinks"=>["mailto:".getenv('ADMIN_EMAIL')],
-            "showShare"=>false,
-            "showFeedback"=>false,
-            "appUrl"=>$url('root'),
-            "extra-css"=>[],
-            "extra-js"=>[],
+            "isApp" => false,
+            "contactLinks" => ["mailto:".getenv('ADMIN_EMAIL')],
+            "showShare" => false,
+            "showFeedback" => false,
+            "appUrl" => $url('root'),
+            "extra-css" => [],
+            "extra-js" => [],
         ];
 
-        $view->setVariable('metadata',$this->getMetadataObj()->merge($array));
+        $view->setVariable('metadata', $this->getMetadataObj()->merge($array));
 
         $view->setVariable('attribution', 'HC');
 

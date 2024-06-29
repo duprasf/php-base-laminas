@@ -1,4 +1,5 @@
 <?php
+
 namespace GcDirectory;
 
 use Laminas\Stdlib\ArrayUtils;

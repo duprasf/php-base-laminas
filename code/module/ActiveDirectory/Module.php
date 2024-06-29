@@ -1,4 +1,5 @@
 <?php
+
 namespace ActiveDirectory;
 
 use Laminas\Stdlib\ArrayUtils;

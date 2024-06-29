@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace UserAuth\Controller;
@@ -25,7 +26,7 @@ class IndexController extends AbstractActionController
         return $this->gcNotify;
     }
 
-    protected $passwordRules=[];
+    protected $passwordRules = [];
     public function setPasswordRules(array $passwordRules)
     {
         $this->passwordRules = $passwordRules;
@@ -67,7 +68,9 @@ class IndexController extends AbstractActionController
         $view = $this->_setCommonMetadata(new ViewModel());
         if(!$this->getUser()->isLoggedIn()) {
             $request = $this->getRequest();
-            return $this->redirect()->toRoute('user/login', ['locale'=>$this->lang()],
+            return $this->redirect()->toRoute(
+                'user/login',
+                ['locale' => $this->lang()],
                 ['query' => [
                     'referrer' => $request->getUriString(),
                 ]]
@@ -83,12 +86,12 @@ class IndexController extends AbstractActionController
         $request = $this->getRequest();
         if ($request->isPost()) {
             $data = $this->params()->fromPost();
-            if($this->getUser()->authenticate($data['email'],$data['password'])) {
+            if($this->getUser()->authenticate($data['email'], $data['password'])) {
                 $this->flashMessenger()->addSuccessMessage($this->getTranslator()->translate('Login successful.'));
                 if($this->params()->fromQuery('referrer')) {
                     return $this->redirect()->toUrl($this->params()->fromQuery('referrer'));
                 }
-                return $this->redirect()->toRoute('user', ['locale'=>$this->lang()]);
+                return $this->redirect()->toRoute('user', ['locale' => $this->lang()]);
             } else {
                 $this->flashMessenger()->addErrorMessage($this->getTranslator()->translate('There was an error login you with your credentials. Please try again.'));
                 $view->setVariable('errorCount', ++$data['errorCount'] ?? 1);
@@ -107,7 +110,7 @@ class IndexController extends AbstractActionController
         if($this->params()->fromQuery('referrer')) {
             $this->redirect()->toUrl($this->params()->fromQuery('referrer'));
         }
-        return $this->redirect()->toRoute('user', ['locale'=>$this->lang()]);
+        return $this->redirect()->toRoute('user', ['locale' => $this->lang()]);
     }
 
     public function registerAction()
@@ -147,20 +150,20 @@ class IndexController extends AbstractActionController
                         );
                     } catch (\PDOException $e) {
                         $errors['additionalRules'] = [
-                            'message'=>$translator->translate('A database error occured (was this email used to registered previously?).'),
-                            'field'=>'email'
+                            'message' => $translator->translate('A database error occured (was this email used to registered previously?).'),
+                            'field' => 'email'
                         ];
                     } catch (\Exception $e) {
                         $errors['additionalRules'] = [
-                            'message'=>$translator->translate('An unknown error occured.'),
-                            'field'=>'password'
+                            'message' => $translator->translate('An unknown error occured.'),
+                            'field' => 'password'
                         ];
                     }
                 }
             } catch (\Throwable $e) {
                 $errors['additionalRules'] = [
-                    'message'=>$translator->translate('An unknown error prevented us from registering your account. Please contact the administration team for help.'),
-                    'field'=>'email'
+                    'message' => $translator->translate('An unknown error prevented us from registering your account. Please contact the administration team for help.'),
+                    'field' => 'email'
                 ];
             }
 
@@ -284,20 +287,20 @@ class IndexController extends AbstractActionController
                         $view->setVariable('result', $result);
                     } catch (\PDOException $e) {
                         $errors['additionalRules'] = [
-                            'message'=>$translator->translate('An unknown database error occured.'),
-                            'field'=>'email'
+                            'message' => $translator->translate('An unknown database error occured.'),
+                            'field' => 'email'
                         ];
                     } catch (\Exception $e) {
                         $errors['additionalRules'] = [
-                            'message'=>$translator->translate('An unknown error occured.'),
-                            'field'=>'password'
+                            'message' => $translator->translate('An unknown error occured.'),
+                            'field' => 'password'
                         ];
                     }
                 }
             } catch (\Throwable $e) {
                 $errors['additionalRules'] = [
-                    'message'=>$translator->translate('An unknown error prevented us from registering your account. Please contact the administration team for help.'),
-                    'field'=>'email'
+                    'message' => $translator->translate('An unknown error prevented us from registering your account. Please contact the administration team for help.'),
+                    'field' => 'email'
                 ];
             }
 
@@ -320,8 +323,8 @@ class IndexController extends AbstractActionController
         $lang = $translator->getLang();
         $metadata = new \ArrayObject([
             "title" => $translator->translate('User Authentification'),
-            "description"=>$translator->translate("User Authentification"),
-            "issuedDate"=>date('Y-m-d'),
+            "description" => $translator->translate("User Authentification"),
+            "issuedDate" => date('Y-m-d'),
             //"extra-css"=>'/css/stylesheet.css',
             //"extra-js"=>'/js/script.js',
         ]);

@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Command;
 
 use Exception;
@@ -41,7 +42,7 @@ class Cronjob extends Command
     /** @var string */
     protected static $defaultName = 'cronjob';
 
-    protected function configure() : void
+    protected function configure(): void
     {
         $this->setName(self::$defaultName)
             ->setDescription('Trigger a cronjob even that can be picked up by other modules.')
@@ -56,7 +57,7 @@ class Cronjob extends Command
     * @param OutputInterface $screen
     * @return {int|mixed}
     */
-    protected function execute(InputInterface $input, OutputInterface $screen) : int
+    protected function execute(InputInterface $input, OutputInterface $screen): int
     {
         try {
             //$file = $input->getArgument('input');
@@ -68,8 +69,8 @@ class Cronjob extends Command
                 'cronjob',
                 $this,
                 [
-                    'timestamp'=>time(),
-                    'minute'=>date('i'),
+                    'timestamp' => time(),
+                    'minute' => date('i'),
                 ]
             );
 

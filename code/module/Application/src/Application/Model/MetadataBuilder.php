@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Model;
 
 use Laminas\Mvc\I18n\Translator;
@@ -11,17 +12,17 @@ exit('MetadataBuilder class should not be used anymore. The Metadata class shoul
 */
 class MetadataBuilder
 {
-    const ERROR_NO_METADATA = 1;
+    public const ERROR_NO_METADATA = 1;
 
-    const TEMPLATE_FULL_PAGE = 'full-content';
-    const TEMPLATE_LEFT_MENU = 'content-with-left-menu';
-    const TEMPLATE_SERVER_MESSAGE = 'server-message';
-    const TEMPLATE_SERVER_MESSAGE_CURRENT_LANG = 'server-message-current-lang';
-    const TEMPLATE_NO_VIEW = 'no-layout';
-    const TEMPLATE_NO_LAYOUT = 'no-layout';
+    public const TEMPLATE_FULL_PAGE = 'full-content';
+    public const TEMPLATE_LEFT_MENU = 'content-with-left-menu';
+    public const TEMPLATE_SERVER_MESSAGE = 'server-message';
+    public const TEMPLATE_SERVER_MESSAGE_CURRENT_LANG = 'server-message-current-lang';
+    public const TEMPLATE_NO_VIEW = 'no-layout';
+    public const TEMPLATE_NO_LAYOUT = 'no-layout';
 
-    const MENU_NO_MENU = 'no-menu';
-    const STANDALONE = 'standalone';
+    public const MENU_NO_MENU = 'no-menu';
+    public const STANDALONE = 'standalone';
 
     protected $data;
     private $ready = false;
@@ -44,16 +45,30 @@ class MetadataBuilder
     }
 
     protected $defaultMetadata = [];
-    public function setDefaultMetadata(array $data) {$this->defaultMetadata = $data; return $this;}
-    public function getDefaultMetadata() { return $this->defaultMetadata;}
+    public function setDefaultMetadata(array $data)
+    {
+        $this->defaultMetadata = $data;
+        return $this;
+    }
+    public function getDefaultMetadata()
+    {
+        return $this->defaultMetadata;
+    }
 
     protected $lang;
-    public function setLang(string $lang) {$this->lang = $lang; return $this;}
-    public function getLang() { return $this->lang;}
+    public function setLang(string $lang)
+    {
+        $this->lang = $lang;
+        return $this;
+    }
+    public function getLang()
+    {
+        return $this->lang;
+    }
 
     public function getFullMetadata($metadata)
     {
-        if($metadata instanceOf \ArrayObject) {
+        if($metadata instanceof \ArrayObject) {
             $metadata = $metadata->getArrayCopy();
         }
         $data = $metadata;
@@ -67,9 +82,8 @@ class MetadataBuilder
         if(!is_array($metadata) || count($metadata) == 0) {
             $error[] = $this->translate('no metadata');
             $data = $default;
-        }
-        else {
-            foreach($default as $key=>$val) {
+        } else {
+            foreach($default as $key => $val) {
                 if(!isset($metadata[$key])) {
                     $data[$key] = $val;
                 }
@@ -80,12 +94,13 @@ class MetadataBuilder
         if(isset($data['template']) && ($data['template'] == self::TEMPLATE_SERVER_MESSAGE || $data['template'] == self::TEMPLATE_SERVER_MESSAGE_CURRENT_LANG)) {
         }
         // NO VIEW, FOR AJAX REQUEST
-        else if(isset($data['template']) && $data['template'] == self::TEMPLATE_NO_LAYOUT) {
+        elseif(isset($data['template']) && $data['template'] == self::TEMPLATE_NO_LAYOUT) {
         }
         // BASIC TEMPLATE
         else {
-            if(!isset($data['titleH1']) && isset($data['title']))
+            if(!isset($data['titleH1']) && isset($data['title'])) {
                 $data['titleH1'] = $data['title'];
+            }
 
             if(!isset($data['description'])) {
                 $error[] = $this->translate('Invalid metadata description');
@@ -96,21 +111,18 @@ class MetadataBuilder
                 $error[] = $this->translate('Issued date is invalid');
                 $data['issued'] = getenv('ISSUED_DATE') ? strtotime(getenv('ISSUED_DATE')) : time();
                 $data['issuedTimestamp'] = getenv('ISSUED_DATE') ? strtotime(getenv('ISSUED_DATE')) : time();
-            }
-            else {
+            } else {
                 $data['issuedTimestamp'] = strtotime($data['issued']);
             }
 
             if(!isset($data['modified']) || !is_string($data['modified']) || $data['modified'] == '') {
                 $data['modified'] = getenv('LAST_MODIFIED_DATE') ? strtotime(getenv('LAST_MODIFIED_DATE')) : $data['issued'];
                 $data['modifiedTimestamp'] = getenv('LAST_MODIFIED_DATE') ? strtotime(getenv('LAST_MODIFIED_DATE')) : $data['issuedTimestamp'];
-            }
-            else if(isset($data['modified']) && !preg_match('(^\d{4}-\d{2}-\d{2}(?: \d{1,2}:\d{1,2}(?::\d{1,2})?)?$)', $data['modified'])) {
+            } elseif(isset($data['modified']) && !preg_match('(^\d{4}-\d{2}-\d{2}(?: \d{1,2}:\d{1,2}(?::\d{1,2})?)?$)', $data['modified'])) {
                 $error[] = $this->translate('Modified date is invalid');
                 $data['modified'] = $data['issued'];
                 $data['modifiedTimestamp'] = $data['issuedTimestamp'];
-            }
-            else {
+            } else {
                 $data['modifiedTimestamp'] = strtotime($data['modified']);
             }
 
@@ -131,7 +143,7 @@ class MetadataBuilder
                 $extraCrumbs = array();
                 if(preg_match_all('(\(([^\|]*)\|([^\)]*)\)\s*)', $data['breadcrumbs'], $out, PREG_SET_ORDER)) {
                     foreach($out as $crumb) {
-                        $extraCrumbs[] = array('href'=>$crumb[2], 'name'=>$crumb[1]);
+                        $extraCrumbs[] = array('href' => $crumb[2], 'name' => $crumb[1]);
                     }
                 }
                 $data['breadcrumbs'] = $extraCrumbs;
@@ -142,12 +154,20 @@ class MetadataBuilder
             if(is_array($data['extra-css'])) {
                 foreach($data['extra-css'] as $val) {
                     if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $val, $out)) {
-                        foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                        foreach($out[1] as $item) {
+                            if(trim($item)) {
+                                $extra[] = $item;
+                            }
+                        }
                     }
                 }
             } else {
                 if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $data['extra-css'], $out)) {
-                    foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                    foreach($out[1] as $item) {
+                        if(trim($item)) {
+                            $extra[] = $item;
+                        }
+                    }
                 }
             }
             $data['extra-css'] = $extra;
@@ -157,12 +177,20 @@ class MetadataBuilder
             if(is_array($data['extra-js'])) {
                 foreach($data['extra-js'] as $val) {
                     if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $val, $out)) {
-                        foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                        foreach($out[1] as $item) {
+                            if(trim($item)) {
+                                $extra[] = $item;
+                            }
+                        }
                     }
                 }
             } else {
                 if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $data['extra-js'], $out)) {
-                    foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                    foreach($out[1] as $item) {
+                        if(trim($item)) {
+                            $extra[] = $item;
+                        }
+                    }
                 }
             }
             $data['extra-js'] = $extra;
@@ -193,29 +221,33 @@ class MetadataBuilder
             if(!is_array($data['contactLinks'])) {
                 $data['contactLinks'] = [$data['contactLinks']];
             }
-            $contact=[];
-            foreach($data['contactLinks'] as $key=>$val) {
+            $contact = [];
+            foreach($data['contactLinks'] as $key => $val) {
                 if(is_numeric($key)) {
-                    $key='href';
+                    $key = 'href';
                 }
-                $contact[]=[$key=>$val];
+                $contact[] = [$key => $val];
             }
-            $data['contactLinks']=json_encode($contact);
+            $data['contactLinks'] = json_encode($contact);
         }
 
-        if(isset($data['no-menu'])) $data['menu'] = self::MENU_NO_MENU;
+        if(isset($data['no-menu'])) {
+            $data['menu'] = self::MENU_NO_MENU;
+        }
 
         return $data;
     }
 
     public function getSubTemplate($uri)
     {
-        if(strpos($uri, '/'.$this->getServiceLocator()->get('lang').'/') === 0){
+        if(strpos($uri, '/'.$this->getServiceLocator()->get('lang').'/') === 0) {
             $uri = str_replace('/'.$this->getServiceLocator()->get('lang').'/', '/', $uri);
         }
         $config = $this->getServiceLocator()->get('Config');
-        foreach($config['subtemplate'] as $path=>$subtemplate) {
-            if(strpos($uri, $path) === 0) return $subtemplate;
+        foreach($config['subtemplate'] as $path => $subtemplate) {
+            if(strpos($uri, $path) === 0) {
+                return $subtemplate;
+            }
         }
         return '';
     }
@@ -223,8 +255,10 @@ class MetadataBuilder
     public function getDefaultMenu($uri)
     {
         $config = $this->getServiceLocator()->get('Config');
-        foreach($config['default-menu'] as $path=>$menu) {
-            if(strpos($uri, $path) === 0) return $menu;
+        foreach($config['default-menu'] as $path => $menu) {
+            if(strpos($uri, $path) === 0) {
+                return $menu;
+            }
         }
         return '';
     }

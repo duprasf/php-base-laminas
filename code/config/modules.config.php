@@ -29,7 +29,7 @@ if($envModules) {
         if(json_last_error() == JSON_ERROR_NONE) {
             $extraModules = array_merge($extraModules, $envModules);
         }
-    } catch(\Exception $e){
+    } catch(\Exception $e) {
 
     }
 }

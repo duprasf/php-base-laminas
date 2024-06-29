@@ -1,4 +1,5 @@
 <?php
+
 namespace TranslationExtractor\Model;
 
 use DirectoryIterator;
@@ -10,7 +11,6 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
 use RecursiveRegexIterator;
-
 
 /**
 * Class that extracts all the strings from a project (folder)
@@ -65,12 +65,12 @@ class Extractor
     * @param String $output
     * @return Extractor
     */
-    public function extractAllModules(String $source = null, String $output=null)
+    public function extractAllModules(String $source = null, String $output = null)
     {
         if(is_null($source)) {
             $source = $this->source;
         }
-        $source = rtrim($source,'/');
+        $source = rtrim($source, '/');
 
         $outputDir = getcwd();
         if(!is_null($output) && is_dir($output)) {
@@ -102,7 +102,7 @@ class Extractor
     * @param String $output
     * @return Extractor
     */
-    public function processFolder(String $source = null, String $output=null)
+    public function processFolder(String $source = null, String $output = null)
     {
         if(is_null($source)) {
             $source = $this->source;
@@ -127,7 +127,7 @@ class Extractor
     * @throws Exception
     * @return Extractor
     */
-    public function processFileList(array $list, String $output=null)
+    public function processFileList(array $list, String $output = null)
     {
         if(is_null($output)) {
             $output = $this->output;
@@ -156,7 +156,7 @@ class Extractor
     {
         // add the extension 'po' if the current filename does not have the right extension
         if(pathinfo($output, PATHINFO_EXTENSION) !== 'po') {
-            $output.='.po';
+            $output .= '.po';
         }
 
         if(!count($array)) {
@@ -171,17 +171,18 @@ class Extractor
 
         array_walk(
             $array,
-            function(&$item, $key, $output) {
+            function (&$item, $key, $output) {
                 $filepath = $item['file'];
                 if(strpos($filepath, __DIR__) === 0) {
-                    $filepath = substr($filepath, strlen(__DIR__)+1);
+                    $filepath = substr($filepath, strlen(__DIR__) + 1);
                 }
-                file_put_contents($output,
+                file_put_contents(
+                    $output,
                     PHP_EOL.
                     '#: first found in '.$filepath.(isset($item['line']) ? ':'.$item['line'] : '').(isset($item['comment']) ? ' '.$item['comment'] : '').PHP_EOL.
                     'msgid "'.preg_replace('((?<!\\\\)")', '\"', $key).'"'.PHP_EOL.
-                    'msgstr "'.preg_replace('((?<!\\\\)")', '\"', $item['msgstr']).'"'.PHP_EOL
-                    , FILE_APPEND
+                    'msgstr "'.preg_replace('((?<!\\\\)")', '\"', $item['msgstr']).'"'.PHP_EOL,
+                    FILE_APPEND
                 );
             },
             $output
@@ -234,7 +235,7 @@ class Extractor
             $config = include($file);
             if(isset($config['router']) && isset($config['router']['routes'])) {
                 $entries = $this->getTranslationTermsFromRoutes($config['router']['routes']);
-                foreach($entries as $key=>$entry) {
+                foreach($entries as $key => $entry) {
                     $entry['file'] = $file;
                     if(!isset($array[$entry['msgstr']])) {
                         $array[$entry['msgstr']] = $entry;
@@ -252,13 +253,13 @@ class Extractor
                 if($contentPerLine == null) {
                     $contentPerLine = file($file);
                 }
-                foreach($contentPerLine as $key=>$content) {
+                foreach($contentPerLine as $key => $content) {
                     if(strpos($content, $entry) !== false) {
-                        $line = $key+1;
+                        $line = $key + 1;
                         break;
                     }
                 }
-                $array[$entry] = array('file'=>$file, 'msgstr'=>$entry, 'line'=>$line);
+                $array[$entry] = array('file' => $file, 'msgstr' => $entry, 'line' => $line);
                 $count++;
             }
         }
@@ -274,7 +275,7 @@ class Extractor
     public function getTranslationTermsFromRoutes(array $routes)
     {
         $terms = array();
-        foreach($routes as $key=>$route) {
+        foreach($routes as $key => $route) {
             $terms = array_merge($terms, $this->getTranslationTermsFromRoute($route, $key));
         }
         return $terms;
@@ -291,15 +292,15 @@ class Extractor
     {
         $found = array();
         if(isset($route['options']) && isset($route['options']['route'])) {
-            preg_match_all('({([a-zA-Z0-9_-]+)})',$route['options']['route'], $out);
+            preg_match_all('({([a-zA-Z0-9_-]+)})', $route['options']['route'], $out);
             if(count($out[1])) {
                 foreach($out[1] as $entry) {
-                    $found[] = array('msgstr'=>$entry, 'comment'=>"(from route {$key})");
+                    $found[] = array('msgstr' => $entry, 'comment' => "(from route {$key})");
                 }
             }
         }
         if(isset($route['child_routes'])) {
-            foreach($route['child_routes'] as $childKey=>$child) {
+            foreach($route['child_routes'] as $childKey => $child) {
                 $found = array_merge($found, $this->getTranslationTermsFromRoute($child, $key.'/'.$childKey));
             }
         }

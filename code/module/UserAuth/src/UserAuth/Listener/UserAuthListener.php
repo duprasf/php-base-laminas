@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAuth\Listener;
 
 use Laminas\EventManager\EventManagerAwareInterface;
@@ -10,13 +11,12 @@ use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Session\SessionManager;
 use Laminas\Http\Request;
 
-
 class UserAuthListener
 {
     private $headScript;
     public function setHeadScript($obj)
     {
-        $this->headScript=$obj;
+        $this->headScript = $obj;
         return $this;
     }
     protected function getHeadScript()

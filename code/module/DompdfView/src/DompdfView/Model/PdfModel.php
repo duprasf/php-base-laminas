@@ -1,4 +1,5 @@
 <?php
+
 namespace DompdfView\Model;
 
 use Laminas\View\Model\ViewModel;
@@ -17,9 +18,9 @@ class PdfModel extends ViewModel
     {
         $this->options['context'] = stream_context_create(array(
             'ssl' => array(
-                'verify_peer' => FALSE,
-                'verify_peer_name' => FALSE,
-                'allow_self_signed'=> TRUE
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
             )
         ));
     }

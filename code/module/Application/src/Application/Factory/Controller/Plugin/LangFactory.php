@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Factory\Controller\Plugin;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;

@@ -1,4 +1,5 @@
 <?php
+
 namespace LegacySupport\Factory\View\Helper;
 
 use Interop\Container\ContainerInterface;

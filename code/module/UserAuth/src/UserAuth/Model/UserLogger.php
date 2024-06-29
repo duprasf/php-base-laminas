@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAuth\Model;
 
 use Psr\Log\LoggerInterface;
@@ -161,7 +162,7 @@ class UserLogger implements LoggerInterface
         $context['message'] = $message;
         try {
             $prepared->execute($context);
-        } catch(\Exception $e){
+        } catch(\Exception $e) {
             var_dump($e->getMessage());
         }
 

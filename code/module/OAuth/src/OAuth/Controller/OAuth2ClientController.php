@@ -21,7 +21,7 @@ class OAuth2ClientController extends AbstractActionController
         $this->enabled = $bool;
         return $this;
     }
-    public function getEnabled():bool
+    public function getEnabled(): bool
     {
         return !!$this->enabled;
     }
@@ -107,13 +107,13 @@ class OAuth2ClientController extends AbstractActionController
         $error = $this->params()->fromQuery('error');
         if($error || !$code) {
             if(filter_var($state, FILTER_VALIDATE_URL)) {
-                return $this->redirect()->toUrl($state.(strpos($state, '?') === false ? '?':'&'). 'error='.$error);
+                return $this->redirect()->toUrl($state.(strpos($state, '?') === false ? '?' : '&'). 'error='.$error);
             }
 
             $json = json_decode($state, true);
             if(json_last_error() === JSON_ERROR_NONE && isset($json['controller'])) {
                 $params = $json['params'] ?? [];
-                $params['error']=$error;
+                $params['error'] = $error;
                 return $this->forward()->dispatch($json['controller'], $params);
             }
             $view->setTemplate('o-auth/o-auth2-client/denied.phtml');
@@ -129,7 +129,7 @@ class OAuth2ClientController extends AbstractActionController
 
         // if the state is an URL, redirect to that URL with the token
         if(filter_var($state, FILTER_VALIDATE_URL)) {
-            return $this->redirect()->toUrl($state.(strpos($state, '?') === false ? '?':'&'). 'token='.$token);
+            return $this->redirect()->toUrl($state.(strpos($state, '?') === false ? '?' : '&'). 'token='.$token);
         }
 
         // the state should be a JSON if not a URL...
@@ -138,14 +138,14 @@ class OAuth2ClientController extends AbstractActionController
         // if you have a controller and action, dispatch the request
         if(is_array($json) && isset($json['controller']) && isset($json['action'])) {
             $params = $json;
-            $params['token']=$token;
+            $params['token'] = $token;
             return $this->forward()->dispatch($json['controller'], $params);
         }
 
         if($this->getDefaultController()) {
             $params = $json;
-            $params['action']=$this->getDefaultController()[1];
-            $params['token']=$token;
+            $params['action'] = $this->getDefaultController()[1];
+            $params['token'] = $token;
             return $this
                 ->forward()
                 ->dispatch(
@@ -172,8 +172,8 @@ class OAuth2ClientController extends AbstractActionController
         $lang = $translator->getLang();
         $metadata = new \ArrayObject([
             "title" => $translator->translate('User Authentification'),
-            "description"=>$translator->translate("User Authentification"),
-            "issuedDate"=>date('Y-m-d'),
+            "description" => $translator->translate("User Authentification"),
+            "issuedDate" => date('Y-m-d'),
             //"extra-css"=>'/css/stylesheet.css',
             //"extra-js"=>'/js/script.js',
         ]);

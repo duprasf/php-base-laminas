@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
@@ -8,11 +9,13 @@ class GetUrlHelper extends AbstractPlugin
 {
     protected $urlObj;
 
-    public function setUrl(Url $obj) {
+    public function setUrl(Url $obj)
+    {
         $this->urlObj = $obj;
         return $this;
     }
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->urlObj;
     }
 

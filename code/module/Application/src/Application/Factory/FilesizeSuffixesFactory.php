@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Factory;
 
 use Interop\Container\ContainerInterface;
@@ -11,6 +12,6 @@ class FilesizeSuffixesFactory implements FactoryInterface
         $sz = 'BKMGTPEZYXSD';
         $extraLetter = $container->get('lang') == 'fr' ? 'o' : 'B';
         $array = str_split($sz);
-        return array_map(function($v) use ($extraLetter) { return $v.$extraLetter;}, $array);
+        return array_map(function ($v) use ($extraLetter) { return $v.$extraLetter;}, $array);
     }
 }

@@ -1,9 +1,9 @@
 <?php
+
 namespace GcNotify;
 
 use Exception;
 use GcNotify\Exception\GcNotifyException;
-
 
 /**
 * Class that sends email using GcNotify (https://notification.canada.ca/)
@@ -19,10 +19,10 @@ class GcNotify
     protected $baseUrl = 'https://api.notification.canada.ca';
     protected $port = 443;
 
-    protected $useException=false;
+    protected $useException = false;
     public function setUseException(bool $bool)
     {
-        $this->useException=$bool;
+        $this->useException = $bool;
         return $this;
     }
     protected function getUseException()
@@ -40,7 +40,7 @@ class GcNotify
     protected $apiKey = null;
     public function setApiKey(String $key)
     {
-        $this->apiKey=$key;
+        $this->apiKey = $key;
         return $this;
     }
 
@@ -56,14 +56,14 @@ class GcNotify
         return $this;
     }
 
-    protected $genericErrorTemplate='e0b6ac22-6bac-4b76-815a-67423219a16e';
+    protected $genericErrorTemplate = 'e0b6ac22-6bac-4b76-815a-67423219a16e';
     public function setGenericErrorTemplate($template)
     {
         $this->genericErrorTemplate = $template;
         return $this;
     }
 
-    protected $genericErrorEmail='imsd.web-dsgi@hc-sc.gc.ca';
+    protected $genericErrorEmail = 'imsd.web-dsgi@hc-sc.gc.ca';
     public function setGenericErrorEmail($email)
     {
         $this->genericErrorEmail = $email;
@@ -77,7 +77,7 @@ class GcNotify
     }
     public function setOverwriteEmail($email)
     {
-        $this->overrideEmail=$email;
+        $this->overrideEmail = $email;
         return $this;
     }
     public function getOverrideEmail()
@@ -115,7 +115,7 @@ class GcNotify
     protected $templates;
     public function setTemplates(array $templates)
     {
-        $this->templates=$templates;
+        $this->templates = $templates;
         return $this;
     }
     public function setTemplate($name, $id)
@@ -157,9 +157,9 @@ class GcNotify
     public function __toString()
     {
         $data = array(
-            'error'=>$this->lastError,
-            'page'=>$this->lastPage,
-            'status'=>$this->lastStatus
+            'error' => $this->lastError,
+            'page' => $this->lastPage,
+            'status' => $this->lastStatus
         );
 
         return json_encode($data);
@@ -167,7 +167,7 @@ class GcNotify
 
     public function setConfig(array $config)
     {
-        $keys=['appName', 'templates', 'apiKey'];
+        $keys = ['appName', 'templates', 'apiKey'];
         foreach($keys as $key) {
             if(isset($config[$key])) {
                 call_user_func([$this, 'set'.ucfirst($key)], $config[$key]);
@@ -189,7 +189,7 @@ class GcNotify
             return false;
         }
 
-        if($data[0] instanceOf \Exception) {
+        if($data[0] instanceof \Exception) {
             return $this->reportException(...$data);
         } else {
             return $this->sendEmail(...$data);
@@ -207,20 +207,20 @@ class GcNotify
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function reportException(\Exception $e, ?String $extraMessage=null, ?String $appName=null, ?String $email = null)
+    public function reportException(\Exception $e, ?String $extraMessage = null, ?String $appName = null, ?String $email = null)
     {
-        $message=trim($extraMessage.PHP_EOL.$e->getMessage()).PHP_EOL;
+        $message = trim($extraMessage.PHP_EOL.$e->getMessage()).PHP_EOL;
         $previous = $e;
         while($previous = $previous->getPrevious()) {
-            $message=$previous->getMessage().' ('.basename($previous->getFile()).':'.$previous->getLine().')'.PHP_EOL;
+            $message = $previous->getMessage().' ('.basename($previous->getFile()).':'.$previous->getLine().')'.PHP_EOL;
         }
         return $this->reportError(
             [
-                'message'=>$e->getMessage(),
-                'stacktrace'=>preg_replace('(#(\d+))', '\1)', $e->getTraceAsString()).PHP_EOL,
-                'file'=>$e->getFile(),
-                'line'=>$e->getLine(),
-                'app-name'=>$appName ?? $this->getAppName(),
+                'message' => $e->getMessage(),
+                'stacktrace' => preg_replace('(#(\d+))', '\1)', $e->getTraceAsString()).PHP_EOL,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'app-name' => $appName ?? $this->getAppName(),
             ],
             $email ?? $this->genericErrorEmail,
             null,
@@ -239,7 +239,7 @@ class GcNotify
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function reportError(array $error, ?String $recipient=null, ?String $template=null, ?String $apiKey=null, ?array $personalisation=[])
+    public function reportError(array $error, ?String $recipient = null, ?String $template = null, ?String $apiKey = null, ?array $personalisation = [])
     {
         $data = [];
         if(!isset($error['message'])) {
@@ -278,7 +278,7 @@ class GcNotify
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function sendEmail(string $recipient, string $templateId, ?array $personalisation=[], ?string $apiKey=null)
+    public function sendEmail(string $recipient, string $templateId, ?array $personalisation = [], ?string $apiKey = null)
     {
         $data = [];
         $data['template_id'] = $this->templates[$templateId] ?? $templateId;
@@ -351,7 +351,7 @@ class GcNotify
         return $success;
     }
 
-    public function readyToSend() : bool
+    public function readyToSend(): bool
     {
         if($this->apiKey && $this->baseUrl && count($this->templates)) {
             return true;

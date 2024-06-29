@@ -1,10 +1,12 @@
 <?php
+
 namespace UserAuth\Model;
 
 use UserAuth\Exception\JwtExpiredException;
 use UserAuth\Exception\JwtException;
 
-class JWT {
+class JWT
+{
     private $secret;
     public function setSecret(string $secret)
     {
@@ -45,7 +47,7 @@ class JWT {
     */
     public function generate(array $payload, int $timeToLive = 604800): string
     {
-        if($timeToLive > 0){
+        if($timeToLive > 0) {
             // if $timeToLive is 0, use the value defined in $payload.
             // This is used to confirm the token is valid
             $now = new \DateTime();
@@ -55,7 +57,7 @@ class JWT {
             //audience
             $payload['aud'] = 'api://default';
             //subject/userId
-            $payload['sub'] = $payload['userId']??md5(time());
+            $payload['sub'] = $payload['userId'] ?? md5(time());
             //JSON Token ID
             $payload['jti'] = '';
 
@@ -117,18 +119,18 @@ class JWT {
     */
     public function getPayload(?string $token)
     {
-        if(!is_string($token)){
+        if(!is_string($token)) {
             throw new JwtException('Token is null or not a string');
         }
-        if(!$this->isToken($token)){
+        if(!$this->isToken($token)) {
             throw new JwtException('Token not found');
         }
 
-        if(!$this->valid($token)){
+        if(!$this->valid($token)) {
             throw new JwtException('Invalid token');
         }
 
-        if($this->isExpired($token)){
+        if($this->isExpired($token)) {
             throw new JwtExpiredException('Expired token');
         }
 

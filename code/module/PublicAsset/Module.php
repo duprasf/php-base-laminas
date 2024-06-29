@@ -1,4 +1,5 @@
 <?php
+
 namespace PublicAsset;
 
 use Laminas\Stdlib\ArrayUtils;
@@ -30,14 +31,14 @@ class Module
     /**
     * @ignore this is a default method for Lamnias, no need to be in documentation
     */
-	public function getAutoloaderConfig()
-	{
-		return array(
-			'Laminas\Loader\StandardAutoloader' => array(
-				'namespaces' => array(
-					__NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-				),
-			),
-		);
-	}
+    public function getAutoloaderConfig()
+    {
+        return array(
+            'Laminas\Loader\StandardAutoloader' => array(
+                'namespaces' => array(
+                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                ),
+            ),
+        );
+    }
 }

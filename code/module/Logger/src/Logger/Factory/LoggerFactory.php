@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Logger\Factory;
@@ -29,7 +30,7 @@ class LoggerFactory implements FactoryInterface
             $obj = new DbLogger();
             $obj->setDb($pdo);
             //$obj->setTranslator($container->get('MvcTranslator'));
-        } else if($path && is_writable($path)) {
+        } elseif($path && is_writable($path)) {
             $obj = new FileLogger();
             $obj->setFilename($path);
         } else {

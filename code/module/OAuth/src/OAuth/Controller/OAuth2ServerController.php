@@ -22,7 +22,7 @@ class OAuth2ServerController extends AbstractActionController
         $this->enabled = $bool;
         return $this;
     }
-    public function getEnabled():bool
+    public function getEnabled(): bool
     {
         return !!$this->enabled;
     }
@@ -89,7 +89,7 @@ class OAuth2ServerController extends AbstractActionController
         $session['params']['clientId'] = $client['clientId'];
 
         $returnUri = $session['params']['redirect_uri'];
-        $returnUri = $returnUri . (strpos($returnUri, '?') === false ? '?':'&'). 'error=access_denied&state='.urlencode($session['params']['state'] ?? '');
+        $returnUri = $returnUri . (strpos($returnUri, '?') === false ? '?' : '&'). 'error=access_denied&state='.urlencode($session['params']['state'] ?? '');
         $view->setVariable('returnUrl', $returnUri);
         $view->setVariable('username', $session['username'] ?? '');
         $session['username'] = '';
@@ -145,12 +145,13 @@ class OAuth2ServerController extends AbstractActionController
         ;
 
         $redirectData = [
-            'state'=>$params['state'],
-            'code'=>$code,
+            'state' => $params['state'],
+            'code' => $code,
         ];
 
-        return $this->redirect()->toUrl($params['redirect_uri']
-            . (strpos($params['redirect_uri'], '?')===false?'?':'&') .
+        return $this->redirect()->toUrl(
+            $params['redirect_uri']
+            . (strpos($params['redirect_uri'], '?') === false ? '?' : '&') .
             http_build_query($redirectData)
         );
     }
@@ -247,12 +248,12 @@ class OAuth2ServerController extends AbstractActionController
         $lang = $translator->getLang();
         $metadata = new \ArrayObject([
             "title" => $translator->translate('User Authentification'),
-            "description"=>$translator->translate("User Authentification"),
-            "issuedDate"=>date('Y-m-d'),
+            "description" => $translator->translate("User Authentification"),
+            "issuedDate" => date('Y-m-d'),
             //"extra-css"=>'/css/stylesheet.css',
             //"extra-js"=>'/js/script.js',
-            'showShare'=>false,
-            'showFeedback'=>false,
+            'showShare' => false,
+            'showFeedback' => false,
         ]);
         $view->setVariable('metadata', $metadata);
         $view->setVariable('attribution', 'HC');

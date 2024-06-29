@@ -1,8 +1,8 @@
 <?php
+
 namespace Stockpile\Model;
 
 use Void\ArrayObject;
-
 
 /**
 * This class replace the old Health Canada's template. Is it meant to accelerate
@@ -21,14 +21,14 @@ use Void\ArrayObject;
 class OldHealthCanadaMetadata extends ArrayObject
 {
     protected $map = [
-        "setTitle"=>"title",
-        "setDesc"=>"description",
-        "setDateCreated"=>"issued",
-        "setDateModified"=>"modified",
-        "setDateMeta"=>"keywords",
-        "setDcSubjects"=>"subject",
-        "setDcCreator"=>"creator",
-        "setLangUrl"=>"switch-lang-url",
+        "setTitle" => "title",
+        "setDesc" => "description",
+        "setDateCreated" => "issued",
+        "setDateModified" => "modified",
+        "setDateMeta" => "keywords",
+        "setDcSubjects" => "subject",
+        "setDcCreator" => "creator",
+        "setLangUrl" => "switch-lang-url",
     ];
 
     public function __call($name, $args)

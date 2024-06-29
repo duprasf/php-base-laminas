@@ -1,4 +1,5 @@
 <?php
+
 namespace Stockpile\Route;
 
 use Laminas\Mvc\Router\Http\RouteInterface;
@@ -26,7 +27,7 @@ class FileSystemRoute extends Regex
         return $this->config;
     }
 
-    public function __construct($regex, $spec,array $defaults)
+    public function __construct($regex, $spec, array $defaults)
     {
         parent::__construct($regex, $spec, $defaults);
     }
@@ -56,7 +57,7 @@ class FileSystemRoute extends Regex
         // get page from file system
         $path = $match->getParam('path') ?? '';
         $path = preg_replace('(/+$)', '', $path);
-        if(strpos($path,'..') !== false) {
+        if(strpos($path, '..') !== false) {
             return null;
         }
 
@@ -94,7 +95,7 @@ class FileSystemRoute extends Regex
             return null;
         }
 
-        foreach($this->defaults as $k=>$v) {
+        foreach($this->defaults as $k => $v) {
             $match->setParam($k, $v);
         }
         $match->setParam('lang', $lang);

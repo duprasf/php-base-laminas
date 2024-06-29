@@ -68,7 +68,7 @@ class UserFactory implements FactoryInterface
         }
 
         if(method_exists($obj, 'setSessionLength')) {
-            $obj->setSessionLength($container->has('UserAuthSessionLength') ? $container->get('UserAuthSessionLength') :  3600);
+            $obj->setSessionLength($container->has('UserAuthSessionLength') ? $container->get('UserAuthSessionLength') : 3600);
         }
 
         $obj->setJwtObj($container->get(JWT::class));

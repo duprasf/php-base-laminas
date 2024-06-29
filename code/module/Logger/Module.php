@@ -1,4 +1,5 @@
 <?php
+
 namespace Logger;
 
 use Laminas\Stdlib\ArrayUtils;

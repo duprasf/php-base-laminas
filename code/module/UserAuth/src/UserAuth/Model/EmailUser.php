@@ -1,7 +1,8 @@
 <?php
+
 namespace UserAuth\Model;
 
-use \PDO;
+use PDO;
 use GcNotify\GcNotify;
 use Psr\Log\LoggerInterface;
 use Void\UUID;
@@ -52,7 +53,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
     * @var MvcTranslator
     * @internal
     */
-    private $translator=null;
+    private $translator = null;
     /**
     * Set the MvcTranslator, this is used when generating the links in the emails
     *
@@ -97,7 +98,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
     */
     public function setTimeToLive(int $ttl)
     {
-        $this->ttl=$ttl;
+        $this->ttl = $ttl;
         return $this;
     }
     protected function getTimeToLive()
@@ -108,7 +109,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
     protected $lang;
     public function setlang(string $lang)
     {
-        $this->lang=$lang;
+        $this->lang = $lang;
         return $this;
     }
     protected function getLang()
@@ -126,10 +127,10 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
     * @throws UserAuth\Exception\InvalidCredentialsException In this implementation, throw exception when credentials are incorrect
     * @throws UserAuth\Exception\UserException this is thrown when no "parentDb" is defined.
     */
-    public function authenticate(string $email, string $password) : bool
+    public function authenticate(string $email, string $password): bool
     {
         // signal that the login process will start
-        $this->getEventManager()->trigger(UserEvent::LOGIN.'.pre', $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN.'.pre', $this, ['email' => $email]);
 
         $pdo = $this->getUserDb();
         if(!$pdo) {
@@ -150,7 +151,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
                     token=VALUES(token), expiryTimestamp=VALUES(expiryTimestamp)
             ");
 
-            $ttl = date('Y-m-d H:i:s', time()+$this->getTimeToLive());
+            $ttl = date('Y-m-d H:i:s', time() + $this->getTimeToLive());
             $prepared->bindParam(':email', $email, PDO::PARAM_STR);
             $prepared->bindParam(':token', $token, PDO::PARAM_STR);
             $prepared->bindParam(':expire', $ttl, PDO::PARAM_STR);
@@ -174,10 +175,10 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
             $email,
             'Email Login '.$this->getLang(),
             [
-                'appName'=>$this->getTranslator()->translate('Employee Directory'),
-                'URL'=>$this->url()->assemble(
-                    ['locale'=>$this->getLang(),'token'=>$token,],
-                    ['name'=>'locale/directory/login/validate','force_canonical' => true,]
+                'appName' => $this->getTranslator()->translate('Employee Directory'),
+                'URL' => $this->url()->assemble(
+                    ['locale' => $this->getLang(),'token' => $token,],
+                    ['name' => 'locale/directory/login/validate','force_canonical' => true,]
                 ),
             ]
         );
@@ -193,7 +194,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
     * @throws UserAuth\Exception\JwtExpiredException If the token is expired
     * @throws UserAuth\Exception\UserException if the ID field is not set in the JWT
     */
-    public function loadFromJwt(?string $jwt) : bool
+    public function loadFromJwt(?string $jwt): bool
     {
         if($jwt == null) {
             throw new JwtException('JWT is null');
@@ -210,7 +211,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
     *
     * @return bool, true if successful false otherwise
     */
-    public function loadFromSession() : bool
+    public function loadFromSession(): bool
     {
         if(!parent::loadFromSession()) {
             return false;
@@ -238,7 +239,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
     * @param int $id
     * @return bool
     */
-    protected function _loadUserById(int|string $id) : bool
+    protected function _loadUserById(int|string $id): bool
     {
         $pdo = $this->getUserDb();
         $prepared = $pdo->prepare("SELECT userId, email, status FROM `".$this->getTableName()."` WHERE email = ?");
@@ -266,7 +267,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
     * @throws UserException thrown if the GcNotify object is not set and an email verification is required
     * @see getLastPasswordErrors
     */
-    public function register(string $email, string $password, string $confirmPassword, ?GcNotify $notify=null)
+    public function register(string $email, string $password, string $confirmPassword, ?GcNotify $notify = null)
     {
         throw new UserException('cannot call '.__METHOD__.' for user of type EmailUser');
     }
@@ -345,7 +346,7 @@ class EmailUser extends DbUser implements UserInterface, \ArrayAccess
         $this->buildLoginSession($data);
 
         // signal that the login was successful
-        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email'=>$data['email']]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email' => $data['email']]);
 
         return true;
     }

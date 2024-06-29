@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth\Exception;
 
 use Exception;

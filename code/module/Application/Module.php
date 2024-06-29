@@ -11,7 +11,6 @@ use Laminas\View\Model\JsonModel;
 use Laminas\ModuleManager\ModuleManager;
 use GcNotify\GcNotify;
 
-
 /**
 * Base configuration class for the Application module. This is the namespace for generic features
 */

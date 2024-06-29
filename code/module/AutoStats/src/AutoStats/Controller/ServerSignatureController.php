@@ -1,4 +1,5 @@
 <?php
+
 namespace AutoStats\Controller;
 
 use Laminas\Mvc\Controller\AbstractRestfulController;
@@ -11,7 +12,7 @@ class ServerSignatureController extends AbstractRestfulController
     private $apmPubKey;
     public function setApmLitePublicKey(string $key)
     {
-        $this->apmPubKey=str_replace('\n', PHP_EOL, $key);
+        $this->apmPubKey = str_replace('\n', PHP_EOL, $key);
         return $this;
     }
     protected function getApmLitePublicKey()
@@ -36,12 +37,12 @@ class ServerSignatureController extends AbstractRestfulController
 
         $data = ServerSignature::get();
 
-        $publicKey=openssl_get_publickey($this->getApmLitePublicKey());
+        $publicKey = openssl_get_publickey($this->getApmLitePublicKey());
 
         if(!openssl_public_encrypt(
-             json_encode($data),
-             $encrypted_data,
-             $publicKey
+            json_encode($data),
+            $encrypted_data,
+            $publicKey
         )) {
             $this->response->setStatusCode(500);
             $view->setVariable('error', 'Could not encrypt');

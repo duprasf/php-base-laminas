@@ -1,4 +1,5 @@
 <?php
+
 namespace GcDirectory\Factory\Model;
 
 use Interop\Container\ContainerInterface;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 
-
 $root = getenv('LAMINAS_ROOT_PATH') ?: dirname(__DIR__);//'/var/www';
 /**
  * This makes our life easier when dealing with paths. Everything is relative

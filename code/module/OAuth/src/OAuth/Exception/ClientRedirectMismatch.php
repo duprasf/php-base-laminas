@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth\Exception;
 
 class ClientRedirectMismatch extends OAuthException

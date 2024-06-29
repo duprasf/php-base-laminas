@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth\Model;
 
 use RuntimeException;
@@ -12,7 +13,7 @@ class CodeVerifier
     * @exception RuntimeException thrown when algo is not supported
     * @return array containing code, publicHash and the algo used
     */
-    static public function getCodeVerifier(String $algoname='S256')
+    public static function getCodeVerifier(String $algoname = 'S256')
     {
         $bytes = random_bytes(64);
         $code = bin2hex($bytes);
@@ -20,20 +21,20 @@ class CodeVerifier
         return self::hashCode($code, $algoname);
     }
 
-    static public function validateCodeVerifier(String $code, String $hash, String $algoname='S256') : bool
+    public static function validateCodeVerifier(String $code, String $hash, String $algoname = 'S256'): bool
     {
         $data = self::hashCode($code, $algoname);
         return $data['publicHash'] === $hash;
     }
 
-    static protected function getAlgo(String $algoname) : String
+    protected static function getAlgo(String $algoname): String
     {
         switch($algoname) {
             case 'S256':
-                $algo='sha256';
+                $algo = 'sha256';
                 break;
             default:
-                $algo=$algoname;
+                $algo = $algoname;
         }
 
         if(!in_array($algo, hash_algos())) {
@@ -42,15 +43,15 @@ class CodeVerifier
         return $algo;
     }
 
-    static protected function hashCode(String $code, String $algoname)
+    protected static function hashCode(String $code, String $algoname)
     {
         $algo = self::getAlgo($algoname);
         $hash = hash($algo, $code);
         $base = self::base64url_encode($hash);
         return [
-            'code'=>$code,
-            'publicHash'=>$base,
-            'algo'=>$algoname,
+            'code' => $code,
+            'publicHash' => $base,
+            'algo' => $algoname,
         ];
     }
 
@@ -59,7 +60,7 @@ class CodeVerifier
     * @param string $data
     * @return boolean|string
     */
-    static public function base64url_encode($data)
+    public static function base64url_encode($data)
     {
         // First of all you should encode $data to Base64 string
         $b64 = base64_encode($data);
@@ -82,7 +83,7 @@ class CodeVerifier
     * @param boolean $strict
     * @return boolean|string
     */
-    static public function base64url_decode($data, $strict = false)
+    public static function base64url_decode($data, $strict = false)
     {
         // Convert Base64URL to Base64 by replacing “-” with “+” and “_” with “/”
         $b64 = strtr($data, '-_', '+/');

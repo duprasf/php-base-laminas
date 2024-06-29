@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAuth\Model;
 
 use PDO;
@@ -28,8 +29,8 @@ class FileEmailUser extends EmailUser
     public const VERIFICATION_COULD_NOT_SEND = 2;
     public const VERIFICATION_EMAIL_SENT = 3;
 
-    protected const TOKEN_TYPE_CONFIRM_EMAIL='confirmEmail';
-    protected const TOKEN_TYPE_RESET_PASSWORD='resetPassword';
+    protected const TOKEN_TYPE_CONFIRM_EMAIL = 'confirmEmail';
+    protected const TOKEN_TYPE_RESET_PASSWORD = 'resetPassword';
 
     // default time to live (TTL) for link to confirm email is 2 hours
     protected const TOKEN_TTL_CONFIRM_EMAIL = 7200;
@@ -63,7 +64,7 @@ class FileEmailUser extends EmailUser
     * @var MvcTranslator
     * @internal
     */
-    private $translator=null;
+    private $translator = null;
     /**
     * Set the MvcTranslator, this is used when generating the links in the emails
     *
@@ -129,7 +130,7 @@ class FileEmailUser extends EmailUser
     */
     public function setTimeToLive(int $ttl)
     {
-        $this->ttl=$ttl;
+        $this->ttl = $ttl;
         return $this;
     }
     protected function getTimeToLive()
@@ -140,7 +141,7 @@ class FileEmailUser extends EmailUser
     protected $lang;
     public function setlang(string $lang)
     {
-        $this->lang=$lang;
+        $this->lang = $lang;
         return $this;
     }
     protected function getLang()
@@ -159,11 +160,11 @@ class FileEmailUser extends EmailUser
     * @throws UserException thrown if the GcNotify object is not set in class or param
     * @see getLastPasswordErrors
     */
-    public function register(string $email, string $password='', string $confirmPassword='', ?GcNotify $notify=null)
+    public function register(string $email, string $password = '', string $confirmPassword = '', ?GcNotify $notify = null)
     {
         $email = strtolower($email);
         // signal that the login process will start
-        $this->getEventManager()->trigger(UserEvent::REGISTER.'.pre', $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::REGISTER.'.pre', $this, ['email' => $email]);
 
 
         // as a email user, we don't "authenticate" we add the email in the file with a token
@@ -177,14 +178,14 @@ class FileEmailUser extends EmailUser
         $routeName = $this->getVerificationRouteName();
 
         $token = $this->getNewToken();
-        $ttl = date('Y-m-d H:i:s', time()+$this->getTimeToLive());
-        $json[$email]['email']=$email;
-        $json[$email]['token']=$token;
-        $json[$email]['expiryTimestamp']=$ttl;
+        $ttl = date('Y-m-d H:i:s', time() + $this->getTimeToLive());
+        $json[$email]['email'] = $email;
+        $json[$email]['token'] = $token;
+        $json[$email]['expiryTimestamp'] = $ttl;
         $this->setUserJson($json);
 
         // sending the email.
-        $notify = $notify?:$this->getGcNotify();
+        $notify = $notify ?: $this->getGcNotify();
 
         if(!$notify || !$notify->readyToSend()) {
             throw new MissingComponentException('GcNotify object is not present or not configure correctly');
@@ -194,10 +195,10 @@ class FileEmailUser extends EmailUser
             $email,
             'login-'.$this->getLang(),
             [
-                'appName'=>$notify->getAppName(),
-                'URL'=>$this->url()->assemble(
-                    ['locale'=>$this->getLang(),'token'=>$token,],
-                    ['name'=>$routeName,'force_canonical' => true,]
+                'appName' => $notify->getAppName(),
+                'URL' => $this->url()->assemble(
+                    ['locale' => $this->getLang(),'token' => $token,],
+                    ['name' => $routeName,'force_canonical' => true,]
                 ),
             ]
         );
@@ -213,7 +214,7 @@ class FileEmailUser extends EmailUser
     {
         $json = $this->getUserJson();
 
-        $data=[];
+        $data = [];
         foreach($json as $user) {
             if(isset($user['token']) && $user['token'] == $token) {
                 $data = $user;
@@ -227,11 +228,11 @@ class FileEmailUser extends EmailUser
         }
 
         // removing the existing token so it cannot be used again
-        $json[$data['email']]['token']='';
-        $data['token']='';
+        $json[$data['email']]['token'] = '';
+        $data['token'] = '';
         $this->exchangeArray($data);
-        $jwt=$this->getJwt();
-        $json[$data['email']]['jwt']=$jwt;
+        $jwt = $this->getJwt();
+        $json[$data['email']]['jwt'] = $jwt;
         $this->setUserJson($json);
 
         // save user data in session if config allows
@@ -240,7 +241,7 @@ class FileEmailUser extends EmailUser
         $this->buildLoginSession($data);
 
         // signal that the login was successful
-        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email'=>$data['email']]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email' => $data['email']]);
 
         return true;
     }
@@ -253,9 +254,9 @@ class FileEmailUser extends EmailUser
     * @param int $time, the length of time the JWT will be valid. It should not change anything, but just in case...
     * @return array, the data you want to send to client as part of the JWT
     */
-    public function getDataForJWT(int $time = 86400) : array
+    public function getDataForJWT(int $time = 86400): array
     {
-        $payload=['id'=>$this['email']];
+        $payload = ['id' => $this['email']];
         return $payload;
     }
 
@@ -264,15 +265,15 @@ class FileEmailUser extends EmailUser
     *
     * @return bool, true if successful false otherwise
     */
-    public function loadFromSession() : bool
+    public function loadFromSession(): bool
     {
         $container = new Container('UserAuth');
         if(!isset($container[self::ID_FIELD])) {
             return false;
         }
-        $data=$container->getArrayCopy();
+        $data = $container->getArrayCopy();
 
-        if($data['exp']<time()) {
+        if($data['exp'] < time()) {
             $container->exchangeArray([]);
             return false;
         }
@@ -280,7 +281,7 @@ class FileEmailUser extends EmailUser
         return true;
     }
 
-    protected function _loadUserById($id) : bool
+    protected function _loadUserById($id): bool
     {
         $json = $this->getUserJson();
 

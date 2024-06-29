@@ -1,4 +1,5 @@
 <?php
+
 namespace DompdfView\Factory;
 
 use Interop\Container\ContainerInterface;

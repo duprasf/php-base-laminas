@@ -22,8 +22,8 @@ $return = [
                         'action'     => 'index',
                         'locale'     => 'en',
                     ],
-                    'constraints'=>[
-                        'locale'=>'en|fr',
+                    'constraints' => [
+                        'locale' => 'en|fr',
                     ],
                 ],
             ],
@@ -46,38 +46,38 @@ $return = [
     ],
     'controller_plugins' => [
         'invokables' => [
-            Controller\Plugin\SetApiResponseHeaders::class=>Controller\Plugin\SetApiResponseHeaders::class,
+            Controller\Plugin\SetApiResponseHeaders::class => Controller\Plugin\SetApiResponseHeaders::class,
         ],
         'factories' => [
-            Controller\Plugin\CommonMetadata::class=>Factory\Controller\Plugin\CommonMetadataFactory::class,
-            Controller\Plugin\GetTranslator::class=>Factory\Controller\Plugin\GetTranslatorFactory::class,
-            Controller\Plugin\GetUrlHelper::class=>Factory\Controller\Plugin\GetUrlHelperFactory::class,
-            Controller\Plugin\Lang::class=>Factory\Controller\Plugin\LangFactory::class,
+            Controller\Plugin\CommonMetadata::class => Factory\Controller\Plugin\CommonMetadataFactory::class,
+            Controller\Plugin\GetTranslator::class => Factory\Controller\Plugin\GetTranslatorFactory::class,
+            Controller\Plugin\GetUrlHelper::class => Factory\Controller\Plugin\GetUrlHelperFactory::class,
+            Controller\Plugin\Lang::class => Factory\Controller\Plugin\LangFactory::class,
         ],
         'aliases' => [
             'getTranslator' => Controller\Plugin\GetTranslator::class,
             'getUrlHelper' => Controller\Plugin\GetUrlHelper::class,
             'lang' => Controller\Plugin\Lang::class,
             'getLang' => Controller\Plugin\Lang::class,
-            'setApiResponseHeaders'=>Controller\Plugin\SetApiResponseHeaders::class,
-            'setResponseHeaders'=>Controller\Plugin\SetApiResponseHeaders::class,
+            'setApiResponseHeaders' => Controller\Plugin\SetApiResponseHeaders::class,
+            'setResponseHeaders' => Controller\Plugin\SetApiResponseHeaders::class,
         ],
     ],
     'service_manager' => [
-        'aliases'=>[
-            "GcNotify"=>GcNotify::class,
+        'aliases' => [
+            "GcNotify" => GcNotify::class,
             'metadataBuilder' => Model\MetadataBuilder::class,
         ],
         'factories' => [
-            Command\Cronjob::class=>Factory\Command\CronjobCommandFactory::class,
+            Command\Cronjob::class => Factory\Command\CronjobCommandFactory::class,
             Model\Metadata::class => Factory\MetadataFactory::class,
-            'lang'=>Factory\LangFactory::class,
-            'domain'=>Factory\DomainFactory::class,
+            'lang' => Factory\LangFactory::class,
+            'domain' => Factory\DomainFactory::class,
             Model\MetadataBuilder::class => Factory\MetadataBuilderFactory::class,
             SessionManager::class => Factory\SessionManagerFactory::class,
-            GcNotify::class=>Factory\GcNotifyFactory::class,
-            "filesize-suffixes"=>Factory\FilesizeSuffixesFactory::class,
-            Listener\ApplicationSetupListener::class=>Factory\Listener\ApplicationSetupListenerFactory::class,
+            GcNotify::class => Factory\GcNotifyFactory::class,
+            "filesize-suffixes" => Factory\FilesizeSuffixesFactory::class,
+            Listener\ApplicationSetupListener::class => Factory\Listener\ApplicationSetupListenerFactory::class,
         ],
         'invokables' => [
             'breadcrumbs' => Model\Breadcrumbs::class,
@@ -87,15 +87,15 @@ $return = [
         Listener\ApplicationSetupListener::class,
     ],
     'view_helpers' => [
-        'aliases'=> [
-            'url'=>View\Helper\Url::class,
-            'url-with-lang'=>View\Helper\Url::class,
-            'UrlHelper'=>View\Helper\Url::class,
-            'headScript'=>View\Helper\HeadScript::class,
+        'aliases' => [
+            'url' => View\Helper\Url::class,
+            'url-with-lang' => View\Helper\Url::class,
+            'UrlHelper' => View\Helper\Url::class,
+            'headScript' => View\Helper\HeadScript::class,
         ],
         'invokables' => [
-            'setSwitchLangUrl'=>View\Helper\SetSwitchLangUrl::class,
-            'sideMenu'=>View\Helper\SideMenu::class,
+            'setSwitchLangUrl' => View\Helper\SetSwitchLangUrl::class,
+            'sideMenu' => View\Helper\SideMenu::class,
             'stripTags' => View\Helper\StripTags::class,
             'breadcrumbs' => View\Helper\BreadcrumbsHelper::class,
             'displayFlashMessages' => View\Helper\DisplayFlashMessages::class,
@@ -135,7 +135,7 @@ $return = [
                 'type'     => 'gettext',
                 'base_dir' => __DIR__ . '/../../../language',
                 'pattern'  => 'layout-%s.mo',
-                'text_domain'=>'layout',
+                'text_domain' => 'layout',
             ],
             [
                 'type'     => 'gettext',
@@ -164,7 +164,7 @@ if(getenv('PHP_DEV_ENV') == 1) {
         ],
         'may_terminate' => true,
         'child_routes' => [
-            'status'=>[
+            'status' => [
                 'type'    => Literal::class,
                 'options' => [
                     'route'    => '/status',

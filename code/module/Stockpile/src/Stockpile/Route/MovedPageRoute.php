@@ -1,4 +1,5 @@
 <?php
+
 namespace Stockpile\Route;
 
 use Laminas\Mvc\Router\Http\RouteInterface;
@@ -36,30 +37,30 @@ class MovedPageRoute extends Regex
     *
     * @return \Laminas\Router\RouteMatch|null
     */
-	public function match(Request $request, $pathOffset = null)
-	{
-		$match = parent::match($request, $pathOffset);
-		if (!$match) {
-			return null;
-		}
+    public function match(Request $request, $pathOffset = null)
+    {
+        $match = parent::match($request, $pathOffset);
+        if (!$match) {
+            return null;
+        }
 
         $path = $match->getParam('path');
-		if(isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '') {
-			$path.='?'.$_SERVER['QUERY_STRING'];
-		}
+        if(isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '') {
+            $path .= '?'.$_SERVER['QUERY_STRING'];
+        }
 
 
         $data = $this->getMovedPageObj()->match($path);
         if($data) {
-            foreach($this->defaults as $k=>$v) {
+            foreach($this->defaults as $k => $v) {
                 $match->setParam($k, $v);
             }
-            foreach($data as $k=>$v) {
+            foreach($data as $k => $v) {
                 $match->setParam($k, $v);
             }
 
-		    return $match;
+            return $match;
         }
         return null;
-	}
+    }
 }

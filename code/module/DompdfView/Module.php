@@ -6,6 +6,7 @@
 *
 * @see https://github.com/dompdf/dompdf
 */
+
 namespace DompdfView;
 
 class Module

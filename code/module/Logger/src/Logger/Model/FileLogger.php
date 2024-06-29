@@ -1,4 +1,5 @@
 <?php
+
 namespace Logger\Model;
 
 use Psr\Log\LoggerInterface;
@@ -22,7 +23,7 @@ class FileLogger implements LoggerInterface
     public function setFilename(String $filename)
     {
         if(is_dir($filename)) {
-            $filename=realpath($filename.DIRECTORY_SEPARATOR.'logs');
+            $filename = realpath($filename.DIRECTORY_SEPARATOR.'logs');
         }
         if(!file_exists($filename)) {
             touch($filename);
@@ -51,6 +52,6 @@ class FileLogger implements LoggerInterface
     public function log($level, $message, array $context = array())
     {
         $f = $this->getHandle();
-        fwrite($f, json_encode(['timestamp'=>time(), 'level'=>$level, 'message'=>$this->interpolate($message, $context)]));
+        fwrite($f, json_encode(['timestamp' => time(), 'level' => $level, 'message' => $this->interpolate($message, $context)]));
     }
 }

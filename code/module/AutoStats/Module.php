@@ -1,4 +1,5 @@
 <?php
+
 namespace AutoStats;
 
 use Laminas\Stdlib\ArrayUtils;

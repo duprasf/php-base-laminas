@@ -1,4 +1,5 @@
 <?php
+
 namespace CurlWrapper;
 
 use CURLFile;
@@ -20,15 +21,15 @@ class CurlWrapper
     private $pubkey;
     private $headers;
 
-    public const GET='GET';
-    public const POST='POST';
-    public const PUT='PUT';
-    public const DELETE='DELETE';
-    public const HEAD='HEAD';
-    public const OPTIONS='OPTIONS';
-    public const PATCH='PATCH';
+    public const GET = 'GET';
+    public const POST = 'POST';
+    public const PUT = 'PUT';
+    public const DELETE = 'DELETE';
+    public const HEAD = 'HEAD';
+    public const OPTIONS = 'OPTIONS';
+    public const PATCH = 'PATCH';
 
-    public function __construct(?string $url=null, ?Iterable $options=null)
+    public function __construct(?string $url = null, ?Iterable $options = null)
     {
         $this->handle = curl_init($url);
         $this->reset();
@@ -65,9 +66,9 @@ class CurlWrapper
             case self::HEAD:
             case self::OPTIONS:
             case self::PATCH:
-                $this->verb=$name;
+                $this->verb = $name;
                 if(isset($arg[0])) {
-                    $this->payload=$arg[0];
+                    $this->payload = $arg[0];
                 }
                 break;
             case 'getCode':
@@ -94,23 +95,23 @@ class CurlWrapper
             throw new CurlException('Option could not be set '.curl_error($this->handle));
         }
         if($option == CURLOPT_HEADER) {
-            $this->returnHeaders=$value;
+            $this->returnHeaders = $value;
         }
         if($option == CURLOPT_RETURNTRANSFER) {
-            $this->returnPage=$value;
+            $this->returnPage = $value;
         }
         return $this;
     }
 
     public function doNotReturnPage(bool $bool)
     {
-        $this->returnPage=$bool;
+        $this->returnPage = $bool;
         return $this;
     }
 
     public function encryptUsingPublicKey(string|OpenSSLAsymmetricKey|OpenSSLCertificate $pubkey)
     {
-        $this->pubkey=$pubkey;
+        $this->pubkey = $pubkey;
         return $this;
     }
 
@@ -127,7 +128,7 @@ class CurlWrapper
 
     public function headers(array $headers)
     {
-        $this->headers=array_merge($this->headers, $headers);
+        $this->headers = array_merge($this->headers, $headers);
         return $this;
     }
 
@@ -139,18 +140,18 @@ class CurlWrapper
         ]);
     }
 
-    public function addFile(string $filename, ?string $posted_filename = null, ?string $mime_type = null, ?string $forceName=null)
+    public function addFile(string $filename, ?string $posted_filename = null, ?string $mime_type = null, ?string $forceName = null)
     {
         // should add validation of location of the file...
         $cf = new CURLFile(
             $filename,
-            $mime_type??mime_content_type($filename),
-            $posted_filename??basename($filename)
+            $mime_type ?? mime_content_type($filename),
+            $posted_filename ?? basename($filename)
         );
         if($forceName) {
-            $this->attachedFiles[$forceName]=$cf;
+            $this->attachedFiles[$forceName] = $cf;
         } else {
-            $this->attachedFiles[]=$cf;
+            $this->attachedFiles[] = $cf;
         }
         return $this;
     }
@@ -162,16 +163,16 @@ class CurlWrapper
 
     public function exec()
     {
-        $includePayload=false;
+        $includePayload = false;
         switch($this->verb) {
             case self::POST:
                 curl_setopt($this->handle, CURLOPT_POST, true);
-                $includePayload=true;
+                $includePayload = true;
                 break;
             case self::PUT:
             case self::PATCH:
                 curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, $this->verb);
-                $includePayload=true;
+                $includePayload = true;
                 break;
             case self::DELETE:
             case self::OPTIONS:
@@ -181,7 +182,7 @@ class CurlWrapper
             case self::GET:
             default:
                 curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, $this->verb);
-                $includePayload=true;
+                $includePayload = true;
                 break;
         }
 
@@ -190,38 +191,38 @@ class CurlWrapper
                 throw new CurlException('Encryption of attached file is not implemented at this time');
             }
             if(is_null($this->payload)) {
-                $this->payload=[];
-            } else if(!is_array($this->payload)) {
-                $this->payload=json_decode($this->payload, true);
+                $this->payload = [];
+            } elseif(!is_array($this->payload)) {
+                $this->payload = json_decode($this->payload, true);
             }
             if(!is_array($this->payload)) {
                 throw new CurlException('The payload could not be converted to an array');
             }
-            foreach($this->attachedFiles as $key=>$file) {
+            foreach($this->attachedFiles as $key => $file) {
                 if(!file_exists($file->getFilename())) {
                     throw new CurlException('File does not exists ', $file->getFilename());
                 }
-                $this->payload[is_numeric($key)?$file->getPostFilename():$key]=$file;
+                $this->payload[is_numeric($key) ? $file->getPostFilename() : $key] = $file;
             }
             $this->headers(['Content-Type: multipart/form-data']);
             curl_setopt($this->handle, CURLOPT_POSTFIELDS, $this->payload);
-        } else if($includePayload && $this->payload) {
-            $payload=json_encode($this->payload);
+        } elseif($includePayload && $this->payload) {
+            $payload = json_encode($this->payload);
             if($this->getNeedsToEncrypt()) {
-                $publicKey=$this->pubkey;
+                $publicKey = $this->pubkey;
                 if(is_string($publicKey)) {
                     if(file_exists($publicKey)) {
-                        $publicKey=file_get_contents($publicKey);
+                        $publicKey = file_get_contents($publicKey);
                     }
-                    $publicKey=openssl_get_publickey(str_replace('\n', PHP_EOL, $publicKey));
+                    $publicKey = openssl_get_publickey(str_replace('\n', PHP_EOL, $publicKey));
                 }
 
                 if(!openssl_public_encrypt(
-                     $payload,
-                     $encrypted_data,
-                     $publicKey
+                    $payload,
+                    $encrypted_data,
+                    $publicKey
                 )) {
-                     exit(basename(__FILE__).':'.__LINE__);
+                    exit(basename(__FILE__).':'.__LINE__);
                 }
 
                 $payload = base64_encode($encrypted_data);
@@ -234,7 +235,7 @@ class CurlWrapper
         curl_setopt($this->handle, CURLOPT_HTTPHEADER, $this->headers);
 
         $raw = curl_exec($this->handle);
-        $this->executed=true;
+        $this->executed = true;
 
         if($this->returnHeaders) {
             $this->lastHeaders = substr($raw, 0, $this->getInfo(CURLINFO_HEADER_SIZE));
@@ -300,15 +301,15 @@ class CurlWrapper
             return false;
         }
         $lines = explode(PHP_EOL, $this->lastHeaders);
-        $return= [trim(array_shift($lines))];// this is the HTTP version and response code
+        $return = [trim(array_shift($lines))];// this is the HTTP version and response code
 
         foreach($lines as $line) {
             if(!trim($line)) {
                 continue;
             }
-            $split=explode(':', $line);
+            $split = explode(':', $line);
             $key = array_shift($split);
-            $return[$key]=trim(implode(':',$split));
+            $return[$key] = trim(implode(':', $split));
         }
         return $return;
     }
@@ -331,15 +332,15 @@ class CurlWrapper
     public function reset()
     {
         curl_reset($this->handle);
-        $this->verb=null;
-        $this->payload=null;
-        $this->lastPage=null;
-        $this->lastHeaders=null;
-        $this->executed=false;
-        $this->returnPage=true;
-        $this->returnHeaders=true;
-        $this->attachedFiles=[];
-        $this->headers=[];
+        $this->verb = null;
+        $this->payload = null;
+        $this->lastPage = null;
+        $this->lastHeaders = null;
+        $this->executed = false;
+        $this->returnPage = true;
+        $this->returnHeaders = true;
+        $this->attachedFiles = [];
+        $this->headers = [];
         return $this;
     }
 

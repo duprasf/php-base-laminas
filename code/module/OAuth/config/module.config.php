@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace OAuth;
@@ -27,17 +28,17 @@ return [
         ],
     ],
     'service_manager' => [
-        'invokables'=>[
+        'invokables' => [
         ],
         'factories' => [
-            Listener\OAuthSetupListener::class=>Factory\Listener\OAuthSetupListenerFactory::class,
+            Listener\OAuthSetupListener::class => Factory\Listener\OAuthSetupListenerFactory::class,
             Model\OAuth2Client::class => Factory\OAuth2ClientFactory::class,
             Model\OAuth2Server::class => Factory\OAuth2ServerFactory::class,
         ],
         'aliases' => [
         ],
     ],
-    'listeners'=>[
+    'listeners' => [
         Listener\OAuthSetupListener::class,
     ],
     'view_helpers' => [

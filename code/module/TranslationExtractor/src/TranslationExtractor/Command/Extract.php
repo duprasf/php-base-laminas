@@ -1,4 +1,5 @@
 <?php
+
 namespace TranslationExtractor\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -13,7 +14,7 @@ class Extract extends Command
     /** @var string */
     protected static $defaultName = 'translation:extract';
 
-    protected function configure() : void
+    protected function configure(): void
     {
         $this->setName(self::$defaultName)
             ->setDescription('Extract translations to a .po file')
@@ -40,7 +41,7 @@ class Extract extends Command
     * @param OutputInterface $screen
     * @return {int|mixed}
     */
-    protected function execute(InputInterface $input, OutputInterface $screen) : int
+    protected function execute(InputInterface $input, OutputInterface $screen): int
     {
         $folder = $input->getArgument('input');
         $output = $input->getArgument('output');

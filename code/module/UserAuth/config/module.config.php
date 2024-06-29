@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace UserAuth;
@@ -133,7 +134,7 @@ return [
         ],
     ],
     'controller_plugins' => [
-        'invokables'=>[
+        'invokables' => [
             'corsSetResponseHeaders' => Controller\Plugin\SetResponseHeaders::class,
             'returnUserData' => Controller\Plugin\ReturnUserData::class,
         ],
@@ -145,7 +146,7 @@ return [
         ],
     ],
     'service_manager' => [
-        'invokables'=>[
+        'invokables' => [
         ],
         'factories' => [
             Model\UserLogger::class => Factory\UserLoggerFactory::class,
@@ -160,7 +161,7 @@ return [
         'aliases' => [
         ],
     ],
-    'listeners'=>[
+    'listeners' => [
         Listener\UserAuthListener::class,
     ],
     'view_helpers' => [

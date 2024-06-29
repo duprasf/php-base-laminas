@@ -1,11 +1,13 @@
 <?php
+
 namespace Stockpile\Model;
 
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerAwareInterface;
 
-class MovedPage extends \ArrayObject implements EventManagerAwareInterface {
+class MovedPage extends \ArrayObject implements EventManagerAwareInterface
+{
     protected $events;
     public function setEventManager(EventManagerInterface $events)
     {
@@ -41,7 +43,7 @@ class MovedPage extends \ArrayObject implements EventManagerAwareInterface {
         if($db && !count($this)) {
             $stmt = $db->query("SELECT movedPageId, movedPageId, originalLocation, newLocation FROM movedPage");
             if($stmt) {
-                $this->exchangeArray(array_map('reset',$stmt->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_ASSOC)));
+                $this->exchangeArray(array_map('reset', $stmt->fetchAll(\PDO::FETCH_GROUP | \PDO::FETCH_ASSOC)));
             }
         }
         return $this;
@@ -70,18 +72,17 @@ class MovedPage extends \ArrayObject implements EventManagerAwareInterface {
             $count = $prepared->rowCount();
             if($count) {
                 $return = array(
-                    "originalLocation"=>$originalLocation,
-                    "newLocation"=>$newLocation,
-                    "movedPageId"=>$db->lastInsertId()
+                    "originalLocation" => $originalLocation,
+                    "newLocation" => $newLocation,
+                    "movedPageId" => $db->lastInsertId()
                 );
-            }
-            else {
-                $return = array('error'=>'Could not insert this record. '.var_export($db->errorInfo(), true));
+            } else {
+                $return = array('error' => 'Could not insert this record. '.var_export($db->errorInfo(), true));
             }
             return $return;
         }
 
-        return array('error'=>'No DB specified');
+        return array('error' => 'No DB specified');
     }
 
     public function match($path)
@@ -153,7 +154,7 @@ class MovedPage extends \ArrayObject implements EventManagerAwareInterface {
         foreach($content as $line) {
             if(preg_match('(^Redirect(Match)? 30\d ([^\s]*)\s+([^\s]*))i', $line, $out)) {
                 $count++;
-                $prepared->execute(array(":original"=>substr($out[2], $out[1]?0:1), ":new"=>$out[3]));
+                $prepared->execute(array(":original" => substr($out[2], $out[1] ? 0 : 1), ":new" => $out[3]));
             }
         }
         return $count;

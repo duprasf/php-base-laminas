@@ -1,4 +1,5 @@
 <?php
+
 namespace PublicAsset\Route;
 
 use Laminas\Mvc\Router\Http\RouteInterface;
@@ -10,7 +11,8 @@ use Void\StringFunction;
 /**
 * The route that will test for assets if no other route was matched
 */
-class PublicAssetRoute extends Regex {
+class PublicAssetRoute extends Regex
+{
     protected $config;
     public function setSearchFolders(array $config)
     {
@@ -39,7 +41,7 @@ class PublicAssetRoute extends Regex {
 
         $path = preg_replace('(/+$)', '', $match->getParam('path'));
         // if we see '..' in the path assume it is a bad request and exit
-        if(strpos($path,'..') !== false) {
+        if(strpos($path, '..') !== false) {
             return null;
         }
 
@@ -57,7 +59,7 @@ class PublicAssetRoute extends Regex {
             $path = $split[1];
         }
 
-        $assetToLoad=null;
+        $assetToLoad = null;
         foreach($config as $conf) {
             $assetToLoad = $this->searchForAsset($path, $conf);
             if($assetToLoad) {
@@ -66,10 +68,10 @@ class PublicAssetRoute extends Regex {
         }
 
         if(!$assetToLoad) {
-            foreach($config as $key=>$conf) {
+            foreach($config as $key => $conf) {
                 $namespaceFolder = substr($path, 0, strpos($path, '/'));
                 if(StringFunction::camel2dashed($key) == $namespaceFolder) {
-                    $path = substr($path, strlen($namespaceFolder)+1);
+                    $path = substr($path, strlen($namespaceFolder) + 1);
                 }
                 $assetToLoad = $this->searchForAsset($path, $conf);
                 if($assetToLoad) {
@@ -81,7 +83,9 @@ class PublicAssetRoute extends Regex {
         if(!$assetToLoad) {
             return null;
         }
-        foreach($this->defaults as $k=>$v) $match->setParam($k, $v);
+        foreach($this->defaults as $k => $v) {
+            $match->setParam($k, $v);
+        }
         $match->setParam('assetToLoad', $assetToLoad);
         //$match->setParam('directPath', $root.$fullpath);
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -11,7 +12,7 @@ class Encode extends Command
     /** @var string */
     protected static $defaultName = 'oauth:encode';
 
-    protected function configure() : void
+    protected function configure(): void
     {
         $this->setName(self::$defaultName)
             ->setDescription('Encode/hash the client secret')
@@ -31,7 +32,7 @@ class Encode extends Command
     * @param OutputInterface $screen
     * @return {int|mixed}
     */
-    protected function execute(InputInterface $input, OutputInterface $screen) : int
+    protected function execute(InputInterface $input, OutputInterface $screen): int
     {
         $secret = $input->getArgument('client_secret');
         //$output = $input->getArgument('output');

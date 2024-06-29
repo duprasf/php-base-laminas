@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth\Listener;
 
 use Laminas\EventManager\EventManagerAwareInterface;
@@ -13,13 +14,12 @@ use Laminas\Router\Http\Segment;
 use OAuth\Controller\OAuth2ClientController;
 use OAuth\Controller\OAuth2ServerController;
 
-
 class OAuthSetupListener
 {
     private $router;
     public function setRouter($obj)
     {
-        $this->router=$obj;
+        $this->router = $obj;
         return $this;
     }
     protected function getRouter()
@@ -30,7 +30,7 @@ class OAuthSetupListener
     private $headScript;
     public function setHeadScript($obj)
     {
-        $this->headScript=$obj;
+        $this->headScript = $obj;
         return $this;
     }
     protected function getHeadScript()
@@ -69,12 +69,12 @@ class OAuthSetupListener
                         'action'     => 'token',
                         'locale'     => 'en',
                     ],
-                    'contraints'=> [
+                    'contraints' => [
                         'locale' => 'en|fr',
                     ],
                 ],
                 'may_terminate' => true,
-                'child_routes'=>[
+                'child_routes' => [
                     'login' => [
                         'type'    => Literal::class,
                         'options' => [
@@ -139,8 +139,8 @@ class OAuthSetupListener
                 'type'    => Segment::class,
                 'options' => [
                     'route'    => '/oauth-login[/:method]',
-                    'constraints'=>[
-                        'method'=>'(?!return).*',
+                    'constraints' => [
+                        'method' => '(?!return).*',
                     ],
                     'defaults' => [
                         'controller' => OAuth2ClientController::class,
@@ -149,7 +149,7 @@ class OAuthSetupListener
                     ],
                 ],
                 'may_terminate' => true,
-                'child_routes'=>[
+                'child_routes' => [
                     'return' => [
                         'type'    => Segment::class,
                         'options' => [

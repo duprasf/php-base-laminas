@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\View\Helper;
 
 use Laminas\View\Helper\HeadScript as OriginalHeadScript;
@@ -9,7 +10,8 @@ use Laminas\Filter\Word\DashToCamelCase;
 * Basic HeadScript replacement, any script will look
 * for a sri file and add the integrity attribute
 */
-class HeadScript extends OriginalHeadScript {
+class HeadScript extends OriginalHeadScript
+{
     protected $config;
     public function setSearchFolders(array $config)
     {
@@ -50,12 +52,12 @@ class HeadScript extends OriginalHeadScript {
                 // only check to serve from that one
                 $config = array($config[$split[0]]);
                 $path = $split[1];
-            } else if(isset($config[$dashToCamel->filter($split[0])])) {
+            } elseif(isset($config[$dashToCamel->filter($split[0])])) {
                 $config = array($config[$dashToCamel->filter($split[0])]);
                 $path = $split[1];
             }
 
-            $assetToLoad=null;
+            $assetToLoad = null;
             foreach($config as $conf) {
                 $assetToLoad = $this->searchForAsset($path, $conf);
                 if($assetToLoad) {
@@ -64,10 +66,10 @@ class HeadScript extends OriginalHeadScript {
             }
 
             if(!$assetToLoad) {
-                foreach($config as $key=>$conf) {
+                foreach($config as $key => $conf) {
                     $namespaceFolder = substr($path, 0, strpos($path, '/'));
                     if($camelToDash->filter($key) == $namespaceFolder) {
-                        $path = substr($path, strlen($namespaceFolder)+1);
+                        $path = substr($path, strlen($namespaceFolder) + 1);
                     }
                     $assetToLoad = $this->searchForAsset($path, $conf);
                     if($assetToLoad) {
@@ -87,8 +89,8 @@ class HeadScript extends OriginalHeadScript {
             }
 
             $sri = $json[$originalPath];
-            $item->attributes['crossorigin']="anonymous";
-            $item->attributes['integrity']=$sri;
+            $item->attributes['crossorigin'] = "anonymous";
+            $item->attributes['integrity'] = $sri;
         }
 
         return parent::toString($indent);

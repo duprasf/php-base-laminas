@@ -1,4 +1,5 @@
 <?php
+
 namespace Stockpile;
 
 use Laminas\Stdlib\ArrayUtils;

@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth\Model;
 
 use PDO;
@@ -39,7 +40,7 @@ class OAuth2Server implements OAuth2ServerInterface
         return $this->jwt;
     }
 
-    private $ttl=[];
+    private $ttl = [];
     public function setTTL(String $name, int $ttl)
     {
         if($name != 'token' && $name != 'refresh') {
@@ -53,7 +54,7 @@ class OAuth2Server implements OAuth2ServerInterface
         return $this->ttl[$name] ?? throw new InvalidArgumentException('TTL name not set, check your factory');
     }
 
-    public function verifyCodeVerifier(String $algoname='S256')
+    public function verifyCodeVerifier(String $algoname = 'S256')
     {
     }
 
@@ -92,7 +93,7 @@ class OAuth2Server implements OAuth2ServerInterface
             $scopeReason[] = $cr;
         }
 
-        $data['scope']=$scopeReason;
+        $data['scope'] = $scopeReason;
         return $data;
     }
 
@@ -116,16 +117,16 @@ class OAuth2Server implements OAuth2ServerInterface
                 payload = :payload
         ");
         $data = [
-            'uuid'=>$uuid,
-            'clientId'=>$clientId,
-            'user_id'=>$user_id,
-            'redirect_uri'=>$redirect_uri,
-            'expires'=>date('Y-m-d H:i:s', time()+60),
-            'scope'=>json_encode($scope),
-            'id_token'=>'',
-            'code_challenge'=>$code_challenge,
-            'code_challenge_method'=>$code_challenge_method,
-            'payload'=>json_encode($payload),
+            'uuid' => $uuid,
+            'clientId' => $clientId,
+            'user_id' => $user_id,
+            'redirect_uri' => $redirect_uri,
+            'expires' => date('Y-m-d H:i:s', time() + 60),
+            'scope' => json_encode($scope),
+            'id_token' => '',
+            'code_challenge' => $code_challenge,
+            'code_challenge_method' => $code_challenge_method,
+            'payload' => json_encode($payload),
         ];
 
         $prepared->execute($data);
@@ -136,7 +137,8 @@ class OAuth2Server implements OAuth2ServerInterface
     public function getToken(String $code, String $redirect_uri, String $code_verifier, String $client_id, String $client_secret)
     {
         $db = $this->getDb();
-        $prepared = $db->prepare("SELECT clientId, client_secret, user_id, code_challenge, code_challenge_method, scope, expires, payload
+        $prepared = $db->prepare(
+            "SELECT clientId, client_secret, user_id, code_challenge, code_challenge_method, scope, expires, payload
             FROM oauth_authorization_code
                 INNER JOIN oauth_client USING(clientId)
             WHERE authorization_code = ?"
@@ -160,9 +162,9 @@ class OAuth2Server implements OAuth2ServerInterface
         }
 
         $payload = json_decode($data['payload'], true);
-        $payload['client_id']=$client_id;
-        $payload['user_id']=$data['user_id'];
-        $payload['scope']=$data['scope'];
+        $payload['client_id'] = $client_id;
+        $payload['user_id'] = $data['user_id'];
+        $payload['scope'] = $data['scope'];
 
         $insertToken = $db->prepare("
             INSERT INTO oauth_access_token
@@ -189,16 +191,16 @@ class OAuth2Server implements OAuth2ServerInterface
             $refreshToken = $this->getJwt()->generate($payload, $this->getTTL('refresh'));
 
             $saveTokenData = [
-                "token"=>$token,
-                "clientId"=>$data['clientId'],
-                "user_id"=>$data['user_id'],
-                "expires"=>date('Y-m-d H:i:s', time()+$this->getTTL('token')),
-                "scope"=>$data['scope'],
+                "token" => $token,
+                "clientId" => $data['clientId'],
+                "user_id" => $data['user_id'],
+                "expires" => date('Y-m-d H:i:s', time() + $this->getTTL('token')),
+                "scope" => $data['scope'],
             ];
             $insertToken->execute($saveTokenData);
 
             $saveTokenData['token'] = $refreshToken;
-            $saveTokenData['expires'] = date('Y-m-d H:i:s', time()+$this->getTTL('refresh'));
+            $saveTokenData['expires'] = date('Y-m-d H:i:s', time() + $this->getTTL('refresh'));
             $insertRefresh->execute($saveTokenData);
 
             $prepareDelete = $db->prepare("DELETE FROM oauth_authorization_code WHERE authorization_code = ?");
@@ -207,11 +209,11 @@ class OAuth2Server implements OAuth2ServerInterface
             $db->commit();
 
             return [
-                "token_type"=>"Bearer",
-                "access_token"=>$token,
-                "expires_in"=>$this->getTTL('token'),
-                "scope"=>$data['scope'],
-                "refresh_token"=>$refreshToken,
+                "token_type" => "Bearer",
+                "access_token" => $token,
+                "expires_in" => $this->getTTL('token'),
+                "scope" => $data['scope'],
+                "refresh_token" => $refreshToken,
             ];
         } catch (\PDOException $e) {
             $db->rollBack();
@@ -226,7 +228,7 @@ class OAuth2Server implements OAuth2ServerInterface
     {
         $db = $this->getDb();
         // delete everything that has expired 5 days ago
-        $time = date('Y-m-d H:i:s', time()-432000);
+        $time = date('Y-m-d H:i:s', time() - 432000);
         $db->exec("DELETE FROM oauth_access_token WHERE expires < '{$time}'");
         $db->exec("DELETE FROM oauth_authorization_code WHERE expires < '{$time}'");
         $db->exec("DELETE FROM oauth_refresh_token WHERE expires < '{$time}'");

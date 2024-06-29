@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\View\Helper;
 
 use Laminas\View\Helper\HelperInterface;
@@ -6,8 +7,8 @@ use Laminas\View\Renderer\RendererInterface;
 
 class SideMenu implements HelperInterface
 {
-    const LOCATION_LEFT='left';
-    const LOCATION_RIGHT='right';
+    public const LOCATION_LEFT = 'left';
+    public const LOCATION_RIGHT = 'right';
 
     protected $view;
     public function setView(RendererInterface $view)

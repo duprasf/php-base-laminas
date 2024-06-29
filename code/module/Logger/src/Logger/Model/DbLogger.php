@@ -1,4 +1,5 @@
 <?php
+
 namespace Logger\Model;
 
 use Psr\Log\LoggerInterface;

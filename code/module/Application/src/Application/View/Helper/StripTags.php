@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\View\Helper;
 
 use Laminas\View\Helper\HelperInterface;
@@ -10,8 +11,14 @@ use Laminas\View\Renderer\RendererInterface;
 class StripTags implements HelperInterface
 {
     protected $view;
-    public function setView(RendererInterface $view) {$this->view = $view;}
-    public function getView() {return $this->view;}
+    public function setView(RendererInterface $view)
+    {
+        $this->view = $view;
+    }
+    public function getView()
+    {
+        return $this->view;
+    }
 
     public function __invoke($string)
     {

@@ -1,4 +1,5 @@
 <?php
+
 namespace Stockpile\Controller;
 
 use Laminas\View\Model\ViewModel;
@@ -59,7 +60,7 @@ class AdminController extends AbstractActionController
         $view = new JsonModel();
         $movedPages = $this->getMovedPageObj();
         $count = $movedPages->remove($_POST['movedPageId']);
-        $result = array('movedPageId'=>$_POST['movedPageId'], 'count'=>$count);
+        $result = array('movedPageId' => $_POST['movedPageId'], 'count' => $count);
         if(!$count) {
             $result['error'] = 'Could not delete this moved page';
         }

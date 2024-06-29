@@ -1,7 +1,8 @@
 <?php
+
 namespace UserAuth\Model;
 
-use \GcNotify\GcNotify;
+use GcNotify\GcNotify;
 
 interface UserInterface
 {
@@ -12,7 +13,7 @@ interface UserInterface
     * @param String $password
     * @return bool, true if successful false (or throws exception) otherwise
     */
-    public function login(String $username, String $password) : bool;
+    public function login(String $username, String $password): bool;
 
     /**
     * Authenticate user with an ID (usually email) and password
@@ -21,20 +22,20 @@ interface UserInterface
     * @param String $password
     * @return bool, true if successful false (or throws exception) otherwise
     */
-    public function authenticate(String $username, String $password) : bool;
+    public function authenticate(String $username, String $password): bool;
     /**
     * Log the user out and destroy the session
     *
     * @return UserInterface
     */
-    public function logout() : self;
+    public function logout(): self;
 
     /**
     * Return true if logged in, false otherwise. By default
     *
     * @return bool, return true if logged in, false otherwise.
     */
-    public function isLoggedIn() : bool;
+    public function isLoggedIn(): bool;
 
     /**
     * Returns the ID field defined in the const ID_FIELD of the class
@@ -69,5 +70,5 @@ interface UserInterface
     *
     * @return array with the data to put in the JWT
     */
-    public function getDataForJWT(int $time = 86400) : array;
+    public function getDataForJWT(int $time = 86400): array;
 }

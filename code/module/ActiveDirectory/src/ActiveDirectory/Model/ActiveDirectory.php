@@ -1,4 +1,5 @@
 <?php
+
 namespace ActiveDirectory\Model;
 
 use Laminas\Ldap\Ldap;
@@ -99,7 +100,7 @@ class ActiveDirectory
     * @param bool $returnFirstElementOnly
     * @return array
     */
-    public function getUserByEmailOrUsername(String $term, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
+    public function getUserByEmailOrUsername(String $term, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
     {
         $data = $this->getByEmail($term, $requestedFieldsMap, $returnRaw, $returnFirstElementOnly);
         if($data) {
@@ -117,7 +118,7 @@ class ActiveDirectory
     * @param bool $returnFirstElementOnly
     * @return array
     */
-    public function getUserByEmail(String $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
+    public function getUserByEmail(String $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
     {
         return $this->getByEmail($email, $requestedFieldsMap, $returnRaw);
     }
@@ -131,7 +132,7 @@ class ActiveDirectory
     * @param bool $returnFirstElementOnly
     * @return array[]
     */
-    public function getByEmail(String $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
+    public function getByEmail(String $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
     {
         $filters = array();
         if(is_array($email)) {
@@ -142,8 +143,7 @@ class ActiveDirectory
                 $filters[] = Filter::equals('gcMessagingMail', $e);
                 $filters[] = Filter::equals('userPrincipalName', $e);
             }
-        }
-        else {
+        } else {
             $filters[] = Filter::equals('eti-emailaddress', $email);
             $filters[] = Filter::equals('mailaddress', $email);
             $filters[] = Filter::equals('mail', $email);
@@ -151,7 +151,7 @@ class ActiveDirectory
             $filters[] = Filter::equals('userPrincipalName', $email);
         }
         //$filter = "(&(!(userAccountControl:1.2.840.113556.1.4.803:=2))(|{$filter1}{$filter2}))";
-        $filter = "(|".implode('',$filters).")";
+        $filter = "(|".implode('', $filters).")";
 
         $array = $this->getByFilter($filter, $requestedFieldsMap, $returnRaw);
         if($returnFirstElementOnly) {
@@ -170,7 +170,7 @@ class ActiveDirectory
     * @param bool $returnFirstElementOnly
     * @return array[]
     */
-    public function getByUsername(String $accountName, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly=false)
+    public function getByUsername(String $accountName, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
     {
         $filters = array();
         if(is_array($accountName)) {
@@ -178,13 +178,12 @@ class ActiveDirectory
                 $filters[] = Filter::equals('account', $e);
                 $filters[] = Filter::equals('samaccountname', $e);
             }
-        }
-        else {
+        } else {
             $filters[] = Filter::equals('account', $accountName);
             $filters[] = Filter::equals('samaccountname', $accountName);
         }
         //$filter = "(&(!(userAccountControl:1.2.840.113556.1.4.803:=2))(|{$filter1}{$filter2}))";
-        $filter = "(|".implode('',$filters).")";
+        $filter = "(|".implode('', $filters).")";
 
         $array = $this->getByFilter($filter, $requestedFieldsMap, $returnRaw);
         if($returnFirstElementOnly) {
@@ -204,13 +203,13 @@ class ActiveDirectory
     protected function getByFilter($filter, $requestedFieldsMap = array(), $returnRaw = false)
     {
         foreach($this->getLdap() as $ldap) {
-            $map = array('mail'=>'email',
-                'eti-emailaddress'=>'email-eti', 'mailaddress'=>'email2', 'department'=>'department',
-                'gcMessagingMail'=>'email-gc', 'userPrincipalName'=>'email-primary',
-                'title'=>'title', 'givenname'=>'givenname', 'sn'=>'surname',
-                'mobile'=>'mobile', 'telephonenumber'=>'phone', 'physicaldeliveryofficename'=>'cubicle',
-                'samaccountname'=>'account', 'memberof'=>'memberof',
-                'level1'=>'branch', 'level1-2'=>'branchId',
+            $map = array('mail' => 'email',
+                'eti-emailaddress' => 'email-eti', 'mailaddress' => 'email2', 'department' => 'department',
+                'gcMessagingMail' => 'email-gc', 'userPrincipalName' => 'email-primary',
+                'title' => 'title', 'givenname' => 'givenname', 'sn' => 'surname',
+                'mobile' => 'mobile', 'telephonenumber' => 'phone', 'physicaldeliveryofficename' => 'cubicle',
+                'samaccountname' => 'account', 'memberof' => 'memberof',
+                'level1' => 'branch', 'level1-2' => 'branchId',
             );
             if(count($requestedFieldsMap) == 0) {
                 $requestedFieldsMap = $map;
@@ -220,14 +219,14 @@ class ActiveDirectory
                 'filter' => $filter,
                 'baseDn' => $ldap->getOptions()['baseDn'],
                 'scope'  => Ldap::SEARCH_SCOPE_SUB,
-                'attributes'=>array_keys($map),
+                'attributes' => array_keys($map),
             );
             $resultsRaw = $ldap->searchEntries($searchOptions);
             if(!$resultsRaw) {
                 continue;
             }
 
-            foreach($resultsRaw as $k=>$v) {
+            foreach($resultsRaw as $k => $v) {
                 if(isset($resultsRaw[$k]['mail'])) {
                     if(!isset($resultsRaw[$k]['email-legacy'])) {
                         $resultsRaw[$k]['email-legacy'] = $resultsRaw[$k]['mail'];
@@ -235,14 +234,14 @@ class ActiveDirectory
                     if(!isset($resultsRaw[$k]['eti-emailaddress'])) {
                         $resultsRaw[$k]['eti-emailaddress'] = $resultsRaw[$k]['mail'];
                     }
-                } else if(isset($resultsRaw[$k]['eti-emailaddress'])) {
+                } elseif(isset($resultsRaw[$k]['eti-emailaddress'])) {
                     if(!isset($resultsRaw[$k]['email-legacy'])) {
                         $resultsRaw[$k]['email-legacy'] = $resultsRaw[$k]['eti-emailaddress'];
                     }
                     if(!isset($resultsRaw[$k]['mail'])) {
                         $resultsRaw[$k]['mail'] = $resultsRaw[$k]['eti-emailaddress'];
                     }
-                } else if(isset($resultsRaw[$k]['email-legacy'])) {
+                } elseif(isset($resultsRaw[$k]['email-legacy'])) {
                     if(!isset($resultsRaw[$k]['eti-emailaddress'])) {
                         $resultsRaw[$k]['eti-emailaddress'] = $resultsRaw[$k]['email-legacy'];
                     }
@@ -277,7 +276,7 @@ class ActiveDirectory
         foreach($raw as $cr) {
             if(isset($cr['mail'])) {
                 $arr = array();
-                foreach($cr as $k=>$v) {
+                foreach($cr as $k => $v) {
                     if(isset($map[$k])) {
                         $k = $map[$k];
                     }
@@ -287,12 +286,10 @@ class ActiveDirectory
                             foreach($v as $group) {
                                 $arr[$k][] = $this->getGroupName($group);
                             }
-                        }
-                        else {
+                        } else {
                             $arr[$k][] = $this->getGroupName($v);
                         }
-                    }
-                    else {
+                    } else {
                         $arr[$k] = is_array($v) ? reset($v) : $v;
                     }
                 }
@@ -302,14 +299,12 @@ class ActiveDirectory
                 if(isset($arr['account']) || isset($arr['email']) || isset($arr['email2'])) {
                     if(isset($map['id']) && isset($raw[$map['id']])) {
                         $id = $raw[$map['id']];
-                    }
-                    else {
-                        $id = isset($arr['account']) ? $arr['account'] : ( isset($arr['email']) ? $arr['email'] : $arr['email2'] );
+                    } else {
+                        $id = isset($arr['account']) ? $arr['account'] : (isset($arr['email']) ? $arr['email'] : $arr['email2']);
                     }
                     $ad[strtolower($id)] = $arr;
                     $ad[strtolower($id)]['raw'] = $raw;
-                }
-                else {
+                } else {
                     $arr['raw'] = $raw;
                     $ad[] = $arr;
                 }

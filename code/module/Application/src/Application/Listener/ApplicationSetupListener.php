@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Listener;
 
 use Laminas\EventManager\EventManagerAwareInterface;
@@ -13,13 +14,12 @@ use Laminas\Session\Container;
 use Laminas\Session\Validator;
 use Laminas\Http\Request;
 
-
 class ApplicationSetupListener
 {
     private $session;
     public function setSessionManager(SessionManager $obj)
     {
-        $this->session=$obj;
+        $this->session = $obj;
         return $this;
     }
     protected function getSessionManager()
@@ -30,7 +30,7 @@ class ApplicationSetupListener
     private $request;
     public function setRequest(Request $obj)
     {
-        $this->request=$obj;
+        $this->request = $obj;
         return $this;
     }
     protected function getRequest()
@@ -41,7 +41,7 @@ class ApplicationSetupListener
     private $config;
     public function setConfig($config)
     {
-        $this->config=$config;
+        $this->config = $config;
         return $this;
     }
     protected function getConfig()
@@ -217,8 +217,8 @@ class ApplicationSetupListener
         $errorMessage = $event->getError();
         $controllerName = $event->getController();
         $notify->reportError([
-            'message'=>$event->getError().PHP_EOL.'___'.PHP_EOL.preg_replace('(#(\d+))', '\1)', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)),
-            'file'=>$event->getController(),
+            'message' => $event->getError().PHP_EOL.'___'.PHP_EOL.preg_replace('(#(\d+))', '\1)', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)),
+            'file' => $event->getController(),
         ]);
 
         return;

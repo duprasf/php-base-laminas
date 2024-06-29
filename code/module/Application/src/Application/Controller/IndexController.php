@@ -68,8 +68,8 @@ class IndexController extends AbstractActionController
         $lang = $translator->getLang();
         $view->setVariable('metadata', new \ArrayObject(array(
             "title" => $translator->translate('Home Page'),
-            "description"=>$translator->translate("The home page our this web site is not set"),
-            "issuedDate"=>date('Y-m-d'),
+            "description" => $translator->translate("The home page our this web site is not set"),
+            "issuedDate" => date('Y-m-d'),
         )));
 
         $view->setVariable('attribution', 'HC');

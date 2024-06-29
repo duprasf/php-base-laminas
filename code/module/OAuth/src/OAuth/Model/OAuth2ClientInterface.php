@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth\Model;
 
 /**
@@ -10,5 +11,5 @@ interface OAuth2ClientInterface
 {
     public function setOAuth2Config(array $config);
     public function redirect(String $method, ?string $state);
-    public function getToken(String $authCode, String $configName, String $code_challenge) : ?String;
+    public function getToken(String $authCode, String $configName, String $code_challenge): ?String;
 }

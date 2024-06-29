@@ -1,11 +1,12 @@
 <?php
+
 namespace Application\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 class SetApiResponseHeaders extends AbstractPlugin
 {
-    public function __invoke($response, $domain = '*', $maxAge = 1728000, $verbs=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+    public function __invoke($response, $domain = '*', $maxAge = 1728000, $verbs = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
     {
         if(!is_int($maxAge)) {
             // good for 20 days
@@ -24,5 +25,5 @@ class SetApiResponseHeaders extends AbstractPlugin
         ;
 
         return $response;
-   }
+    }
 }

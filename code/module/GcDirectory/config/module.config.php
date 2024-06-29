@@ -1,13 +1,14 @@
 <?php
+
 namespace GcDirectory;
 
 return [
     'service_manager' => [
         'factories' => [
-            Model\GcDirectory::class=>Factory\Model\GcDirectoryFactory::class,
+            Model\GcDirectory::class => Factory\Model\GcDirectoryFactory::class,
         ],
-        "aliases"=>[
-            "GcDirectory"=>Model\GcDirectory::class,
+        "aliases" => [
+            "GcDirectory" => Model\GcDirectory::class,
         ],
     ],
     'translator' => [
@@ -22,7 +23,7 @@ return [
     ],
     'view_manager' => [
         'template_path_stack' => [
-            __NAMESPACE__=>__DIR__ . '/../view',
+            __NAMESPACE__ => __DIR__ . '/../view',
         ],
         'strategies' => [
             'ViewJsonStrategy',

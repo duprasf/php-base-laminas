@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth;
 
 use Laminas\Stdlib\ArrayUtils;

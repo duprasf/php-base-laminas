@@ -1,4 +1,5 @@
 <?php
+
 namespace PublicAsset\Factory;
 
 use PublicAsset\Route\PublicAssetRoute;
@@ -8,11 +9,11 @@ use Interop\Container\ContainerInterface;
 
 class PublicAssetRouteFactory implements FactoryInterface
 {
-	protected $creationOptions;
-	public function setCreationOptions(array $creationOptions)
-	{
-		$this->creationOptions = $creationOptions;
-	}
+    protected $creationOptions;
+    public function setCreationOptions(array $creationOptions)
+    {
+        $this->creationOptions = $creationOptions;
+    }
 
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
@@ -20,12 +21,12 @@ class PublicAssetRouteFactory implements FactoryInterface
         return $this->createService($container, $requestedName, $options);
     }
 
-	public function createService(ServiceLocatorInterface $serviceLocator)
-	{
-		$config = $serviceLocator->get('Config');
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
+        $config = $serviceLocator->get('Config');
 
-		$route = new PublicAssetRoute($this->creationOptions['regex'], $this->creationOptions['spec'], $this->creationOptions['defaults']);
+        $route = new PublicAssetRoute($this->creationOptions['regex'], $this->creationOptions['spec'], $this->creationOptions['defaults']);
         $route->setSearchFolders(isset($config['public_assets']) ? $config['public_assets'] : array());
-		return $route;
-	}
+        return $route;
+    }
 }

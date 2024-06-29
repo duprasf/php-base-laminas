@@ -1,10 +1,11 @@
 <?php
+
 namespace Application\View\Helper;
 
-use \Laminas\Mvc\I18n\Translator;
-use \Laminas\View\Renderer\RendererInterface;
-use \Laminas\View\Helper\HelperInterface;
-use \Application\Model\Breadcrumbs;
+use Laminas\Mvc\I18n\Translator;
+use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Helper\HelperInterface;
+use Application\Model\Breadcrumbs;
 
 /**
 * Generate the WET HTML for the breadcrumbs
@@ -23,11 +24,17 @@ class BreadcrumbsHelper implements HelperInterface
     }
 
     protected $translator;
-    public function setTranslator(Translator $translator) {$this->translator = $translator;}
-    public function getTranslator() {return $this->translator;}
+    public function setTranslator(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
+    public function getTranslator()
+    {
+        return $this->translator;
+    }
 
     protected $breadcrumbs;
-    public function setBreadcrumbs(null|array|Breadcrumbs $breadcrumbs=null)
+    public function setBreadcrumbs(null|array|Breadcrumbs $breadcrumbs = null)
     {
         $this->breadcrumbs = $breadcrumbs;
     }
@@ -36,7 +43,8 @@ class BreadcrumbsHelper implements HelperInterface
         return $this->breadcrumbs ?? new Breadcrumbs();
     }
 
-    public function __invoke(null|array|Breadcrumbs $breadcrumbs=null) {
+    public function __invoke(null|array|Breadcrumbs $breadcrumbs = null)
+    {
         if($breadcrumbs) {
             $this->setBreadcrumbs($breadcrumbs);
         }
@@ -65,24 +73,23 @@ class BreadcrumbsHelper implements HelperInterface
         $translator = $this->getTranslator();
         $breadcrumbs = $this->getBreadcrumbs();
         if(!is_array($breadcrumbs)) {
-            $breadcrumbs=$breadcrumbs->getArrayCopy();
+            $breadcrumbs = $breadcrumbs->getArrayCopy();
         }
         $string = '<nav role="navigation" id="wb-bc" property="breadcrumb">
             <h2>'.$translator->translate('You are here:').'</h2>
                 <div class="container">
                     <div class="row">
                         <ol class="breadcrumb">';
-                            foreach($breadcrumbs as $crumb){
-                                $string.='<li><a href="'.$crumb['href'].'">';
-                                if(isset($crumb['acronym'])) {
-                                    $string.='<abbr title="'.$crumb['acronym'].'">'.$crumb['title'].'</abbr>';
-                                }
-                                else {
-                                    $string.=$crumb['title'];
-                                }
-                                $string.='</a></li>';
-                            }
-                           	$string.= '
+        foreach($breadcrumbs as $crumb) {
+            $string .= '<li><a href="'.$crumb['href'].'">';
+            if(isset($crumb['acronym'])) {
+                $string .= '<abbr title="'.$crumb['acronym'].'">'.$crumb['title'].'</abbr>';
+            } else {
+                $string .= $crumb['title'];
+            }
+            $string .= '</a></li>';
+        }
+        $string .= '
                         </ol>
                     </div>
                 </div>

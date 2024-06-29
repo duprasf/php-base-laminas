@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Factory;
 
 use Interop\Container\ContainerInterface;
@@ -10,7 +11,8 @@ class LangFactory implements FactoryInterface
     {
         $route = $container->get('router')->match($container->get('Request'));
         $lang  = $route
-            ? ($route->getParam('locale', 'en')
+            ? (
+                $route->getParam('locale', 'en')
                 ?: $route->getParam('lang', 'en')
             )
             : 'en'

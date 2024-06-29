@@ -1,4 +1,5 @@
 <?php
+
 namespace Stockpile\Controller;
 
 use Laminas\View\Model\ViewModel;
@@ -23,7 +24,7 @@ class IndexController extends AbstractActionController
     private $metadata;
     public function setMetadata(ArrayObject $obj)
     {
-        $this->metadata=$obj;
+        $this->metadata = $obj;
         return $this;
     }
     protected function getMetadata()
@@ -50,8 +51,7 @@ class IndexController extends AbstractActionController
         if($this->params('originalLocation') != 'index_e.shtml' && $this->params('originalLocation') != 'index_f.shtml') {
             if($this->getRequest()->getHeader('referer')) {
 
-            }
-            else {
+            } else {
                 $translator = $this->getTranslator();
                 $this->flashMessenger()->addWarningMessage($translator->translate("This page was recently moved, please update your bookmark to this new address as soon as possible."));
             }

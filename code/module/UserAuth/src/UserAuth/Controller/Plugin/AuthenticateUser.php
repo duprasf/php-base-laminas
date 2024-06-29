@@ -10,13 +10,12 @@ use UserAuth\Model\EmailUser;
 use UserAuth\Model\JWT;
 use UserAuth\Exception\JwtExpiredException;
 
-
 class AuthenticateUser extends AbstractPlugin
 {
     private $user;
     public function setUser(User $obj)
     {
-        $this->user=$obj;
+        $this->user = $obj;
         return $this;
     }
     protected function getUser()
@@ -27,7 +26,7 @@ class AuthenticateUser extends AbstractPlugin
     private $jwtObj;
     public function setJwtObj(JWT $obj)
     {
-        $this->jwtObj=$obj;
+        $this->jwtObj = $obj;
         return $this;
     }
     protected function getJwtObj()
@@ -35,13 +34,13 @@ class AuthenticateUser extends AbstractPlugin
         return $this->jwtObj;
     }
 
-    public function __invoke(Authorization|GenericHeader|string|null $auth):string|bool
+    public function __invoke(Authorization|GenericHeader|string|null $auth): string|bool
     {
-        $jwt=null;
-        if($auth instanceOf Authorization) {
+        $jwt = null;
+        if($auth instanceof Authorization) {
             $jwt = str_replace('Bearer ', '', $auth->getFieldValue());
         }
-        if($auth instanceOf GenericHeader) {
+        if($auth instanceof GenericHeader) {
             $jwt = $auth->getFieldValue();
         }
         if(is_string($auth)) {

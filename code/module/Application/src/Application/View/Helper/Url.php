@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\View\Helper;
 
 use Laminas\View\Helper\Url as UrlHelper;
@@ -8,7 +9,8 @@ use Laminas\View\Renderer\RendererInterface;
 * Basic URL View Helper class but will set the locale/language of the requested
 * route automatically if not set when called
 */
-class Url extends UrlHelper {
+class Url extends UrlHelper
+{
     protected $view;
     public function setView(RendererInterface $view)
     {

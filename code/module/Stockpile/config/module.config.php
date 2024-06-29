@@ -1,60 +1,61 @@
 <?php
+
 namespace Stockpile;
 
 return [
     'router' => [
         'routes' => [
-            'file-system-page'=>[
-                'type'=>Route\FileSystemRoute::class,
-                'options'=>[
-                    'regex'=>'/(?P<lang>en|fr)(?P<path>/.*)?$',
-                    'spec'=>'/%lang%/%path%',
-                    'defaults'=>[
-                        'controller'=>Controller\IndexController::class,
-                        'action'=>'file-system-page',
+            'file-system-page' => [
+                'type' => Route\FileSystemRoute::class,
+                'options' => [
+                    'regex' => '/(?P<lang>en|fr)(?P<path>/.*)?$',
+                    'spec' => '/%lang%/%path%',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'file-system-page',
                     ],
-                    'constraints'=>[
-                        'path'=>'^[\w\d/-]*$',
-                        'lang'=>'en|fr',
+                    'constraints' => [
+                        'path' => '^[\w\d/-]*$',
+                        'lang' => 'en|fr',
                     ],
                 ],
                 'may_terminate' => true,
                 'child_routes' => [],
             ],
-            'moved-pages-admin'=>[
-                'type'=>'literal',
-                'options'=>[
-                    'route'=>'/{moved-pages}',
-                    'defaults'=>[
-                        'controller'=>Controller\AdminController::class,
-                        'action'=>'moved-pages-setup',
+            'moved-pages-admin' => [
+                'type' => 'literal',
+                'options' => [
+                    'route' => '/{moved-pages}',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'moved-pages-setup',
                     ],
                 ],
                 'child_routes' => [
-                    'setup'=>[
-                        'type'=>'literal',
-                        'options'=>[
-                            'route'=>'/setup',
-                            'defaults'=>[
-                                'action'=>'moved-pages-setup',
+                    'setup' => [
+                        'type' => 'literal',
+                        'options' => [
+                            'route' => '/setup',
+                            'defaults' => [
+                                'action' => 'moved-pages-setup',
                             ],
                         ],
                     ],
-                    'remove'=>[
-                        'type'=>'literal',
-                        'options'=>[
-                            'route'=>'/remove',
-                            'defaults'=>[
-                                'action'=>'moved-pages-remove',
+                    'remove' => [
+                        'type' => 'literal',
+                        'options' => [
+                            'route' => '/remove',
+                            'defaults' => [
+                                'action' => 'moved-pages-remove',
                             ],
                         ],
                     ],
-                    'add'=>[
-                        'type'=>'literal',
-                        'options'=>[
-                            'route'=>'/add',
-                            'defaults'=>[
-                                'action'=>'moved-pages-add',
+                    'add' => [
+                        'type' => 'literal',
+                        'options' => [
+                            'route' => '/add',
+                            'defaults' => [
+                                'action' => 'moved-pages-add',
                             ],
                         ],
                     ],
@@ -69,7 +70,7 @@ return [
         ],
     ],
     'route_manager' => [
-        'factories'=>[
+        'factories' => [
             Route\FileSystemRoute::class => Factory\FileSystemRouteFactory::class,
             Route\MovedPageRoute::class => Factory\MovedPageRouteFactory::class,
         ],
@@ -78,12 +79,12 @@ return [
         'factories' => [
             Model\MovedPage::class => Factory\MovedPageFactory::class,
         ],
-        'invokables'=>[
+        'invokables' => [
             Model\Auth::class => Model\Auth::class,
             Model\OldHealthCanadaMetadata::class,
         ],
-        'aliases'=>[
-            'OldHealthCanadaMetadata'=>Model\OldHealthCanadaMetadata::class,
+        'aliases' => [
+            'OldHealthCanadaMetadata' => Model\OldHealthCanadaMetadata::class,
         ],
     ],
     'translator' => [
@@ -98,7 +99,7 @@ return [
     ],
     'view_manager' => [
         'template_path_stack' => [
-            'Stockpile'=>__DIR__ . '/../view',
+            'Stockpile' => __DIR__ . '/../view',
         ],
     ],
 ];

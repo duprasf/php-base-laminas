@@ -1,4 +1,5 @@
 <?php
+
 namespace LegacySupport;
 
 use Laminas\Stdlib\ArrayUtils;

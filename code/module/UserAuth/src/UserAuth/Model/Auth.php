@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAuth\Model;
 
 class Auth
@@ -10,10 +11,10 @@ class Auth
 
     public function authenticateHtpasswd($passwdData, $userid, $passwd)
     {
-        foreach($passwdData as $line){
-            if (strpos($line, $userid.':') === 0){
+        foreach($passwdData as $line) {
+            if (strpos($line, $userid.':') === 0) {
                 $pair = explode(":", $line);
-                $encryptedPasswdParts = explode('$',$pair[1]);
+                $encryptedPasswdParts = explode('$', $pair[1]);
                 $algorithm = $encryptedPasswdParts[1];
                 $salt = $encryptedPasswdParts[2];
                 return $this->verify($passwd, $pair[1], $encryptedPasswdParts[3], $algorithm, $salt);
@@ -23,7 +24,7 @@ class Auth
         return false;
     }
 
-    public function verify($password, $fullEncryptedString, $encryptedPassword='', $algo=PASSWORD_DEFAULT, $salt='')
+    public function verify($password, $fullEncryptedString, $encryptedPassword = '', $algo = PASSWORD_DEFAULT, $salt = '')
     {
         $return = false;
         switch(strtolower($algo)) {
@@ -40,7 +41,7 @@ class Auth
         return $return;
     }
 
-    public function encrypt($password, $algo=PASSWORD_DEFAULT, $salt='')
+    public function encrypt($password, $algo = PASSWORD_DEFAULT, $salt = '')
     {
         $cryptPassword = null;
         switch(strtolower($algo)) {
@@ -48,23 +49,24 @@ class Auth
                 $cryptPassword = $this->cryptApr1Md5($salt, $password);
                 break;
             case '2y':
-                $cryptPassword = password_hash($passwd,PASSWORD_BCRYPT);
+                $cryptPassword = password_hash($passwd, PASSWORD_BCRYPT);
                 break;
             case 'argon2i':
-                $cryptPassword = password_hash($passwd,PASSWORD_ARGON2I);
+                $cryptPassword = password_hash($passwd, PASSWORD_ARGON2I);
                 break;
             case 'argon2id':
-                $cryptPassword = password_hash($passwd,PASSWORD_ARGON2ID);
+                $cryptPassword = password_hash($passwd, PASSWORD_ARGON2ID);
                 break;
             default:
-                $cryptPassword = password_hash($passwd,PASSWORD_DEFAULT);
+                $cryptPassword = password_hash($passwd, PASSWORD_DEFAULT);
                 break;
 
         }
         return $cryptPassword;
     }
 
-    public function cryptApr1Md5($salt, $plainpasswd) {
+    public function cryptApr1Md5($salt, $plainpasswd)
+    {
         $len = strlen($plainpasswd);
         $text = $plainpasswd.'$apr1$'.$salt;
         $bin = pack("H32", md5($plainpasswd.$salt.$plainpasswd));
@@ -86,7 +88,7 @@ class Auth
             $new .= ($i & 1) ? $bin : $plainpasswd;
             $bin = pack("H32", md5($new));
         }
-        $tmp='';
+        $tmp = '';
         for ($i = 0; $i < 5; $i++) {
             $k = $i + 6;
             $j = $i + 12;
@@ -96,7 +98,8 @@ class Auth
             $tmp = $bin[$i].$bin[$k].$bin[$j].$tmp;
         }
         $tmp = chr(0).chr(0).$bin[11].$tmp;
-        $tmp = strtr(strrev(substr(base64_encode($tmp), 2)),
+        $tmp = strtr(
+            strrev(substr(base64_encode($tmp), 2)),
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
             "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
         );

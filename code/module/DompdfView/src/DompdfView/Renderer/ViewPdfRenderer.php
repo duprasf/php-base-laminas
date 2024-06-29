@@ -1,4 +1,5 @@
 <?php
+
 namespace DompdfView\Renderer;
 
 use Laminas\View\Renderer\RendererInterface as Renderer;
@@ -57,17 +58,16 @@ class ViewPdfRenderer implements Renderer
             $nameOrModel->setVariable('basePath', $basePath);
             $chroot = $nameOrModel->getOption('chroot');
             $context = $nameOrModel->getOption('context');
-        }
-        else{
+        } else {
             $paperSize = 'letter';
             $paperOrientation = 'portrait';
             $basePath = __DIR__;
             $chroot = '/var/www';
             $context = stream_context_create(array(
                 'ssl' => array(
-                    'verify_peer' => FALSE,
-                    'verify_peer_name' => FALSE,
-                    'allow_self_signed'=> TRUE
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
                 )
             ));
         }
@@ -75,7 +75,7 @@ class ViewPdfRenderer implements Renderer
         //$pdf = $this->getEngine();
         // can't explain why in French using the dompdf created in the factory
         // doesn't work when opening in acrobat
-        $pdf = new Dompdf(['chroot'=>$chroot]);
+        $pdf = new Dompdf(['chroot' => $chroot]);
         $pdf->setPaper($paperSize, $paperOrientation);
         $pdf->setBasePath($basePath);
         $pdf->setHttpContext($context);

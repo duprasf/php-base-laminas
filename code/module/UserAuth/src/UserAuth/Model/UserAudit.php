@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAuth\Model;
 
 use Psr\Log\LogLevel;
@@ -37,55 +38,55 @@ class UserAudit
 
     public function listen($e)
     {
-        $event='';
+        $event = '';
         $level = LogLevel::INFO;
         $message = '[USER_AUTH] ';
 
         switch($e->getName()) {
             case UserEvent::LOGIN:
-                $message.='[LOGIN] {username} ({userId}) has login successfully from {ip} using {userAgent}.';
+                $message .= '[LOGIN] {username} ({userId}) has login successfully from {ip} using {userAgent}.';
                 break;
             case UserEvent::LOGIN_FAILED:
                 $level = LogLevel::WARNING;
-                $message.='[LOGIN_FAILED] A failed login attempt for {username} ({userId}) was attempted from {ip} using {userAgent}.';
+                $message .= '[LOGIN_FAILED] A failed login attempt for {username} ({userId}) was attempted from {ip} using {userAgent}.';
                 break;
             case UserEvent::LOGOUT:
-                $message.='[LOGOUT] {username} ({userId}) logged out.';
+                $message .= '[LOGOUT] {username} ({userId}) logged out.';
                 break;
             case UserEvent::RESET_PASSWORD_REQUEST:
-                $message.='[RESET_PASS_REQUEST] A password reset was requested for {username} ({userId}) from {ip} using {userAgent} sent to {email}.';
+                $message .= '[RESET_PASS_REQUEST] A password reset was requested for {username} ({userId}) from {ip} using {userAgent} sent to {email}.';
                 break;
             case UserEvent::RESET_PASSWORD_HANDLED:
-                $message.='[RESET_PASS_HANDLED] A password reset link was used for {username} ({userId}) from {ip} using {userAgent}.';
+                $message .= '[RESET_PASS_HANDLED] A password reset link was used for {username} ({userId}) from {ip} using {userAgent}.';
                 break;
             case UserEvent::CONFIRM_EMAIL_HANDLED:
-                $message.='[CONFIRM_EMAIL_SENT] A confirmation email was sent to {email} for user {username} ({userId}).';
+                $message .= '[CONFIRM_EMAIL_SENT] A confirmation email was sent to {email} for user {username} ({userId}).';
                 break;
             case UserEvent::REGISTER:
-                $message.='[REGISTER] A new user, {username} ({userId}), has registered from {ip} using {userAgent}.';
+                $message .= '[REGISTER] A new user, {username} ({userId}), has registered from {ip} using {userAgent}.';
                 break;
             case UserEvent::REGISTER_FAILED:
                 $level = LogLevel::ALERT;
-                $message.='[REGISTER_FAILED] A failed registration was detected with username {username} from {ip} using {userAgent}.';
+                $message .= '[REGISTER_FAILED] A failed registration was detected with username {username} from {ip} using {userAgent}.';
                 break;
             case UserEvent::CHANGE_PASSWORD:
-                $message.='[PASSWORD_CHANGED] A password was successfully changed for {username} ({userId}) from {ip} using {userAgent}.';
+                $message .= '[PASSWORD_CHANGED] A password was successfully changed for {username} ({userId}) from {ip} using {userAgent}.';
                 break;
             default:
                 return $this;
                 break;
         }
 
-        $context=[];
+        $context = [];
         $params = $e->getParams();
-        $context['userId']=$params['userId']??null;
-        $context['email']=$params['email']??null;
-        $context['ip']=$_SERVER['SERVER_ADDR'];
-        $context['userAgent']=$_SERVER['HTTP_USER_AGENT'];
+        $context['userId'] = $params['userId'] ?? null;
+        $context['email'] = $params['email'] ?? null;
+        $context['ip'] = $_SERVER['SERVER_ADDR'];
+        $context['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
         $context['type'] = $e->getName();
         $message = preg_replace_callback(
             '(\{([a-zA-Z]+)\})',
-            function($key) use ($context) {
+            function ($key) use ($context) {
                 if($key[1] == 'username' && !isset($context['username'])) {
                     $key[1] = 'email';
                 }
@@ -100,4 +101,3 @@ class UserAudit
     }
 
 }
-

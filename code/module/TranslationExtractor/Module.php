@@ -1,4 +1,5 @@
 <?php
+
 namespace TranslationExtractor;
 
 use Laminas\Stdlib\ArrayUtils;

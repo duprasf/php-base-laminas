@@ -1,4 +1,5 @@
 <?php
+
 namespace OAuth\Model;
 
 use PDO;
@@ -53,13 +54,13 @@ class OAuth2Client implements OAuth2ClientInterface
         $session['configName'] = $configName;
 
         $data = [
-            'response_type'=>'code',
-            'client_id'=>$config['client_id'],
-            'redirect_uri'=>$config['redirect_uri'],
-            'scope'=>$config['scope'],
-            'state'=>$state,
-            'code_challenge'=>$codeChallenge['publicHash'],
-            'code_challenge_method'=>$codeChallenge['algo'],
+            'response_type' => 'code',
+            'client_id' => $config['client_id'],
+            'redirect_uri' => $config['redirect_uri'],
+            'scope' => $config['scope'],
+            'state' => $state,
+            'code_challenge' => $codeChallenge['publicHash'],
+            'code_challenge_method' => $codeChallenge['algo'],
         ];
         return $config['url-authorize'].'?'.http_build_query($data);
     }
@@ -67,7 +68,7 @@ class OAuth2Client implements OAuth2ClientInterface
     protected function validatedConfig($config)
     {
         $fields = array_flip(['url-authorize', 'url-token', 'redirect_uri', 'client_id', 'client_secret', 'scope']);
-        foreach($config as $method=>$values) {
+        foreach($config as $method => $values) {
             $missing = array_intersect_key($fields, $values);
             if(count($missing)) {
                 throw new MissingMandatoryValue("OAuth method '{$method}' is missing mandatory '".implode("', '", $missing)."'");
@@ -82,7 +83,7 @@ class OAuth2Client implements OAuth2ClientInterface
     * @param String $authCode, the authorization code received by the client after granting access
     * @param String $configName, the name of the configuration used
     */
-    public function getToken(String $authCode, String $configName, String $code_challenge) : ?String
+    public function getToken(String $authCode, String $configName, String $code_challenge): ?String
     {
         $session = new Container('oauth');
         $code_challenge = $session['code_challenge'];
@@ -100,12 +101,12 @@ class OAuth2Client implements OAuth2ClientInterface
         // set URL and other appropriate options
         curl_setopt($ch, CURLOPT_URL, $config['url-token']);
         $postdata = [
-            'grant_type'=>'authorization_code',
-            'code'=>$authCode,
-            'redirect_uri'=>$config['redirect_uri'],
-            'code_verifier'=>$code_challenge,
-            'client_id'=>$config['client_id'],
-            'client_secret'=>$config['client_secret'],
+            'grant_type' => 'authorization_code',
+            'code' => $authCode,
+            'redirect_uri' => $config['redirect_uri'],
+            'code_verifier' => $code_challenge,
+            'client_id' => $config['client_id'],
+            'client_secret' => $config['client_secret'],
         ];
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -137,9 +138,9 @@ class OAuth2Client implements OAuth2ClientInterface
         ");
 
         $prepared->execute([
-            'refreshToken'=>$json['refresh_token'],
-            'token'=>$json['access_token'],
-            'method'=>$configName,
+            'refreshToken' => $json['refresh_token'],
+            'token' => $json['access_token'],
+            'method' => $configName,
         ]);
 
         return $json['access_token'];

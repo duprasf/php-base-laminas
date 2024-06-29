@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Factory;
 
 use Exception;
@@ -17,8 +18,8 @@ class GcNotifyFactory implements FactoryInterface
             $obj = new GcNotify();
 
             if(getenv('GC_NOTIFY_TEMPATES')) {
-                $templates=json_decode(getenv('GC_NOTIFY_TEMPATES'), true);
-                if(json_last_error()==JSON_ERROR_NONE) {
+                $templates = json_decode(getenv('GC_NOTIFY_TEMPATES'), true);
+                if(json_last_error() == JSON_ERROR_NONE) {
                     $obj->setTemplates($templates);
                 }
             }

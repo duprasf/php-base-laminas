@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\Model;
 
 use ArrayObject;
@@ -15,14 +16,21 @@ class Metadata extends ArrayObject
     private $ready = false;
 
     protected $defaultMetadata = [];
-    public function setDefaultMetadata(array $data) {$this->defaultMetadata = $data; return $this;}
-    public function getDefaultMetadata() { return $this->defaultMetadata;}
+    public function setDefaultMetadata(array $data)
+    {
+        $this->defaultMetadata = $data;
+        return $this;
+    }
+    public function getDefaultMetadata()
+    {
+        return $this->defaultMetadata;
+    }
 
     public function getDefaultMetadataFromEnvVariables()
     {
-        $a=[
-            'issued'=> getenv('ISSUED_DATE'),
-            'modified'=> getenv('LAST_MODIFIED_DATE'),
+        $a = [
+            'issued' => getenv('ISSUED_DATE'),
+            'modified' => getenv('LAST_MODIFIED_DATE'),
         ];
         // this is to remove keys with "false" which is the default return from getenv()
         return array_filter($a);
@@ -30,7 +38,7 @@ class Metadata extends ArrayObject
 
     public function __construct(array|ArrayObject|null $data = [])
     {
-        $this->exchangeArray($data??[]);
+        $this->exchangeArray($data ?? []);
         $this->init();
     }
 
@@ -72,10 +80,10 @@ class Metadata extends ArrayObject
 
         // name changed, to be backward compatible
         if(isset($this['issuedDate']) && !isset($this['issued'])) {
-            $this['issued']=$this['issuedDate'];
+            $this['issued'] = $this['issuedDate'];
         }
         if(isset($this['modifiedDate']) && !isset($this['modifiedDate'])) {
-            $this['modified']=$this['modifiedDate'];
+            $this['modified'] = $this['modifiedDate'];
         }
 
 
@@ -120,12 +128,20 @@ class Metadata extends ArrayObject
             if(is_array($this['extra-css'])) {
                 foreach($this['extra-css'] as $val) {
                     if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $val, $out)) {
-                        foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                        foreach($out[1] as $item) {
+                            if(trim($item)) {
+                                $extra[] = $item;
+                            }
+                        }
                     }
                 }
             } else {
                 if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $this['extra-css'], $out)) {
-                    foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                    foreach($out[1] as $item) {
+                        if(trim($item)) {
+                            $extra[] = $item;
+                        }
+                    }
                 }
             }
             $this['extra-css'] = $extra;
@@ -135,12 +151,20 @@ class Metadata extends ArrayObject
             if(is_array($this['extra-js'])) {
                 foreach($this['extra-js'] as $val) {
                     if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $val, $out)) {
-                        foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                        foreach($out[1] as $item) {
+                            if(trim($item)) {
+                                $extra[] = $item;
+                            }
+                        }
                     }
                 }
             } else {
                 if(preg_match_all('(([^\|]*)(?:\s*\|\s*)?)', $this['extra-js'], $out)) {
-                    foreach($out[1] as $item) if(trim($item)) $extra[] = $item;
+                    foreach($out[1] as $item) {
+                        if(trim($item)) {
+                            $extra[] = $item;
+                        }
+                    }
                 }
             }
             $this['extra-js'] = $extra;
@@ -150,14 +174,14 @@ class Metadata extends ArrayObject
             if(!is_array($this['contactLinks'])) {
                 $this['contactLinks'] = [$this['contactLinks']];
             }
-            $contact=[];
-            foreach($this['contactLinks'] as $key=>$val) {
+            $contact = [];
+            foreach($this['contactLinks'] as $key => $val) {
                 if(is_numeric($key)) {
-                    $key='href';
+                    $key = 'href';
                 }
-                $contact[]=[$key=>$val];
+                $contact[] = [$key => $val];
             }
-            $this['contactLinks']=json_encode($contact);
+            $this['contactLinks'] = json_encode($contact);
         }
 
         return $this;

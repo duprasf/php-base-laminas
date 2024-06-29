@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAuth\Model;
 
 use GcNotify\GcNotify;
@@ -19,7 +20,7 @@ abstract class User extends \ArrayObject implements UserInterface
     protected const ID_FIELD = 'email';
 
     protected $gcNotifyObj;
-    public function setGcNotify(GcNotify $obj) : self
+    public function setGcNotify(GcNotify $obj): self
     {
         $this->gcNotifyObj = $obj;
         return $this;
@@ -42,7 +43,7 @@ abstract class User extends \ArrayObject implements UserInterface
     * @param JWT $obj
     * @return User
     */
-    public function setJwtObj(JWT $obj) : self
+    public function setJwtObj(JWT $obj): self
     {
         $this->jwtObj = $obj;
         return $this;
@@ -58,7 +59,7 @@ abstract class User extends \ArrayObject implements UserInterface
     }
 
     protected $sessionLength;
-    public function setSessionLength(int $length) : self
+    public function setSessionLength(int $length): self
     {
         $this->sessionLength = $length;
         return $this;
@@ -129,7 +130,7 @@ abstract class User extends \ArrayObject implements UserInterface
     */
     public function setLogger(LoggerInterface $logger)
     {
-        $this->logger=$logger;
+        $this->logger = $logger;
         return $this;
     }
 
@@ -168,13 +169,13 @@ abstract class User extends \ArrayObject implements UserInterface
     *
     * @var mixed
     */
-    protected $defaultPasswordRules=[
-        'minSize'=>12,
-        'atLeastOneLowerCase'=>true,
-        'atLeastOneUpperCase'=>true,
-        'atLeastOneNumber'=>true,
-        'atLeastOneSpecialCharacters'=>true,
-        'pattern'=>'([a-zA-Z0-9\{\}\[\]\(\)\/\\\'"`~,;:\.<>\*\^\-@\$%\+\?&!=#_]{12,})i',
+    protected $defaultPasswordRules = [
+        'minSize' => 12,
+        'atLeastOneLowerCase' => true,
+        'atLeastOneUpperCase' => true,
+        'atLeastOneNumber' => true,
+        'atLeastOneSpecialCharacters' => true,
+        'pattern' => '([a-zA-Z0-9\{\}\[\]\(\)\/\\\'"`~,;:\.<>\*\^\-@\$%\+\?&!=#_]{12,})i',
     ];
 
     /**
@@ -223,7 +224,7 @@ abstract class User extends \ArrayObject implements UserInterface
     *
     * @return bool, return true if logged in, false otherwise.
     */
-    public function isLoggedIn() : bool
+    public function isLoggedIn(): bool
     {
         return !!$this->getUserId();
     }
@@ -246,7 +247,7 @@ abstract class User extends \ArrayObject implements UserInterface
     * @return bool, true if successful false otherwise
     * @throws InvalidCredentialsException Depending on implementation, classes can throw exception when credentials are incorrect
     */
-    public function login(String $email, String $password) : bool
+    public function login(String $email, String $password): bool
     {
         return $this->authenticate($email, $password);
     }
@@ -259,7 +260,7 @@ abstract class User extends \ArrayObject implements UserInterface
     * @return bool, true if successful false otherwise
     * @throws InvalidCredentialsException Depending on implementation, classes can throw exception when credentials are incorrect
     */
-    abstract public function authenticate(String $email, String $password) : bool;
+    abstract public function authenticate(String $email, String $password): bool;
     /**
     * Load a user from the JWT. The expiry time of the JWT should be checked before allowing this.
     *
@@ -269,7 +270,7 @@ abstract class User extends \ArrayObject implements UserInterface
     * @throws UserAuth\Exception\JwtExpiredException If the token is expired
     * @throws UserAuth\Exception\UserException if the ID field is not set in the JWT
     */
-    abstract public function loadFromJwt(?String $jwt) : bool;
+    abstract public function loadFromJwt(?String $jwt): bool;
 
     /**
     * Called when a user changes his/her password. They must provide the current password
@@ -303,7 +304,7 @@ abstract class User extends \ArrayObject implements UserInterface
     * @param array $passwordRules specific rules that overwrite the internal or default one
     * @return mixed
     */
-    public function validatePassword(String $password, String $confirmation=null, array $passwordRules=[])
+    public function validatePassword(String $password, String $confirmation = null, array $passwordRules = [])
     {
         if($confirmation && $password !== $confirmation) {
             throw new InvalidConfirmationPassword(
@@ -320,35 +321,35 @@ abstract class User extends \ArrayObject implements UserInterface
             $passwordRules = $this->getPasswordRules();
         }
 
-        $errors=[];
+        $errors = [];
         if(isset($passwordRules['minSize']) && strlen($password) < $passwordRules['minSize']) {
             $errors['minSize'] = [
-                'message'=>sprintf($translator->translate('Minimum size of your password must be %d characters.', 'userAuth'), $passwordRules['minSize']),
-                'field'=>'password'
+                'message' => sprintf($translator->translate('Minimum size of your password must be %d characters.', 'userAuth'), $passwordRules['minSize']),
+                'field' => 'password'
             ];
         }
         if(isset($passwordRules['atLeastOneLowerCase']) && !preg_match('([a-z])', $password)) {
             $errors['atLeastOneLowerCase'] = [
-                'message'=>$translator->translate('Your password must containt at least one lower case letter.', 'userAuth'),
-                'field'=>'password'
+                'message' => $translator->translate('Your password must containt at least one lower case letter.', 'userAuth'),
+                'field' => 'password'
             ];
         }
-        if(isset($passwordRules['atLeastOneUpperCase']) && !preg_match('([A-Z])', $password)){
+        if(isset($passwordRules['atLeastOneUpperCase']) && !preg_match('([A-Z])', $password)) {
             $errors['atLeastOneUpperCase'] = [
-                'message'=>$translator->translate('Your password must containt at least one upper case letter.', 'userAuth'),
-                'field'=>'password'
+                'message' => $translator->translate('Your password must containt at least one upper case letter.', 'userAuth'),
+                'field' => 'password'
             ];
         }
-        if(isset($passwordRules['atLeastOneNumber']) && !preg_match('([0-9])', $password)){
+        if(isset($passwordRules['atLeastOneNumber']) && !preg_match('([0-9])', $password)) {
             $errors['atLeastOneNumber'] = [
-                'message'=>$translator->translate('Your password must containt at least one number.', 'userAuth'),
-                'field'=>'password'
+                'message' => $translator->translate('Your password must containt at least one number.', 'userAuth'),
+                'field' => 'password'
             ];
         }
-        if(isset($passwordRules['atLeastOneSpecialCharacters']) && !preg_match('(['.preg_quote($passwordRules['atLeastOneSpecialCharacters']).'])', $password)){
+        if(isset($passwordRules['atLeastOneSpecialCharacters']) && !preg_match('(['.preg_quote($passwordRules['atLeastOneSpecialCharacters']).'])', $password)) {
             $errors['atLeastOneSpecialCharacters'] = [
-                'message'=>$translator->translate('Your password must containt at least one special character.', 'userAuth'),
-                'field'=>'password'
+                'message' => $translator->translate('Your password must containt at least one special character.', 'userAuth'),
+                'field' => 'password'
             ];
         }
         if(isset($passwordRules['additionalRules'])
@@ -357,8 +358,8 @@ abstract class User extends \ArrayObject implements UserInterface
             && !call_user_func($passwordRules['additionalRulesCallback'], $password)
         ) {
             $errors['additionalRules'] = [
-                'message'=>$translator->translate($passwordRules['additionalRulesErrorMsg']??$passwordRules['additionalRules'], 'userAuth'),
-                'field'=>'password'
+                'message' => $translator->translate($passwordRules['additionalRulesErrorMsg'] ?? $passwordRules['additionalRules'], 'userAuth'),
+                'field' => 'password'
             ];
         }
         $this->lastPasswordErrors = $errors;
@@ -373,15 +374,15 @@ abstract class User extends \ArrayObject implements UserInterface
     *
     * @return bool, true if successful false otherwise
     */
-    public function loadFromSession() : bool
+    public function loadFromSession(): bool
     {
         $container = new Container('UserAuth');
         if(!isset($container[self::ID_FIELD])) {
             return false;
         }
-        $data=$container->getArrayCopy();
+        $data = $container->getArrayCopy();
 
-        if($data['exp']<time()) {
+        if($data['exp'] < time()) {
             $container->exchangeArray([]);
             return false;
         }
@@ -395,14 +396,14 @@ abstract class User extends \ArrayObject implements UserInterface
     * @param array $data
     * @return User
     */
-    protected function buildLoginSession(array $data) : self
+    protected function buildLoginSession(array $data): self
     {
 
         if($this->getUserConfig('useSession')) {
             $container = new Container('UserAuth');
             if(!isset($data['exp'])) {
-                $data['iat']=time();
-                $data['exp']=time()+$this->getSessionLength();
+                $data['iat'] = time();
+                $data['exp'] = time() + $this->getSessionLength();
             }
             $container->exchangeArray($data);
         }
@@ -415,7 +416,7 @@ abstract class User extends \ArrayObject implements UserInterface
     *
     * @return User
     */
-    protected function destroySession() : self
+    protected function destroySession(): self
     {
         $container = new Container('UserAuth');
         $container->exchangeArray([]);
@@ -428,7 +429,7 @@ abstract class User extends \ArrayObject implements UserInterface
     *
     * @return array
     */
-    protected function getSessionInfo() : array
+    protected function getSessionInfo(): array
     {
         $container = new Container('UserAuth');
         return $container->getArrayCopy();
@@ -439,7 +440,7 @@ abstract class User extends \ArrayObject implements UserInterface
     *
     * @return User
     */
-    public function logout() : self
+    public function logout(): self
     {
         $data = $this->getArrayCopy();
         // get the email and user ID
@@ -451,8 +452,8 @@ abstract class User extends \ArrayObject implements UserInterface
             UserEvent::LOGOUT.'.pre',
             $this,
             [
-                'email'=>$email,
-                'userId'=>$userId
+                'email' => $email,
+                'userId' => $userId
             ]
         );
 
@@ -465,8 +466,8 @@ abstract class User extends \ArrayObject implements UserInterface
             UserEvent::LOGOUT,
             $this,
             [
-                'email'=>$email,
-                'userId'=>$userId
+                'email' => $email,
+                'userId' => $userId
             ]
         );
         return $this;
@@ -493,7 +494,7 @@ abstract class User extends \ArrayObject implements UserInterface
     * @param int $time, the length of time the JWT will be valid. It should not change anything, but just in case...
     * @return array, the data you want to send to client as part of the JWT
     */
-    public function getDataForJWT(int $time = 86400) : array
+    public function getDataForJWT(int $time = 86400): array
     {
         $payload = $this->getArrayCopy();
         if(!isset($payload['id'])) {

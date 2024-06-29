@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAuth\Model;
 
 use Exception;
@@ -47,15 +48,15 @@ class LdapUser extends User
     * @return bool, true if successful false otherwise
     * @throws UserAuth\Exception\InvalidCredentialsException In this implementation, throw exception when credentials are incorrect
     */
-    public function authenticate(String $email, String $password) : bool
+    public function authenticate(String $email, String $password): bool
     {
-        $this->getEventManager()->trigger(UserEvent::LOGIN.'.pre', $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN.'.pre', $this, ['email' => $email]);
 
         try {
             $ad = $this->getLdap();
             $data = $ad->getUserByEmailOrUsername($email, returnFirstElementOnly:true);
             if(!$data || !isset($data['dn']) || !$ad->validateCredentials($data['dn'], $password)) {
-                $this->getEventManager()->trigger(UserEvent::LOGIN_FAILED, $this, ['email'=>$email]);
+                $this->getEventManager()->trigger(UserEvent::LOGIN_FAILED, $this, ['email' => $email]);
                 // can return false or throw an exception, it depends on your implementation
                 throw new InvalidCredentialsException();
             }
@@ -71,7 +72,7 @@ class LdapUser extends User
         // but I know not every use case would work with that.
         $this->buildLoginSession($data);
 
-        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email'=>$email]);
+        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, ['email' => $email]);
 
         return true;
     }
@@ -85,7 +86,7 @@ class LdapUser extends User
     * @throws UserAuth\Exception\JwtExpiredException If the token is expired
     * @throws UserAuth\Exception\UserException if the ID field is not set in the JWT
     */
-    public function loadFromJwt(?String $jwt) : bool
+    public function loadFromJwt(?String $jwt): bool
     {
         $data = $this->jwtToData($jwt);
         if(!isset($data[self::ID_FIELD])) {
@@ -191,7 +192,7 @@ class LdapUser extends User
     * @param GcNotify $notify
     * @throws UserMethodUnavailable
     */
-    public function validatePassword(String $password, String $confirmation=null, array $passwordRules=[])
+    public function validatePassword(String $password, String $confirmation = null, array $passwordRules = [])
     {
         throw new UserMethodUnavailable();
     }
@@ -202,12 +203,12 @@ class LdapUser extends User
     * @param int $time, the length of time the JWT will be valid. It should not change anything, but just in case...
     * @return array, the data you want to send to client as part of the JWT
     */
-    public function getDataForJWT(int $time = 86400) : array
+    public function getDataForJWT(int $time = 86400): array
     {
-        $payload=[
+        $payload = [
             'id' => $this[self::ID_FIELD] ?? null,
-            'email'=>$this['email'],
-            'account'=>$this['account'],
+            'email' => $this['email'],
+            'account' => $this['account'],
         ];
 
         // you must return an array, even an empty array would work, but would be completely useless

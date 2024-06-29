@@ -1,4 +1,5 @@
 <?php
+
 namespace Application\View\Helper;
 
 use Laminas\Router\Http\RouteMatch;
@@ -11,15 +12,23 @@ use Laminas\View\Renderer\RendererInterface;
 class GetLangSwitchUrl implements HelperInterface
 {
     protected $view;
-    public function setView(RendererInterface $view) {$this->view = $view;}
-    public function getView() {return $this->view;}
+    public function setView(RendererInterface $view)
+    {
+        $this->view = $view;
+    }
+    public function getView()
+    {
+        return $this->view;
+    }
 
     protected $route;
-    public function setRouteMatch(RouteMatch $route) {
+    public function setRouteMatch(RouteMatch $route)
+    {
         $this->route = $route;
         return $this;
     }
-    public function getRouteMatch() {
+    public function getRouteMatch()
+    {
         return $this->route;
     }
 
@@ -35,7 +44,7 @@ class GetLangSwitchUrl implements HelperInterface
                 $params['locale'] = $view->lang == 'en' ? 'fr' : 'en';
                 $switchLangUrl = $view->url($route->getMatchedRouteName(), $params);
             } else {
-                $switchLangUrl='/';
+                $switchLangUrl = '/';
             }
         }
         return $switchLangUrl;

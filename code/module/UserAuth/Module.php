@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAuth;
 
 use Laminas\Stdlib\ArrayUtils;
