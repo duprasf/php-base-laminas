@@ -252,6 +252,7 @@ class CurlWrapper
         curl_setopt($this->handle, CURLOPT_RETURNTRANSFER, $this->returnPage);
         curl_setopt($this->handle, CURLOPT_HEADER, $this->returnHeaders);
         curl_setopt($this->handle, CURLOPT_HTTPHEADER, $this->headers);
+        curl_setopt($this->handle, CURLOPT_ENCODING , '');
 
         $raw = curl_exec($this->handle);
         $this->executed = true;
@@ -271,7 +272,12 @@ class CurlWrapper
         return $this->getPage();
     }
 
-    public function getPage()
+    public function getPage(): ?string
+    {
+        return $this->getLastPage();
+    }
+
+    public function getLastPage(): ?string
     {
         if(!$this->executed) {
             throw new CurlException('You need to execute the CURL before fetching this information');
@@ -279,14 +285,20 @@ class CurlWrapper
         return $this->lastPage;
     }
 
-    public function getReturnJson()
+    public function getReturnJson(): ?array
     {
         return $this->getPageJson();
     }
 
-    public function getPageJson()
+    public function asJson(): ?array
     {
-        return json_decode($this->getPage(), true);
+        return $this->getPageJson();
+    }
+
+    public function getPageJson(): ?array
+    {
+        $json= json_decode($this->getPage(), true);
+        return json_last_error()==JSON_ERROR_NONE ? $json : null;
     }
 
     public function getReturnCode()
@@ -366,6 +378,11 @@ class CurlWrapper
     public function getErrorNumber(): int
     {
         return curl_errno($this->handle);
+    }
+
+    public function getLastError(): ?string
+    {
+        return $this->getError();
     }
 
     public function getError(): ?string
