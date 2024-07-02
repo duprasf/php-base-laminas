@@ -216,7 +216,7 @@ class GcNotify
         }
         return $this->reportError(
             [
-                'message' => $e->getMessage(),
+                'message' => $message,
                 'stacktrace' => preg_replace('(#(\d+))', '\1)', $e->getTraceAsString()).PHP_EOL,
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -300,6 +300,9 @@ class GcNotify
     protected function makeRequest(string $url, array $postData, ?string $apiKey = null)
     {
         if(!$apiKey && !$this->apiKey) {
+            if($this->getUseException()) {
+                throw new GcNotifyException('No API key set for GC Notify');
+            }
             print 'No API key set for GC Notify';
             return false;
         }
