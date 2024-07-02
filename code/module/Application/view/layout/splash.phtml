@@ -97,7 +97,7 @@ if($missing){
                         </section>
                         <section class="col-sm-6" lang="fr">
                             <h2 class="hght-inhrt h4"><?=$translate($this->metadata['title'], $fr);?></h2>
-                            <p><a href="<?=$this->homeRoute?$this->url($this->homeRoute, array_merge(['locale'=>'fr'], $this->homeRouteParams)):$translate($this->homeUrl,$en);?>" class="btn btn-primary" translate="no">Français</a></p>
+                            <p><a href="<?=$this->homeRoute?$this->url($this->homeRoute, array_merge(['locale'=>'fr'], $this->homeRouteParams)):$translate($this->homeUrl,$fr);?>" class="btn btn-primary" translate="no">Français</a></p>
                         </section>
                     </div>
 
@@ -105,7 +105,9 @@ if($missing){
                 <div class="sp-bx-bt col-xs-12">
                     <div class="row">
                         <div class="col-xs-7 col-md-8">
-                            <a href="<?=$this->termsUrl?$this->url($this->termsRoute, $this->termsRouteParams):'https://www.canada.ca/en/transparency/terms.html';?>" class="sp-lk">Terms and conditions</a> <span class="glyphicon glyphicon-asterisk"></span> <a href="<?=$this->termsUrl?$this->url($this->termsRoute, array_merge(['locale'=>'fr'], $this->termsRouteParams)):'https://www.canada.ca/fr/transparence/avis.html';?>" class="sp-lk" lang="fr">Avis</a>
+                            <a href="<?=$this->termsRoute?$this->url($this->termsRoute, $this->termsRouteParams):($this->termsUrl?$translate($this->termsUrl, $en):'https://www.canada.ca/en/transparency/terms.html');?>" class="sp-lk">Terms and conditions</a>
+                            <span class="glyphicon glyphicon-asterisk"></span>
+                            <a href="<?=$this->termsRoute?$this->url($this->termsRoute, array_merge(['locale'=>'fr'], $this->termsRouteParams)):($this->termsUrl?$translate($this->termsUrl, $fr):'https://www.canada.ca/fr/transparence/avis.html');?>" class="sp-lk" lang="fr">Avis</a>
                         </div>
                         <div class="col-xs-5 col-md-4 text-right mrgn-bttm-md">
                             <img src="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/assets/wmms-blk.svg" width="127" alt="Symbol of the Government of Canada" /><span class="wb-inv"> / <span lang="fr">Symbole du gouvernement du Canada</span></span>
