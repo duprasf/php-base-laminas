@@ -3,6 +3,7 @@
 namespace CurlWrapper;
 
 use CURLFile;
+use CURLStringFile;
 use OpenSSLAsymmetricKey;
 use OpenSSLCertificate;
 use Exception\CurlException;
@@ -142,11 +143,29 @@ class CurlWrapper
 
     public function addFile(string $filename, ?string $posted_filename = null, ?string $mime_type = null, ?string $forceName = null)
     {
+        if(!file_exists($filename)) {
+            return $this->addStringFile($filename, $posted_filename, $mime_type, $forceName);
+        }
         // should add validation of location of the file...
         $cf = new CURLFile(
             $filename,
             $mime_type ?? mime_content_type($filename),
             $posted_filename ?? basename($filename)
+        );
+        if($forceName) {
+            $this->attachedFiles[$forceName] = $cf;
+        } else {
+            $this->attachedFiles[] = $cf;
+        }
+        return $this;
+    }
+
+    public function addStringFile(string $data, ?string $posted_filename = null, ?string $mime_type = null, ?string $forceName = null)
+    {
+        $cf = new CURLStringFile(
+            $data,
+            $mime_type ?? null,
+            $posted_filename ?? null
         );
         if($forceName) {
             $this->attachedFiles[$forceName] = $cf;
