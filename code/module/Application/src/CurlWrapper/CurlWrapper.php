@@ -218,10 +218,10 @@ class CurlWrapper
                 throw new CurlException('The payload could not be converted to an array');
             }
             foreach($this->attachedFiles as $key => $file) {
-                if(!file_exists($file->getFilename())) {
+                if($file instanceof CURLFile && !file_exists($file->getFilename())) {
                     throw new CurlException('File does not exists ', $file->getFilename());
                 }
-                $this->payload[is_numeric($key) ? $file->getPostFilename() : $key] = $file;
+                $this->payload[is_numeric($key) && $file instanceof CURLFile ? $file->getPostFilename() : $key] = $file;
             }
             $this->headers(['Content-Type: multipart/form-data']);
             curl_setopt($this->handle, CURLOPT_POSTFIELDS, $this->payload);
