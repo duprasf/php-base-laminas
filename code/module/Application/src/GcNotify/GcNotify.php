@@ -134,10 +134,12 @@ class GcNotify
         switch($name) {
             case 'error':
             case 'lastError':
+            case 'getLastError':
                 $return = $this->lastError;
                 break;
             case 'page':
             case 'lastPage':
+            case 'getLastPage':
                 $return = $this->lastPage;
                 break;
             case 'status':
@@ -145,7 +147,9 @@ class GcNotify
             case 'code':
             case 'lastCode':
             case 'statusCode':
+            case 'getStatusCode':
             case 'lastStatusCode':
+            case 'getLastStatusCode':
                 $return = $this->lastStatus;
                 break;
             default:

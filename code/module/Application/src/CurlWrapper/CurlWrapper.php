@@ -180,7 +180,7 @@ class CurlWrapper
         return !!$this->pubkey;
     }
 
-    public function exec()
+    public function exec(): bool
     {
         $includePayload = false;
         switch($this->verb) {
@@ -264,7 +264,8 @@ class CurlWrapper
             $this->lastPage = trim($raw);
         }
 
-        return $this;
+        $code = $this->getReturnCode();
+        return $code>=200 && $code<=299;
     }
 
     public function getReturn()
@@ -309,6 +310,11 @@ class CurlWrapper
         return $this->getInfo(CURLINFO_HTTP_CODE);
     }
 
+    public function getHttpResponseStatusCode()
+    {
+        return $this->getReturnCode();
+    }
+
     public function getRequestHeaders()
     {
         return $this->headers;
@@ -348,11 +354,6 @@ class CurlWrapper
     public function getInfo(?int $opt = null)
     {
         return curl_getinfo($this->handle, $opt);
-    }
-
-    public function getHttpResponseStatusCode()
-    {
-        return $this->getInfo(CURLINFO_HTTP_CODE);
     }
 
     public function getUrl()
