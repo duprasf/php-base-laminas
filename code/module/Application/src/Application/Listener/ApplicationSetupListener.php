@@ -87,6 +87,12 @@ class ApplicationSetupListener
             100
         );
 
+        $eventManager->getSharedManager()->attach(
+            '*',
+            MvcEvent::EVENT_RENDER,
+            array($this, 'updateViewLang'),
+            -9000
+        );
     }
 
     public function startSession()
@@ -184,6 +190,42 @@ class ApplicationSetupListener
         setlocale(LC_ALL, $lang.'_CA');
         $sm->setAllowOverride(false);
     }
+
+
+    /**
+    * Set "default" variables (lang, supportedLang and contentSecurityPolicy) to the layout and view object
+    *
+    * @param MvcEvent $event
+    * @return Module
+    */
+    public function updateViewLang(MvcEvent $event)
+    {
+        $application = $event->getTarget();
+        $service     = $application->getServiceManager();
+        $lang        = $service->get('lang');
+        $config      = $application->getConfig();
+        $request     = $event->getRequest();
+        $response    = $event->getResponse();
+        $route       = $event->getRouteMatch();
+        $layout      = $event->getViewModel();
+        $views       = $layout->getChildren();
+        $view        = isset($views[0]) ? $views[0] : new \Laminas\View\Model\ViewModel();
+
+        // if we are returning json, skip this process
+        if($layout instanceof JsonModel || !$route || $layout->terminate()) {
+            return;
+        }
+
+        $metadata = $view->getVariable('metadata');
+        $lang = isset($metadata['lang'])?$metadata['lang']:$lang;
+        $layout->setVariable('lang', $lang);
+        $view->setVariable('lang', $lang);
+        $view->setVariable('supportedLang', $service->get('supportedLang'));
+        $layout->setVariable('supportedLang', $service->get('supportedLang'));
+        $layout->setVariable('contentSecurityPolicy', $service->has('contentSecurityPolicy') ? $service->get('contentSecurityPolicy') : null);
+    }
+
+
 
     /**
     * Event listener method. SEnd an email for exceptions and errors
