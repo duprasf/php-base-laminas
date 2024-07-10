@@ -134,12 +134,10 @@ class GcNotify
         switch($name) {
             case 'error':
             case 'lastError':
-            case 'getLastError':
                 $return = $this->lastError;
                 break;
             case 'page':
             case 'lastPage':
-            case 'getLastPage':
                 $return = $this->lastPage;
                 break;
             case 'status':
@@ -147,8 +145,26 @@ class GcNotify
             case 'code':
             case 'lastCode':
             case 'statusCode':
-            case 'getStatusCode':
             case 'lastStatusCode':
+                $return = $this->lastStatus;
+                break;
+            default:
+                break;
+        }
+        return $return;
+    }
+
+    public function __call($name, $arg)
+    {
+        $return = null;
+        switch($name) {
+            case 'getLastError':
+                $return = $this->lastError;
+                break;
+            case 'getLastPage':
+                $return = $this->lastPage;
+                break;
+            case 'getStatusCode':
             case 'getLastStatusCode':
                 $return = $this->lastStatus;
                 break;
@@ -354,7 +370,6 @@ class GcNotify
         if($this->getUseException() && !$success) {
             throw new GcNotifyException('Status code not in the 200 '.$page);
         }
-
         return $success;
     }
 
