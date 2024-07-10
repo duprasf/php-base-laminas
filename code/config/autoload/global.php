@@ -14,6 +14,7 @@
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\ServiceManager;
+use Laminas\Session\Storage\SessionArrayStorage;
 
 return [
     'router' => [
@@ -57,6 +58,6 @@ return [
         'remember_me_seconds' => getenv('PHP_SESSION_TIME') ?? ini_get('session.gc_maxlifetime') ?? 86400,
     ],
     'session_storage' => [
-        'type' => Session\Storage\SessionArrayStorage::class,
+        'type' => SessionArrayStorage::class,
     ],
 ];
