@@ -67,6 +67,7 @@ $return = [
         'aliases' => [
             "GcNotify" => GcNotify::class,
             'metadataBuilder' => Model\MetadataBuilder::class,
+            'sessionManager'=>Model\SessionManager::class,
         ],
         'factories' => [
             Command\Cronjob::class => Factory\Command\CronjobCommandFactory::class,
@@ -74,7 +75,7 @@ $return = [
             'lang' => Factory\LangFactory::class,
             'domain' => Factory\DomainFactory::class,
             Model\MetadataBuilder::class => Factory\MetadataBuilderFactory::class,
-            SessionManager::class => Factory\SessionManagerFactory::class,
+            Model\SessionManager::class => Factory\SessionManagerFactory::class,
             GcNotify::class => Factory\GcNotifyFactory::class,
             "filesize-suffixes" => Factory\FilesizeSuffixesFactory::class,
             Listener\ApplicationSetupListener::class => Factory\Listener\ApplicationSetupListenerFactory::class,
