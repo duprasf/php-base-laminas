@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 
+try {
 $root = getenv('LAMINAS_ROOT_PATH') ?: dirname(__DIR__);//'/var/www';
 /**
  * This makes our life easier when dealing with paths. Everything is relative
@@ -40,3 +41,12 @@ if (file_exists($root.'/config/development.config.php')) {
 
 // Run the application!
 Application::init($appConfig)->run();
+
+} catch(\Exception $e) {
+    if(getenv('PHP_DEV_ENV')) {
+        print '<pre>'.$e->getMessage().'</pre>';
+        print 'Stack:<pre>'.debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS).'</pre>';
+    } else {
+        print 'unknown error';
+    }
+}
