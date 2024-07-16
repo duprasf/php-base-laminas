@@ -232,7 +232,7 @@ class GcNotify
         $message = trim($extraMessage.PHP_EOL.$e->getMessage()).PHP_EOL;
         $previous = $e;
         while($previous = $previous->getPrevious()) {
-            $message = $previous->getMessage().' ('.basename($previous->getFile()).':'.$previous->getLine().')'.PHP_EOL;
+            $message.= $previous->getMessage().' ('.basename($previous->getFile()).':'.$previous->getLine().')'.PHP_EOL;
         }
         return $this->reportError(
             [
