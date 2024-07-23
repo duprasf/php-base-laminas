@@ -52,10 +52,10 @@ class ActiveDirectory
     /**
     * Check if a username exists, return true as soon as a match is found
     *
-    * @param String $username
+    * @param string $username
     * @return true if found in one of the LDAP, false otherwise
     */
-    public function validateUsername(String $username)
+    public function validateUsername(string $username)
     {
         foreach($this->getLdap() as $ldap) {
             try {
@@ -72,18 +72,18 @@ class ActiveDirectory
     /**
     * Tries to bind to each LDAP using the provided account (DN) and password
     *
-    * @param String $acctname
-    * @param String $password
+    * @param string $acctname
+    * @param string $password
     */
-    public function validateCredentials(String $acctname, String $password)
+    public function validateCredentials(string $acctname, string $password)
     {
         foreach($this->getLdap() as $ldap) {
             try {
-                $ldap->bind($acctname, $password);
+                $r = $ldap->bind($acctname, $password);
                 $acctname = $ldap->getCanonicalAccountName($acctname);
                 return true;
-            } catch (LdapException $zle) {
-                if ($zle->getCode() === LdapException::LDAP_X_DOMAIN_MISMATCH) {
+            } catch (LdapException $e) {
+                if ($e->getCode() === LdapException::LDAP_X_DOMAIN_MISMATCH) {
                     continue;
                 }
             }
@@ -94,13 +94,13 @@ class ActiveDirectory
     /**
     * Get the user data from an email or username
     *
-    * @param String $term
+    * @param string $term
     * @param array $requestedFieldsMap
     * @param bool $returnRaw
     * @param bool $returnFirstElementOnly
     * @return array
     */
-    public function getUserByEmailOrUsername(String $term, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
+    public function getUserByEmailOrUsername(string $term, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
     {
         $data = $this->getByEmail($term, $requestedFieldsMap, $returnRaw, $returnFirstElementOnly);
         if($data) {
@@ -112,13 +112,13 @@ class ActiveDirectory
     /**
     * Synonym of getByEmail()
     *
-    * @param String $email
+    * @param string $email
     * @param array $requestedFieldsMap
     * @param bool $returnRaw
     * @param bool $returnFirstElementOnly
     * @return array
     */
-    public function getUserByEmail(String $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
+    public function getUserByEmail(string $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
     {
         return $this->getByEmail($email, $requestedFieldsMap, $returnRaw);
     }
@@ -126,13 +126,13 @@ class ActiveDirectory
     /**
     * Get the user data from an email
     *
-    * @param String $term
+    * @param string $term
     * @param array $requestedFieldsMap
     * @param bool $returnRaw
     * @param bool $returnFirstElementOnly
     * @return array[]
     */
-    public function getByEmail(String $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
+    public function getByEmail(string $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
     {
         $filters = array();
         if(is_array($email)) {
@@ -164,13 +164,13 @@ class ActiveDirectory
     /**
     * Get the user data from an username
     *
-    * @param String $term
+    * @param string $term
     * @param array $requestedFieldsMap
     * @param bool $returnRaw
     * @param bool $returnFirstElementOnly
     * @return array[]
     */
-    public function getByUsername(String $accountName, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
+    public function getByUsername(string $accountName, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
     {
         $filters = array();
         if(is_array($accountName)) {
@@ -316,9 +316,9 @@ class ActiveDirectory
     /**
     * Get a group name from DN
     *
-    * @param String $groupDN
+    * @param string $groupDN
     */
-    protected function getGroupName($groupDN)
+    protected function getGroupName(string $groupDN)
     {
         preg_match("(CN=((?:(?!,OU=)(?!,CN=).)*),(?:CN|OU)=)", $groupDN, $out);
         return isset($out[1]) ? $out[1] : null;
