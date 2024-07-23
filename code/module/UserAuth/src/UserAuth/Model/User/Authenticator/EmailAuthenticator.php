@@ -6,6 +6,7 @@ use Void\UUID;
 use Laminas\Mvc\I18n\Translator as MvcTranslator;
 use Laminas\View\Helper\Url as UrlHelper;
 use GcNotify\GcNotify;
+use Application\Model\EmailerInterface;
 use UserAuth\Exception\UserException;
 use UserAuth\Exception\UserExistsException;
 use UserAuth\Exception\InvalidCredentialsException;
@@ -107,7 +108,7 @@ class EmailAuthenticator extends AbstractAuthenticator implements AuthenticatorI
         return true;
     }
 
-    protected $ttl;
+    protected $ttl=3600;
     /**
      * Set the time (in sec) the token will be valid. If none is specified, 1 hour will be used
      * @param int $ttl
@@ -120,7 +121,7 @@ class EmailAuthenticator extends AbstractAuthenticator implements AuthenticatorI
     }
     protected function getTimeToLive(): int
     {
-        return $this->ttl ?? 3600;
+        return $this->ttl;
     }
 
     private $verificationRouteName;
@@ -186,7 +187,7 @@ class EmailAuthenticator extends AbstractAuthenticator implements AuthenticatorI
         return $this->lang;
     }
 
-    private $tokenFieldName;
+    private $tokenFieldName='token';
     public function setEmailTokenFieldName(string $tokenFieldName): self
     {
         $this->tokenFieldName = $tokenFieldName;
@@ -197,14 +198,23 @@ class EmailAuthenticator extends AbstractAuthenticator implements AuthenticatorI
         return $this->tokenFieldName;
     }
 
-    private $notify;
-    public function setGcNotify(GcNotify $notify): self
+    private $emailer;
+    public function setEmailer(EmailerInterface $emailer): self
     {
-        $this->notify = $notify;
+        $this->emailer = $emailer;
         return $this;
+    }
+    protected function getEmailer(): EmailerInterface
+    {
+        return $this->emailer;
+    }
+
+    public function setGcNotify(GcNotify $obj): self
+    {
+        return $this->setEmailer($obj);
     }
     protected function getGcNotify(): GcNotify
     {
-        return $this->notify;
+        return $this->getEmailer();
     }
 }

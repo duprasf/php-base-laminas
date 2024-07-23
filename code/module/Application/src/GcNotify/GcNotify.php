@@ -3,6 +3,7 @@
 namespace GcNotify;
 
 use Exception;
+use Application\Model\EmailerInterface;
 use GcNotify\Exception\GcNotifyException;
 
 /**
@@ -11,7 +12,7 @@ use GcNotify\Exception\GcNotifyException;
 * @author Francois Dupras, francois.dupras@canada.ca
 * @version 1.2
 */
-class GcNotify
+class GcNotify implements EmailerInterface
 {
     protected $lastPage;
     protected $lastStatus;
@@ -20,7 +21,7 @@ class GcNotify
     protected $port = 443;
 
     protected $useException = false;
-    public function setUseException(bool $bool)
+    public function setUseException(bool $bool): self
     {
         $this->useException = $bool;
         return $this;
@@ -75,7 +76,7 @@ class GcNotify
     {
         return $this->setOverwriteEmail($email);
     }
-    public function setOverwriteEmail($email)
+    public function setOverwriteEmail($email): self
     {
         $this->overrideEmail = $email;
         return $this;
@@ -101,7 +102,7 @@ class GcNotify
     }
 
     protected $appName;
-    public function setAppName($name)
+    public function setAppName($name): self
     {
         $this->appName = $name;
         return $this;
@@ -174,7 +175,7 @@ class GcNotify
         return $return;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $data = array(
             'error' => $this->lastError,
@@ -203,13 +204,13 @@ class GcNotify
     * @see GcNotify::reportException, GcNotify::reportError
     * @param mixed $data
     */
-    public function __invoke(...$data)
+    public function __invoke(...$data): bool
     {
         if(!count($data)) {
             return false;
         }
 
-        if($data[0] instanceof \Exception) {
+        if($data[0] instanceof Exception) {
             return $this->reportException(...$data);
         } else {
             return $this->sendEmail(...$data);
@@ -222,7 +223,12 @@ class GcNotify
         'confirm' => 'a3e9adf7-52c4-47b8-8ecc-834bb0695157',
         'resetPassword' => '56523a2f-9e5c-4f30-84c0-3d97ef0a945b',
     ];
-    public function sendAuthenticationEmail(string $recipient, string $template, string $url, null|string $apiKey = null)
+    public function sendAuthenticationEmail(
+        string $recipient,
+        string $template,
+        string $url,
+        null|string $apiKey = null
+    ): bool
     {
         if(!$apiKey) {
             $apiKey = getenv('GC_NOTIFY_AUTH_API_KEY');
@@ -253,7 +259,7 @@ class GcNotify
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function reportException(\Exception $e, ?String $extraMessage = null, ?String $appName = null, ?String $email = null)
+    public function reportException(Exception $e, ?String $extraMessage = null, ?String $appName = null, ?String $email = null): bool
     {
         $message = trim($extraMessage.PHP_EOL.$e->getMessage()).PHP_EOL;
         $previous = $e;
@@ -285,7 +291,7 @@ class GcNotify
     *
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function reportError(array $error, ?String $recipient = null, ?String $template = null, ?String $apiKey = null, ?array $personalisation = [])
+    public function reportError(array $error, ?String $recipient = null, ?String $template = null, ?String $apiKey = null, ?array $personalisation = []): bool
     {
         $data = [];
         if(!isset($error['message'])) {
@@ -323,7 +329,7 @@ class GcNotify
     * @param string $apiKey the API key if not set globally
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
-    public function sendEmail(string $recipient, string $templateId, ?array $personalisation = [], ?string $apiKey = null)
+    public function sendEmail(string $recipient, string $templateId, ?array $personalisation = [], ?string $apiKey = null): bool
     {
         $data = [];
         $data['template_id'] = $this->templates[$templateId] ?? $templateId;
