@@ -332,7 +332,7 @@ class DbUser extends User implements UserInterface, \ArrayAccess
         // trigger event that the reset request is starting
         $this->getEventManager()->trigger(UserEvent::RESET_PASSWORD_REQUEST, $this, ['email' => $email]);
         $db = $this->getParentDb();
-        if(!$pdo) {
+        if(!$db) {
             // cannot use this method if the parentDb was not set
             throw new UserException('You cannot use this parent service without a parentDb');
         }
@@ -457,8 +457,6 @@ class DbUser extends User implements UserInterface, \ArrayAccess
                 'password' => password_hash($newPassword, PASSWORD_DEFAULT),
                 'userId' => $data['userId'],
             ]);
-            // token is single use, make sure it is deleted
-            $this->removeToken($token);
             $pdo->commit();
             $this->getEventManager()->trigger(UserEvent::CHANGE_PASSWORD, $this, ['email' => $email, 'userId' => $data['userId']]);
             return true;

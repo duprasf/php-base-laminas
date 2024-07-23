@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace UserAuth;
 
-use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
-use Laminas\ServiceManager\Factory\InvokableFactory;
-use Model\User;
+
 
 return [
     'router' => [
         'routes' => [
+            'emailLoginValidateToken' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/{email-login}/:token',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'emailLoginValidateToken',
+                    ],
+                ],
+            ],
             /*
             'user' => [
                 'type'    => Segment::class,
@@ -135,7 +143,6 @@ return [
     ],
     'controller_plugins' => [
         'invokables' => [
-            'corsSetResponseHeaders' => Controller\Plugin\SetResponseHeaders::class,
             'returnUserData' => Controller\Plugin\ReturnUserData::class,
         ],
         'factories' => [
@@ -151,12 +158,15 @@ return [
         'factories' => [
             Model\UserLogger::class => Factory\UserLoggerFactory::class,
             Model\UserAudit::class => Factory\UserAuditFactory::class,
+            Model\JWT::class => Factory\JWTFactory::class,
+            Listener\UserAuthListener::class => Factory\Listener\UserAuthListenerFactory::class,
+            Model\User\User::class => Factory\User\UserFactory::class,
+
+            // These are the old functions, depreciated
             Model\User::class => Factory\UserFactory::class,
             Model\EmailUser::class => Factory\UserFactory::class,
             Model\FileEmailUser::class => Factory\UserFactory::class,
             Model\LdapUser::class => Factory\UserFactory::class,
-            Model\JWT::class => Factory\JWTFactory::class,
-            Listener\UserAuthListener::class => Factory\Listener\UserAuthListenerFactory::class,
         ],
         'aliases' => [
         ],

@@ -2,7 +2,7 @@
 
 namespace UserAuth\Exception;
 
-use UserException;
+use UserAuth\Exception\UserException;
 
 class UserMethodUnavailable extends UserException
 {

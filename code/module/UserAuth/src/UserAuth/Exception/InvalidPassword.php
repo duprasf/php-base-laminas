@@ -2,7 +2,7 @@
 
 namespace UserAuth\Exception;
 
-use UserException;
+use UserAuth\Exception\UserException;
 
 class InvalidPassword extends UserException
 {

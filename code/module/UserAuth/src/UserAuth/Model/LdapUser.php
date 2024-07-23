@@ -43,12 +43,12 @@ class LdapUser extends User
     * Authenticate/login a user using a database. This particular implementation would use Active Directory
     * to authenticate and each app could have a user DB with access rights
     *
-    * @param String $email, this can be email or account name
-    * @param String $password
+    * @param string $email, this can be email or account name
+    * @param string $password
     * @return bool, true if successful false otherwise
     * @throws UserAuth\Exception\InvalidCredentialsException In this implementation, throw exception when credentials are incorrect
     */
-    public function authenticate(String $email, String $password): bool
+    public function authenticate(string $email, string $password): bool
     {
         $this->getEventManager()->trigger(UserEvent::LOGIN.'.pre', $this, ['email' => $email]);
 
@@ -80,13 +80,13 @@ class LdapUser extends User
     /**
     * Load a user from the JWT. The expiry time of the JWT should be checked before allowing this.
     *
-    * @param String $jwt the JavaScript Web Token received from the client
+    * @param string $jwt the JavaScript Web Token received from the client
     * @return bool, true if successful false otherwise
     * @throws UserAuth\Exception\JwtException If the token is null or invalid
     * @throws UserAuth\Exception\JwtExpiredException If the token is expired
     * @throws UserAuth\Exception\UserException if the ID field is not set in the JWT
     */
-    public function loadFromJwt(?String $jwt): bool
+    public function loadFromJwt(?string $jwt): bool
     {
         $data = $this->jwtToData($jwt);
         if(!isset($data[self::ID_FIELD])) {
@@ -109,12 +109,12 @@ class LdapUser extends User
     /**
     * This function is not available in this class
     *
-    * @param String $email
-    * @param String $password
+    * @param string $email
+    * @param string $password
     * @param GcNotify $notify
     * @throws UserMethodUnavailable
     */
-    public function register(String $email, String $password, String $confirmPassword, ?GcNotify $notify)
+    public function register(string $email, string $password, string $confirmPassword, ?GcNotify $notify)
     {
         throw new UserMethodUnavailable();
     }
@@ -122,12 +122,12 @@ class LdapUser extends User
     /**
     * This function is not available in this class
     *
-    * @param String $email
-    * @param String $password
+    * @param string $email
+    * @param string $password
     * @param GcNotify $notify
     * @throws UserMethodUnavailable
     */
-    public function requestResetPassword(String $email, GcNotify $notify)
+    public function requestResetPassword(string $email, GcNotify $notify)
     {
         throw new UserMethodUnavailable();
     }
@@ -135,12 +135,12 @@ class LdapUser extends User
     /**
     * This function is not available in this class
     *
-    * @param String $email
-    * @param String $password
+    * @param string $email
+    * @param string $password
     * @param GcNotify $notify
     * @throws UserMethodUnavailable
     */
-    public function handleVerifyEmailToken(String $token)
+    public function handleVerifyEmailToken(string $token)
     {
         throw new UserMethodUnavailable();
     }
@@ -148,12 +148,12 @@ class LdapUser extends User
     /**
     * This function is not available in this class
     *
-    * @param String $email
-    * @param String $password
+    * @param string $email
+    * @param string $password
     * @param GcNotify $notify
     * @throws UserMethodUnavailable
     */
-    public function validateResetPasswordToken(String $token)
+    public function validateResetPasswordToken(string $token)
     {
         throw new UserMethodUnavailable();
     }
@@ -161,12 +161,12 @@ class LdapUser extends User
     /**
     * This function is not available in this class
     *
-    * @param String $email
-    * @param String $password
+    * @param string $email
+    * @param string $password
     * @param GcNotify $notify
     * @throws UserMethodUnavailable
     */
-    public function resetPassword(String $token, String $password, String $confirmPassword)
+    public function resetPassword(string $token, string $password, string $confirmPassword)
     {
         throw new UserMethodUnavailable();
     }
@@ -174,12 +174,12 @@ class LdapUser extends User
     /**
     * Called when a user changes his/her password. They must provide the current password
     *
-    * @param String $email
-    * @param String $existingPassword
-    * @param String $newPassword
-    * @param String $confirmPassword
+    * @param string $email
+    * @param string $existingPassword
+    * @param string $newPassword
+    * @param string $confirmPassword
     */
-    public function changePassword(String $email, String $existingPassword, String $newPassword, String $confirmPassword)
+    public function changePassword(string $email, string $existingPassword, string $newPassword, string $confirmPassword)
     {
         throw new UserMethodUnavailable();
     }
@@ -187,12 +187,12 @@ class LdapUser extends User
     /**
     * This function is not available in this class
     *
-    * @param String $email
-    * @param String $password
+    * @param string $email
+    * @param string $password
     * @param GcNotify $notify
     * @throws UserMethodUnavailable
     */
-    public function validatePassword(String $password, String $confirmation = null, array $passwordRules = [])
+    public function validatePassword(string $password, string $confirmation = null, array $passwordRules = [])
     {
         throw new UserMethodUnavailable();
     }

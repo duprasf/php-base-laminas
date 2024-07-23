@@ -14,6 +14,11 @@ use UserAuth\UserEvent;
 
 abstract class User extends \ArrayObject implements UserInterface
 {
+    public function __construct()
+    {
+        trigger_error('Class ' . __CLASS__ . ' and its children are deprecated. Please use UserAuth\Model\User\User instead.', E_USER_DEPRECATED);
+    }
+
     /**
     * Which field represent the unique identifier of the user (ex: email, userId, etc.)
     */
@@ -306,13 +311,14 @@ abstract class User extends \ArrayObject implements UserInterface
     */
     public function validatePassword(String $password, String $confirmation = null, array $passwordRules = [])
     {
+        $translator = $this->getTranslator();
+
         if($confirmation && $password !== $confirmation) {
             throw new InvalidConfirmationPassword(
                 $translator->translate('The password and confirmation do not match.')
             );
         }
 
-        $translator = $this->getTranslator();
 
         // only accept rules that exists in defaultPasswordRules
         $passwordRules = array_intersect_key($passwordRules, $this->defaultPasswordRules);
@@ -476,10 +482,10 @@ abstract class User extends \ArrayObject implements UserInterface
     /**
     * Get the content of the Javascript Web Token (when using API)
     *
-    * @param String $jwt
+    * @param string $jwt
     * @return array containing the content of the JWT
-    * @throws UserAuth\Exception\JwtException If the token is null or invalid
-    * @throws UserAuth\Exception\JwtExpiredException If the token is expired
+    * @throws \UserAuth\Exception\JwtException If the token is null or invalid
+    * @throws \UserAuth\Exception\JwtExpiredException If the token is expired
     */
     public function jwtToData($jwt)
     {
