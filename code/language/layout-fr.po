@@ -109,31 +109,31 @@ msgstr "Menu de la section"
 
 #: first found in module/Application/src/Application/Model/MetadataBuilder.php
 msgid "no metadata"
-msgstr ""
+msgstr "aucune métadonnées"
 
 #: first found in module/Application/src/Application/Model/MetadataBuilder.php
 msgid "Invalid metadata description"
-msgstr ""
+msgstr "métadonnées description invalide"
 
 #: first found in module/Application/src/Application/Model/MetadataBuilder.php
 msgid "Issued date is invalid"
-msgstr ""
+msgstr "date de publication invalide"
 
 #: first found in module/Application/src/Application/Model/MetadataBuilder.php
 msgid "Modified date is invalid"
-msgstr ""
+msgstr "date modifier invalide"
 
 #: first found in module/Application/src/Application/Model/MetadataBuilder.php
 msgid "Modified date is prior to the issued date"
-msgstr ""
+msgstr "date modifier est avant la date de publication"
 
 #: first found in module/Application/src/Application/Model/MetadataBuilder.php
 msgid "Title is missing"
-msgstr ""
+msgstr "Le titre est manquant"
 
 #: first found in module/Application/src/Application/Model/MetadataBuilder.php
-msgid "Government of Canada, Infrastructure Canada"
-msgstr "Gouvernement du Canada, Infrastructure Canada"
+msgid "Government of Canada, Health Canada"
+msgstr "Gouvernement du Canada, Santé Canada"
 
 #: 
 msgid "Home"
@@ -153,7 +153,7 @@ msgstr "fermer"
 
 #: 
 msgid "Return to mySOURCE"
-msgstr ""
+msgstr "Retourner à maSOURCE"
 
 #: 
 msgid "Submit"
@@ -170,4 +170,40 @@ msgstr "Précédente"
 #: 
 msgid "Start"
 msgstr "Débuté"
+
+#: 
+msgid "Your session will expire automatically in #min# min #sec# sec."
+msgstr "Votre session va expirer automatiquement dans #min# min #sec# sec."
+
+#: 
+msgid "Select \"Continue session\" to extend your session."
+msgstr "Sélectionez \"Continuer la session\" pour continuer votre session."
+
+#: 
+msgid "Session timeout warning"
+msgstr "Avertissement d'expiration de session"
+
+#: 
+msgid "Sorry your session has already expired. Please sign in again."
+msgstr "Désoler votre session est expirer. Veuillez vous connecter de nouveau."
+
+#: 
+msgid "Continue session"
+msgstr "Continuer la session"
+
+#: 
+msgid "End session now"
+msgstr "Terminer la session immediatement"
+
+#: 
+msgid "Application settings"
+msgstr "Configuration de l'application"
+
+#: 
+msgid "Sign in"
+msgstr "Connecter"
+
+#: 
+msgid "Sign out"
+msgstr "Déconnecter"
 

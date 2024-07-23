@@ -132,7 +132,7 @@ msgid "Title is missing"
 msgstr ""
 
 #: first found in module/Application/src/Application/Model/MetadataBuilder.php
-msgid "Government of Canada, Infrastructure Canada"
+msgid "Government of Canada, Health Canada"
 msgstr ""
 
 #: 
@@ -145,5 +145,65 @@ msgstr ""
 
 #: 
 msgid "Public Health Agency of Canada, Government of Canada"
+msgstr ""
+
+#: 
+msgid "close"
+msgstr ""
+
+#: 
+msgid "Return to mySOURCE"
+msgstr ""
+
+#: 
+msgid "Submit"
+msgstr ""
+
+#: 
+msgid "Next"
+msgstr ""
+
+#: 
+msgid "Previous"
+msgstr ""
+
+#: 
+msgid "Start"
+msgstr ""
+
+#: 
+msgid "Your session will expire automatically in #min# min #sec# sec."
+msgstr ""
+
+#: 
+msgid "Select \"Continue session\" to extend your session."
+msgstr ""
+
+#: 
+msgid "Session timeout warning"
+msgstr ""
+
+#: 
+msgid "Sorry your session has already expired. Please sign in again."
+msgstr ""
+
+#: 
+msgid "Continue session"
+msgstr ""
+
+#: 
+msgid "End session now"
+msgstr ""
+
+#: 
+msgid "Application settings"
+msgstr ""
+
+#: 
+msgid "Sign in"
+msgstr ""
+
+#: 
+msgid "Sign out"
 msgstr ""
 
