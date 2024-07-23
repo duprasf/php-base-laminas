@@ -216,6 +216,32 @@ class GcNotify
         }
     }
 
+    protected $genericAuthenticationTemplates = [
+        'login-en' => 'f601d4ae-0e38-4a31-8eb9-9b76e34dec46',
+        'login-fr' => 'fa2314e9-e51c-4fbd-a70d-6b684bc7f043',
+        'confirm' => 'a3e9adf7-52c4-47b8-8ecc-834bb0695157',
+        'resetPassword' => '56523a2f-9e5c-4f30-84c0-3d97ef0a945b',
+    ];
+    public function sendAuthenticationEmail(string $recipient, string $template, string $url, null|string $apiKey = null)
+    {
+        if(!$apiKey) {
+            $apiKey = getenv('GC_NOTIFY_AUTH_API_KEY');
+        }
+        if(!$apiKey) {
+            throw new GcNotifyException('No Auth API Key found');
+        }
+
+        if(!array_key_exists($template, $this->genericAuthenticationTemplates)) {
+            throw new GcNotifyException('Template must be one of '.implode(', ', array_keys($this->genericAuthenticationTemplates)));
+        }
+
+        $personalisation = [
+            'url' => $url,
+            'appName' => $this->getAppName(),
+        ];
+        return $this->sendEmail($recipient, $this->genericAuthenticationTemplates[$template], $personalisation, $apiKey);
+    }
+
     /**
     * Will send the exception to the admin. If no email is specified
     * it will be sent to the default admin (should be IMSD Web)
@@ -291,11 +317,10 @@ class GcNotify
     /**
     * Sends an email using GC Notify
     *
-    * @param String $emailRecipient the recipient of your email
-    * @param String $templateId the template to use
-    * @param Array $personalisation an array with the variable in the template
-    * @param String $apiKey the API key if not set globally
-    *
+    * @param string $emailRecipient the recipient of your email
+    * @param string $templateId the template to use
+    * @param array $personalisation an array with the variable in the template
+    * @param string $apiKey the API key if not set globally
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
     public function sendEmail(string $recipient, string $templateId, ?array $personalisation = [], ?string $apiKey = null)
@@ -313,8 +338,7 @@ class GcNotify
     *
     * @param string $url the URL to call (email or SMS)
     * @param array $postData the data to be sent as an array
-    * @param String $apiKey the API key to use, will use global API Key if not specified
-    *
+    * @param string $apiKey the API key to use, will use global API Key if not specified
     * @return bool true if successful false otherwise (use ->lastPage for details)
     */
     protected function makeRequest(string $url, array $postData, ?string $apiKey = null)
