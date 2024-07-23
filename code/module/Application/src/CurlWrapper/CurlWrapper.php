@@ -252,7 +252,7 @@ class CurlWrapper
         curl_setopt($this->handle, CURLOPT_RETURNTRANSFER, $this->returnPage);
         curl_setopt($this->handle, CURLOPT_HEADER, $this->returnHeaders);
         curl_setopt($this->handle, CURLOPT_HTTPHEADER, $this->headers);
-        curl_setopt($this->handle, CURLOPT_ENCODING , '');
+        curl_setopt($this->handle, CURLOPT_ENCODING, '');
 
         $raw = curl_exec($this->handle);
         $this->executed = true;
@@ -265,7 +265,7 @@ class CurlWrapper
         }
 
         $code = $this->getReturnCode();
-        return $code>=200 && $code<=299;
+        return $code >= 200 && $code <= 299;
     }
 
     public function getReturn()
@@ -298,8 +298,8 @@ class CurlWrapper
 
     public function getPageJson(): ?array
     {
-        $json= json_decode($this->getPage(), true);
-        return json_last_error()==JSON_ERROR_NONE ? $json : null;
+        $json = json_decode($this->getPage(), true);
+        return json_last_error() == JSON_ERROR_NONE ? $json : null;
     }
 
     public function getReturnCode()

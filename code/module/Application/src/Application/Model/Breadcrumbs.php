@@ -34,7 +34,7 @@ class Breadcrumbs extends ArrayObject
                 }
             }
         } else {
-            if(preg_match_all('(\(([^\|]*)\|([^\)]*)\)\s*)', $data['breadcrumbs'], $out, PREG_SET_ORDER)) {
+            if(preg_match_all('(\(([^\|]*)\|([^\)]*)\)\s*)', $breadcrumbs, $out, PREG_SET_ORDER)) {
                 foreach($out as $crumb) {
                     $extraBreadcrumbs[] = array('href' => $crumb[2], 'title' => $crumb[1]);
                 }

@@ -8,7 +8,6 @@ namespace Application\Factory\Controller\Plugin;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\Mvc\I18n\Translator;
 
 class GetUrlHelperFactory implements FactoryInterface
 {

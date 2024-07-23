@@ -2,6 +2,8 @@
 
 namespace GcNotify\Exception;
 
-class GcNotifyException
+use Exception;
+
+class GcNotifyException extends Exception
 {
 }

@@ -217,7 +217,7 @@ class ApplicationSetupListener
         }
 
         $metadata = $view->getVariable('metadata');
-        $lang = isset($metadata['lang'])?$metadata['lang']:$lang;
+        $lang = isset($metadata['lang']) ? $metadata['lang'] : $lang;
         $layout->setVariable('lang', $lang);
         $view->setVariable('lang', $lang);
         $view->setVariable('supportedLang', $service->get('supportedLang'));

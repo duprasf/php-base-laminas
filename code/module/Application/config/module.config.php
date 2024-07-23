@@ -8,6 +8,7 @@ use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack;
+use GcNotify\GcNotify;
 
 $return = [
     'router' => [
@@ -67,7 +68,7 @@ $return = [
         'aliases' => [
             "GcNotify" => GcNotify::class,
             'metadataBuilder' => Model\MetadataBuilder::class,
-            'sessionManager'=>Model\SessionManager::class,
+            'sessionManager' => Model\SessionManager::class,
         ],
         'factories' => [
             Command\Cronjob::class => Factory\Command\CronjobCommandFactory::class,

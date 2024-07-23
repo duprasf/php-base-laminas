@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use ArrayObject;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
@@ -26,7 +27,7 @@ class IndexController extends AbstractActionController
     {
         $view = new ViewModel();
         $this->_setCommonMetadata($view);
-        $view->setVariable('metadata', new \ArrayObject());
+        $view->setVariable('metadata', new ArrayObject());
         return $view;
     }
 
@@ -66,7 +67,7 @@ class IndexController extends AbstractActionController
     {
         $translator = $this->getTranslator();
         $lang = $translator->getLang();
-        $view->setVariable('metadata', new \ArrayObject(array(
+        $view->setVariable('metadata', new ArrayObject(array(
             "title" => $translator->translate('Home Page'),
             "description" => $translator->translate("The home page our this web site is not set"),
             "issuedDate" => date('Y-m-d'),

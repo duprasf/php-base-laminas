@@ -23,23 +23,22 @@ class Url extends UrlHelper
     }
 
     protected $lang;
-    public function setLang($lang)
+    public function setLang(string $lang)
     {
         $this->lang = $lang;
         return $this;
     }
-    public function getLang()
+    public function getLang(): string|null
     {
         return $this->lang;
     }
 
     public function __invoke(
         $name = null,
-        $params = array(),
-        $options = array(),
+        $params = [],
+        $options = [],
         $reuseMatchedParams = false
     ) {
-
         if(!is_array($params)) {
             $params = array();
         }
