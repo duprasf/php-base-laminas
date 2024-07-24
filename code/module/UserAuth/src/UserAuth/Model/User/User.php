@@ -47,7 +47,13 @@ class User extends ArrayObject implements UserInterface
     */
     public function authenticate(...$args): bool|array
     {
-        $this->getEventManager()->trigger(UserEvent::LOGIN.'.pre', $this, [$this->getIdField() => $args[$this->getIdField()] ?? $args[0], 'target' => $args[$this->getIdField()] ?? $args[0]]);
+        if(isset($args[$this->getIdField()])) {
+            $this->getEventManager()->trigger(
+                UserEvent::LOGIN.'.pre',
+                $this,
+                [$this->getIdField() => $args[$this->getIdField()], 'target' => $args[$this->getIdField()]]
+            );
+        }
         $data = $this->getAuthenticator()->authenticate(...$args);
         if(!$data) {
             $this->getEventManager()->trigger(UserEvent::LOGIN.'.err', $this, [
@@ -58,7 +64,11 @@ class User extends ArrayObject implements UserInterface
             $this->logout();
             return false;
         }
-        $this->getEventManager()->trigger(UserEvent::LOGIN, $this, [$this->getIdField() => $args[$this->getIdField()] ?? $args[0], 'target' => $args[$this->getIdField()] ?? $args[0]]);
+        $this->getEventManager()->trigger(
+            UserEvent::LOGIN, 
+            $this, 
+            ['target' => reset($args)]
+        );
         if(!is_array($data)) {
             return true;
         }
@@ -197,25 +207,29 @@ class User extends ArrayObject implements UserInterface
     //****************** Session
     protected function saveToSession(): self
     {
-        if($this->getUseSession()) {
-            $container = new Container($this->getSessionName());
-            $data = $this->getArrayCopy();
-            if(!isset($data['iat'])) {
-                $data['iat'] = time();
-            }
-            $data['exp'] = time() + $this->getSessionLength();
-            $container->exchangeArray($data);
+        if(!$this->getUseSession()) {
+            return $this;
         }
+        $container = new Container($this->getSessionName());
+        $data = $this->getArrayCopy();
+        if(!isset($data['iat'])) {
+            $data['iat'] = time();
+        }
+        $data['exp'] = time() + $this->getSessionLength();
+        $container->exchangeArray($data);
         return $this;
     }
 
     public function loadFromSession(): bool
     {
+        if(!$this->getUseSession()) {
+            return $this;
+        }
         $container = new Container($this->getSessionName());
-        if(!isset($container[$this->getIdField()])) {
+        $data = $container->getArrayCopy();
+        if(!isset($data[$this->getIdField()])) {
             return false;
         }
-        $data = $container->getArrayCopy();
 
         if($data['exp'] < time()) {
             $container->exchangeArray([]);

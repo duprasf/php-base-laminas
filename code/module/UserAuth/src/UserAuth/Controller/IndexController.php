@@ -21,6 +21,17 @@ class IndexController extends AbstractActionController
         }
     }
 
+    public function loadJwtFromSessionAction()
+    {
+        $this->getUser()->loadFromSession();
+        return $this->returnUserData($this->getUser());
+    }
+
+    public function pingAction()
+    {
+        return $this->returnUserData($this->getUser());
+    }
+
     protected $user;
     /**
      * Set the user that will be used to validate email token

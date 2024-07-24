@@ -20,6 +20,26 @@ return [
                     ],
                 ],
             ],
+            'loadJwtFromSession' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/{load-jwt-from-session}',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'loadJwtFromSession',
+                    ],
+                ],
+            ],
+            'ping' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/{ping}',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'ping',
+                    ],
+                ],
+            ],
             /*
             'user' => [
                 'type'    => Segment::class,

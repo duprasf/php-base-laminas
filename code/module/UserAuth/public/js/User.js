@@ -20,6 +20,8 @@ class User {
             this.options[i] = options[i];
         }
 
+        this.fromServerSession(false);
+
         let payload = this.getJwtPayload();
         if(!payload) {
             return this.setupAppButtons();
@@ -209,6 +211,32 @@ class User {
                 if(laminas.user.getOption('verbose')) {
                     console.log('ping:', laminas.user.getJwtPayload());
                 }
+            })
+            .catch( error => {
+                console.error(error);
+            }
+        );
+    }
+
+    fromServerSession(remember) {
+        let options = {
+            method: 'get',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        fetch('/load-jwt-from-session', options)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not OK');
+                }
+                return response.json();
+            })
+            .then( response => {
+                if(laminas.user.getOption('verbose')) {
+                    console.log('ping:', response.jwt);
+                }
+                laminas.user.saveJwt(response.jwt, remember ?? laminas.user.getRemembered())
             })
             .catch( error => {
                 console.error(error);
