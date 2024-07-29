@@ -50,7 +50,11 @@ try {
 } catch(\Exception $e) {
     if(getenv('PHP_DEV_ENV')) {
         print '<pre>'.$e->getMessage().'</pre>';
-        print 'Stack:<pre>'.debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS).'</pre>';
+        print 'Stack:<pre>';
+        debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        print '</pre>';
+        var_dump($e->getMessage());
+        var_dump($e->getFile().':'.$e->getLine());
     } else {
         print 'unknown error';
     }
