@@ -32,21 +32,37 @@ class GetLangSwitchUrl implements HelperInterface
         return $this->route;
     }
 
+    private $queryString=[];
+    public function setQueryString(array $queryString):self
+    {
+        $this->queryString = $queryString;
+        return $this;
+    }
+    protected function getQueryString():array
+    {
+        return $this->queryString;
+    }
+
     public function __invoke()
     {
         $view = $this->getView();
         // set switchLang link
         $switchLangUrl = $view->vars('switch-lang-url');
-        if(!$switchLangUrl) {
-            $route = $this->getRouteMatch();
-            if($route) {
-                $params = $route->getParams();
-                $params['locale'] = $view->lang == 'en' ? 'fr' : 'en';
-                $switchLangUrl = $view->url($route->getMatchedRouteName(), $params);
-            } else {
-                $switchLangUrl = '/';
-            }
+        if($switchLangUrl) {
+            return $switchLangUrl;
         }
-        return $switchLangUrl;
+
+        $route = $this->getRouteMatch();
+        if($route) {
+            $params = $route->getParams();
+            $params['locale'] = $view->lang == 'en' ? 'fr' : 'en';
+            $switchLangUrl = $view->url($route->getMatchedRouteName(), $params);
+        } else {
+            $switchLangUrl = '/';
+        }
+        if(!$this->getQueryString()) {
+            return $switchLangUrl;
+        }
+        return $switchLangUrl.'?'.http_build_query($this->getQueryString());
     }
 }

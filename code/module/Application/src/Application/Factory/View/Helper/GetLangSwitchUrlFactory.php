@@ -8,13 +8,16 @@ use Application\View\Helper\GetLangSwitchUrl;
 
 class GetLangSwitchUrlFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $sm, $requestedName, ?array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
-        $object = new GetLangSwitchUrl();
-        $route = $sm->get('Application')->getMvcEvent()->getRouteMatch();
+        $obj = new GetLangSwitchUrl();
+        $route = $container->get('Application')->getMvcEvent()->getRouteMatch();
         if($route) {
-            $object->setRouteMatch($route);
+            $obj->setRouteMatch($route);
         }
-        return $object;
+        $request=$container->get('request');
+        $obj->setQueryString($request->getQuery()->getArrayCopy());
+
+        return $obj;
     }
 }
