@@ -5,24 +5,22 @@ namespace Application\View\Helper;
 use Laminas\View\Helper\HelperInterface;
 use Laminas\View\Renderer\RendererInterface;
 
-/**
-*   This is OLD. It is meant as a lecagy support for Stockpile
-*/
 class SetSwitchLangUrl implements HelperInterface
 {
     protected $view;
-    public function setView(RendererInterface $view)
+    public function setView(RendererInterface $view): self
     {
         $this->view = $view;
+        return $this;
     }
-    public function getView()
+    public function getView(): RendererInterface
     {
         return $this->view;
     }
 
     public function __invoke($url)
     {
-        $this->view->viewModel()->getCurrent()->setOption('switch-lang-url', $url);
+        $this->getView()->{'switch-lang-url'}= $url;
 
         return $this;
     }
