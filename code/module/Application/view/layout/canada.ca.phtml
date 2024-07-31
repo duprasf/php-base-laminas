@@ -42,6 +42,7 @@ if(!$this->contentSecurityPolicy) {
 
 
 $sideMenu = $layout->sideMenu;
+$sideMenuPartial = $view->sideMenuPartial??$layout->sideMenuPartial;
 $sideMenuLocation = $layout->sideMenuLocation;
 $usefulLinks = $layout->usefulLinks;
 $usefulLinksTitle = $layout->usefulLinksTitle ? $layout->usefulLinksTitle : $this->translate('Useful Links');
@@ -283,7 +284,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             </header>
         </div>
 
-        <?if($sideMenu):?>
+        <?if($sideMenu||$sideMenuPartial):?>
             <div class="container"><div class="row">
             <main role="main" property="mainContentOfPage" class="col-md-9 <?=$sideMenuLocation!='right'? ' col-md-push-3':'';?> <?=$this->mainClass;?>" id="<?=$this->mainId;?>">
         <?else:?>
@@ -332,10 +333,10 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                 </div>
             </div>
         </main>
-        <?if($sideMenu):?>
+        <?if($sideMenu||$sideMenuPartial):?>
             <nav class="wb-sec col-md-3 <?=$sideMenuLocation!='right' ? ' col-md-pull-9' : '';?>" typeof="SiteNavigationElement" id="wb-sec" role="navigation">
                 <h2 id="wb-sec-h" class="wb-inv"><?=$this->translate('Section menu');?></h2>
-                <?=$sideMenu;?>
+                <?=$sideMenu??$this->partial($sideMenuPartial);?>
             </nav>
         <?endif;?>
         <?if($usefulLinks):?>
@@ -356,7 +357,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                 </section>
             </div>
         <?endif;?>
-        <?if($sideMenu || $usefulLinks):?>
+        <?if($sideMenu || $sideMenuPartial || $usefulLinks):?>
             </div></div>
         <?endif;?>
         <div id="def-footer">
@@ -456,7 +457,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             var defTop = document.getElementById("def-top");
             defTop.outerHTML = wet.builder.<?=$this->isApp?'appTop':'top';?>({
                 cdnEnv: "<?=$cdtsEnv;?>",
-                topSecMenu: <?=$sideMenu ? 'true':'false';?>,
+                topSecMenu: <?=$sideMenu||$sideMenuPartial ? 'true':'false';?>,
                 lngLinks: [{
                     lang: "<?=$otherLang;?>",
                     href: "<?=$this->getLangSwitchUrl();?>",
