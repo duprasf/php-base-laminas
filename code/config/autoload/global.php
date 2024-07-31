@@ -13,12 +13,12 @@
  */
 
 use Interop\Container\ContainerInterface;
-use Laminas\ServiceManager\ServiceManager;
+use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack;
 use Laminas\Session\Storage\SessionArrayStorage;
 
 return [
     'router' => [
-        'router_class' => Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack::class,
+        'router_class' => TranslatorAwareTreeRouteStack::class,
     ],
     'service_manager' => [
         'initializers' => [
@@ -45,7 +45,7 @@ return [
 
             'cdts-version' => '5_0_1',
             'cdts-path' => 'https://www.canada.ca/etc/designs/canada/cdts/gcweb/v%s',
-            'cdts-env' => getenv('PHP_DEV_ENV')?'dev':'prod',
+            'cdts-env' => getenv('PHP_DEV_ENV') ? 'dev' : 'prod',
             'cdts-integrity' => [
                 '4_0_24' => [
                     '/cdts/compiled/soyutils.js' => 'sha384-32eoaED5PWLqUcm/SmCNYkjyLGbZouGKcA7SqNkg4pw/HO5GQvYe41sFH2Gurff2',

@@ -228,8 +228,7 @@ class GcNotify implements EmailerInterface
         string $template,
         string $url,
         null|string $apiKey = null
-    ): bool
-    {
+    ): bool {
         if(!$apiKey) {
             $apiKey = getenv('GC_NOTIFY_AUTH_API_KEY');
         }
@@ -264,7 +263,7 @@ class GcNotify implements EmailerInterface
         $message = trim($extraMessage.PHP_EOL.$e->getMessage()).PHP_EOL;
         $previous = $e;
         while($previous = $previous->getPrevious()) {
-            $message.= $previous->getMessage().' ('.basename($previous->getFile()).':'.$previous->getLine().')'.PHP_EOL;
+            $message .= $previous->getMessage().' ('.basename($previous->getFile()).':'.$previous->getLine().')'.PHP_EOL;
         }
         return $this->reportError(
             [

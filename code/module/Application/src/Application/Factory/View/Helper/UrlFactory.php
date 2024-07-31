@@ -9,7 +9,6 @@ use Laminas\Router\Http\RouteMatch;
 use Laminas\Router\RouteStackInterface;
 use Application\View\Helper\Url;
 
-
 class UrlFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)

@@ -6,7 +6,6 @@ namespace UserAuth;
 
 use Laminas\Router\Http\Segment;
 
-
 return [
     'router' => [
         'routes' => [

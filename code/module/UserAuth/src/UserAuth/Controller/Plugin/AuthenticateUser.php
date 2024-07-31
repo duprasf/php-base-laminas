@@ -53,7 +53,7 @@ class AuthenticateUser extends AbstractPlugin
         if(!$jwt) {
             throw new JwtException('No JWT found');
         }
-        
+
         if(!$this->getUser()) {
             return $this->getJwtObj()->getPayload($jwt);
         }

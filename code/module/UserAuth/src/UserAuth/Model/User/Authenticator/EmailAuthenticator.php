@@ -108,7 +108,7 @@ class EmailAuthenticator extends AbstractAuthenticator implements AuthenticatorI
         return true;
     }
 
-    protected $ttl=3600;
+    protected $ttl = 3600;
     /**
      * Set the time (in sec) the token will be valid. If none is specified, 1 hour will be used
      * @param int $ttl
@@ -187,7 +187,7 @@ class EmailAuthenticator extends AbstractAuthenticator implements AuthenticatorI
         return $this->lang;
     }
 
-    private $tokenFieldName='token';
+    private $tokenFieldName = 'token';
     public function setEmailTokenFieldName(string $tokenFieldName): self
     {
         $this->tokenFieldName = $tokenFieldName;

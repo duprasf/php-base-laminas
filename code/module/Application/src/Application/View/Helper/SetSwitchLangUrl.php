@@ -20,7 +20,7 @@ class SetSwitchLangUrl implements HelperInterface
 
     public function __invoke($url)
     {
-        $this->getView()->{'switch-lang-url'}= $url;
+        $this->getView()->{'switch-lang-url'} = $url;
 
         return $this;
     }

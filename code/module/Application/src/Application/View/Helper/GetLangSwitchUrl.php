@@ -32,13 +32,13 @@ class GetLangSwitchUrl implements HelperInterface
         return $this->route;
     }
 
-    private $queryString=[];
-    public function setQueryString(array $queryString):self
+    private $queryString = [];
+    public function setQueryString(array $queryString): self
     {
         $this->queryString = $queryString;
         return $this;
     }
-    protected function getQueryString():array
+    protected function getQueryString(): array
     {
         return $this->queryString;
     }

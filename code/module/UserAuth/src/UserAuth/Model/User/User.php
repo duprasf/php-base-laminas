@@ -65,8 +65,8 @@ class User extends ArrayObject implements UserInterface
             return false;
         }
         $this->getEventManager()->trigger(
-            UserEvent::LOGIN, 
-            $this, 
+            UserEvent::LOGIN,
+            $this,
             ['target' => reset($args)]
         );
         if(!is_array($data)) {

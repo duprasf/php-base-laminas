@@ -15,7 +15,7 @@ class GetLangSwitchUrlFactory implements FactoryInterface
         if($route) {
             $obj->setRouteMatch($route);
         }
-        $request=$container->get('request');
+        $request = $container->get('request');
         $obj->setQueryString($request->getQuery()->getArrayCopy());
 
         return $obj;
