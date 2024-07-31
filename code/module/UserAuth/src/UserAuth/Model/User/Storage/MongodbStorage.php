@@ -63,9 +63,9 @@ class MongodbStorage extends AbstractStorage implements StorageInterface
      * Read an entity
      * @param string|int $id the ID of the entity
      * @param mixed $fields the fields to return, can be empty to return all
-     * @return array the requested data
+     * @return bool|array the requested data or false if not found
      */
-    public function read(string|int $id, null|array $fields = null): array
+    public function read(string|int $id, null|array $fields = null): bool|array
     {
         if(isset($fields[0])) {
             $fields = array_fill_keys($fields, 1);
@@ -131,15 +131,15 @@ class MongodbStorage extends AbstractStorage implements StorageInterface
         $this->db = $obj;
         return $this;
     }
-    protected function getDatabaseConnection(): MongoDb|MongoCollection
+    protected function getDatabaseConnection(): MongoCollection
     {
         if(! $this->db instanceof MongoDb) {
             throw new StorageException('DB is not a MongoDB\Database Object');
         }
         $collection = $this->collection;
-        if($collection) {
-            return $this->db->$collection;
+        if(!$collection) {
+            throw new StorageException("A collection name is required");
         }
-        return $this->db;
+        return $this->db->$collection;
     }
 }

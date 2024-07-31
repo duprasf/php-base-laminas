@@ -11,7 +11,7 @@ interface StorageInterface
     public function insert(array $content): bool;
     public function update(string|int $id, array $content): bool;
     public function delete(string|int $id): bool;
-    public function read(string|int $id, null|array $fields = null): array;
+    public function read(string|int $id, null|array $fields = null): bool|array;
     public function findUniqueValue(string $fieldName, $cbGenerate): mixed;
     public function findByToken(string $token, null|array $fields = null): bool|array;
     public function setIdField(string $string): self;

@@ -86,9 +86,9 @@ class MySQLStorage extends AbstractStorage implements StorageInterface
      * Read an entity
      * @param string|int $id the ID of the entity
      * @param mixed $fields the fields to return, can be empty to return all
-     * @return array the requested data
+     * @return bool|array the requested data or false if not found
      */
-    public function read(string|int $id, null|array $fields = null): array
+    public function read(string|int $id, null|array $fields = null): bool|array
     {
         $query = "SELECT ";
         if(is_array($fields) && count($fields)) {
