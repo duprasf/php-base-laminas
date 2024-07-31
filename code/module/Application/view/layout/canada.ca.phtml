@@ -43,7 +43,7 @@ if(!$this->contentSecurityPolicy) {
 
 $sideMenu = $layout->sideMenu;
 $sideMenuPartial = $view->sideMenuPartial??$layout->sideMenuPartial;
-$sideMenuLocation = $layout->sideMenuLocation;
+$sideMenuLocation = $view->sideMenuLocation??$layout->sideMenuLocation;
 $usefulLinks = $layout->usefulLinks;
 $usefulLinksTitle = $layout->usefulLinksTitle ? $layout->usefulLinksTitle : $this->translate('Useful Links');
 $usefulLinksLocation = $layout->usefulLinksLocation;
