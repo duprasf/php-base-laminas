@@ -5,15 +5,15 @@ namespace UserAuth\Controller\Plugin;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Http\Header\Authorization;
 use Laminas\Http\Header\GenericHeader;
-use UserAuth\Model\User;
+use UserAuth\Model\User\UserInterface;
 use UserAuth\Model\EmailUser;
 use UserAuth\Model\JWT;
-use UserAuth\Exception\JwtExpiredException;
+use UserAuth\Exception\JwtException;
 
 class AuthenticateUser extends AbstractPlugin
 {
     private $user;
-    public function setUser(User $obj)
+    public function setUser(UserInterface $obj)
     {
         $this->user = $obj;
         return $this;
@@ -34,7 +34,7 @@ class AuthenticateUser extends AbstractPlugin
         return $this->jwtObj;
     }
 
-    public function __invoke(Authorization|GenericHeader|string|null $auth): string|bool
+    public function __invoke(Authorization|GenericHeader|string|null $auth): string|UserInterface
     {
         $jwt = null;
         if($auth instanceof Authorization) {
@@ -42,19 +42,23 @@ class AuthenticateUser extends AbstractPlugin
         }
         if($auth instanceof GenericHeader) {
             $jwt = $auth->getFieldValue();
+            if($jwt === "null") {
+                $jwt = null;
+            }
         }
         if(is_string($auth)) {
             $jwt = $auth;
         }
 
         if(!$jwt) {
-            return false;
+            throw new JwtException('No JWT found');
         }
+        
         if(!$this->getUser()) {
             return $this->getJwtObj()->getPayload($jwt);
         }
 
         $this->getUser()->loadFromJwt($jwt);
-        return true;
+        return $this->getUser();
     }
 }

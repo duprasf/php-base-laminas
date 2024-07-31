@@ -8,9 +8,8 @@ namespace UserAuth\Factory\Controller\Plugin;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\Mvc\I18n\Translator;
 use UserAuth\Model\JWT;
-use UserAuth\Model\EmailUser;
+use UserAuth\Model\User\User;
 
 class AuthenticateUserFactory implements FactoryInterface
 {
@@ -18,7 +17,7 @@ class AuthenticateUserFactory implements FactoryInterface
     {
         $obj = new $requestedName();
         $obj->setJwtObj($container->get(JWT::class));
-        $obj->setUser($container->get(EmailUser::class));
+        $obj->setUser($container->get(User::class));
 
         return $obj;
     }
