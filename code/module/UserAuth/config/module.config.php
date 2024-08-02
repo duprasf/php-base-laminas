@@ -182,10 +182,10 @@ return [
             Model\User\User::class => Factory\User\UserFactory::class,
 
             // These are the old functions, depreciated
-            Model\User::class => Factory\UserFactory::class,
-            Model\EmailUser::class => Factory\UserFactory::class,
-            Model\FileEmailUser::class => Factory\UserFactory::class,
-            Model\LdapUser::class => Factory\UserFactory::class,
+            //Model\User::class => Factory\UserFactory::class,
+            //Model\EmailUser::class => Factory\UserFactory::class,
+            //Model\FileEmailUser::class => Factory\UserFactory::class,
+            //Model\LdapUser::class => Factory\UserFactory::class,
         ],
         'aliases' => [
         ],
@@ -194,9 +194,11 @@ return [
         Listener\UserAuthListener::class,
     ],
     'view_helpers' => [
-        'invokables' => [
+        'aliases' => [
+            'user'=>View\Helper\UserHelper::class,
         ],
         'factories' => [
+            View\Helper\UserHelper::class=>Factory\View\Helper\UserHelperFactory::class,
         ],
     ],
     'view_manager' => [
