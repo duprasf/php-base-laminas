@@ -180,12 +180,6 @@ return [
             Model\JWT::class => Factory\JWTFactory::class,
             Listener\UserAuthListener::class => Factory\Listener\UserAuthListenerFactory::class,
             Model\User\User::class => Factory\User\UserFactory::class,
-
-            // These are the old functions, depreciated
-            //Model\User::class => Factory\UserFactory::class,
-            //Model\EmailUser::class => Factory\UserFactory::class,
-            //Model\FileEmailUser::class => Factory\UserFactory::class,
-            //Model\LdapUser::class => Factory\UserFactory::class,
         ],
         'aliases' => [
         ],
