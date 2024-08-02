@@ -43,6 +43,7 @@ if(!$this->contentSecurityPolicy) {
 
 $sideMenu = $layout->sideMenu;
 $sideMenuPartial = $view->sideMenuPartial??$layout->sideMenuPartial;
+$sideMenuPartialOptions = $view->sideMenuPartialOptions??$layout->sideMenuPartialOptions??[];
 $sideMenuLocation = $view->sideMenuLocation??$layout->sideMenuLocation;
 $usefulLinks = $layout->usefulLinks;
 $usefulLinksTitle = $layout->usefulLinksTitle ? $layout->usefulLinksTitle : $this->translate('Useful Links');
@@ -336,7 +337,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         <?if($sideMenu||$sideMenuPartial):?>
             <nav class="wb-sec col-md-3 <?=$sideMenuLocation!='right' ? ' col-md-pull-9' : '';?>" typeof="SiteNavigationElement" id="wb-sec" role="navigation">
                 <h2 id="wb-sec-h" class="wb-inv"><?=$this->translate('Section menu');?></h2>
-                <?=$sideMenu??$this->partial($sideMenuPartial);?>
+                <?=$sideMenu??$this->partial($sideMenuPartial, $sideMenuPartialOptions);?>
             </nav>
         <?endif;?>
         <?if($usefulLinks):?>
