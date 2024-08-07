@@ -20,50 +20,10 @@ class User {
             this.options[i] = options[i];
         }
 
-        this.fromServerSession(false);
-
-        let payload = this.getJwtPayload();
-        if(!payload) {
-            return this.setupAppButtons();
-        }
-
-        ready((function() {
-            document.body.addEventListener("jwt-expired", e=>this.logout.bind(this));
-            // Set a time out for when the JWT expires.
-            // The default behavior does not logout the user automatically in case the
-            // app wants to do something before end. It would be easy to set a call
-            // a few minutes before to alert the user to extends the session for example.
-            let payload = this.getJwtPayload();
-            let time = (payload.exp*1000)-Date.now();
-            if(time < 100) {
-                // a minimum of 100 ms should be used for the call back
-                // if the token is expired
-                time = 100;
-            }
-            // the same timeout is set when a user is logged in and timeout ends on logout
-            this.jwtTimeout = setTimeout(this.jwtExpired.bind(this), time);
-
-            if(time <= 100) {
-                // if not logged in, just exit
-                return;
-            }
-
-            for(var key in payload) {
-                if(!this[key]) {
-                    if(key=='id') {
-                        continue;
-                    }
-                    this[key] = payload[key];
-                }
-            }
-
-            document.body.classList.add('isLoggedIn');
-            this.setupAppButtons();
-
-            if(this.options.useSession) {
-                this.startSession();
-            }
-        }).bind(this));
+        ready(function() {
+            laminas.user.timeoutPing = setInterval(laminas.user.ping.bind(laminas.user), 600000);
+            laminas.user.ping();
+        });
     }
 
     setOption(name, value) {
@@ -178,24 +138,61 @@ class User {
     }
 
     handleLogin(jwt, remember) {
-        this.saveJwt(jwt, remember);
-
-        let payload = this.getJwtPayload();
-        for(var key in payload) {
-            if(!this[key]) {
-                this[key] = payload[key];
+        if(!jwt) {
+            if(laminas.user.getOption('verbose')) {
+                console.log('handleLogin received an empty jwt, loging out');
             }
+            return laminas.user.logout();
+        }
+        this.saveJwt(jwt, remember);
+        document.body.addEventListener("jwt-expired", e=>laminas.user.logout.bind(laminas.user));
+        // Set a time out for when the JWT expires.
+        // The default behavior does not logout the user automatically in case the
+        // app wants to do something before end. It would be easy to set a call
+        // a few minutes before to alert the user to extends the session for example.
+        let payload = laminas.user.getJwtPayload();
+        let time = (payload.exp*1000)-Date.now();
+        if(time < 100) {
+            // a minimum of 100 ms should be used for the call back
+            // if the token is expired
+            time = 100;
+        }
+        if(time <= 100) {
+            if(laminas.user.getOption('verbose')) {
+                console.log('The jwt is expired. Loggin out.');
+            }
+            return laminas.user.logout();
+        }
+        // the same timeout is set when a user is logged in and timeout ends on logout
+        laminas.user.jwtTimeout = setTimeout(laminas.user.jwtExpired.bind(laminas.user), time);
+
+        for(var key in payload) {
+            if(!laminas.user[key]) {
+                if(key=='id') {
+                    continue;
+                }
+                laminas.user[key] = payload[key];
+            }
+        }
+
+        document.body.classList.add('isLoggedIn');
+        laminas.user.setupAppButtons();
+
+        if(laminas.user.options.useSession) {
+            laminas.user.startSession();
         }
     }
 
-    ping(pingUrl, remember) {
+    ping() {
         let options = {
             method: 'get',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Access-Token': laminas.user.getJwt()
+                'X-Access-Token': this.getJwt()
             }
         };
+        let pingUrl = this.getOption('pingUrl')??'/ping';
+
         fetch(pingUrl, options)
             .then(response => {
                 if (!response.ok) {
@@ -205,38 +202,9 @@ class User {
             })
             .then( response => {
                 if(laminas.user.getOption('verbose')) {
-                    console.log('ping:', response.jwt);
+                    console.log('ping successful. JWT is:', response.jwt);
                 }
-                laminas.user.saveJwt(response.jwt, remember ?? laminas.user.getRemembered())
-                if(laminas.user.getOption('verbose')) {
-                    console.log('ping:', laminas.user.getJwtPayload());
-                }
-            })
-            .catch( error => {
-                console.error(error);
-            }
-        );
-    }
-
-    fromServerSession(remember) {
-        let options = {
-            method: 'get',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
-        fetch('/load-jwt-from-session', options)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not OK');
-                }
-                return response.json();
-            })
-            .then( response => {
-                if(laminas.user.getOption('verbose')) {
-                    console.log('ping:', response.jwt);
-                }
-                laminas.user.saveJwt(response.jwt, remember ?? laminas.user.getRemembered())
+                laminas.user.handleLogin(response.jwt, laminas.user.getRemembered())
             })
             .catch( error => {
                 console.error(error);
@@ -293,10 +261,9 @@ class User {
     saveJwt(jwt, remember) {
         if(laminas.user.getOption('verbose')) {
             console.log('laminas.user.saveJwt()');
-            console.log(jwt);
         }
         if(remember == undefined) {
-            remember = localStorage.getItem('jwt') ? true : false;
+            remember = laminas.user.getRemembered() ? true : false;
         }
 
         sessionStorage.removeItem('jwt');
