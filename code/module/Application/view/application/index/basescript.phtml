@@ -1,12 +1,25 @@
 // time savers
 var $$ = function(selector) { return document.querySelectorAll(selector); }
 
-function ready(fn) {
+let readyFunctions=[];
+
+function ready(fn, priority=0, ...params) {
+    if(readyFunctions.length==0) {
+		document.addEventListener('DOMContentLoaded', loadAllReadyFunction);
+    }
 	if (document.readyState != 'loading'){
-		fn();
-	} else {
-		document.addEventListener('DOMContentLoaded', fn);
+		return fn(...params);
 	}
+
+    readyFunctions.push({fn, priority, params});
+}
+
+const loadAllReadyFunction = (e) => {
+    readyFunctions.sort((a,b)=>a.priority > b.priority ? -1 :(a.priority == b.priority ? 0 : 1));
+
+    for(let cr of readyFunctions) {
+        cr['fn'](...cr['params']);
+    }
 }
 
 const camelToDash = str => str.replace(/([a-z])?([A-Z])/g, (match, p1,p2) => (p1?p1+'-':'')+p2.toLowerCase() );
