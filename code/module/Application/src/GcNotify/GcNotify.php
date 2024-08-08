@@ -31,6 +31,20 @@ class GcNotify implements EmailerInterface
         return $this->useException;
     }
 
+    protected $authServiceApiKey = null;
+    public function setAuthServiceApiKey(string $key): self
+    {
+        $this->authServiceApiKey = $key;
+        return $this;
+    }
+    protected function getAuthServiceApiKey(): string
+    {
+        if(!$this->authServiceApiKey) {
+            $this->authServiceApiKey = getenv('GC_NOTIFY_AUTH_API_KEY');
+        }
+        return $this->authServiceApiKey;
+    }
+
     protected $errorReportingSecretKey = null;
     public function setErrorReportingKey($key)
     {
@@ -230,7 +244,7 @@ class GcNotify implements EmailerInterface
         null|string $apiKey = null
     ): bool {
         if(!$apiKey) {
-            $apiKey = getenv('GC_NOTIFY_AUTH_API_KEY');
+            $apiKey = $this->getAuthServiceApiKey();
         }
         if(!$apiKey) {
             throw new GcNotifyException('No Auth API Key found');
