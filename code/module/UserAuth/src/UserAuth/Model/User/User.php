@@ -150,7 +150,7 @@ class User extends ArrayObject implements UserInterface
     *
     * @return mixed value of $this->getIdField()
     */
-    public function getUserId(): string
+    public function getUserId(): ?string
     {
         return $this[$this->getIdField()] ?? null;
     }
@@ -394,26 +394,6 @@ class User extends ArrayObject implements UserInterface
     * Get the EventManager to triger for different events
     *
     * Other modules/composents could listen for those to execute code at specific time
-    *
-    * Standard events:
-    * * UserAuth\UserEvent::LOGIN.'.pre': Should be sent before testing the credentials
-    * * UserAuth\UserEvent::LOGIN_FAILED: Should be sent if the credentials are wrong, currently it is the same for no user or wrong password but the event will containt the userId if user is found
-    * * UserAuth\UserEvent::LOGIN: Should be sent when the user has been logged in
-    * * UserAuth\UserEvent::LOGOUT.'.pre': Should be sent before logout, in case operations are required BEFORE logout
-    * * UserAuth\UserEvent::LOGOUT: Should be sent after the user has been loged out
-    * * UserAuth\UserEvent::REGISTER.'.pre': Should be sent before registration start
-    * * UserAuth\UserEvent::REGISTER: Should be sent when the registration is completed and successful
-    * * UserAuth\UserEvent::REGISTER_FAILED: Should be sent when the registration failed
-    * * UserAuth\UserEvent::RESET_PASSWORD_REQUEST.'.pre': Should be sent before generating the request to reset a password
-    * * UserAuth\UserEvent::RESET_PASSWORD_REQUEST: Should be sent after the reset password email was sent
-    * * UserAuth\UserEvent::RESET_PASSWORD_HANDLED.'.pre': Should be sent when the user is resetting the password
-    * * UserAuth\UserEvent::RESET_PASSWORD_HANDLED: Should be sent after the password was reset
-    * * UserAuth\UserEvent::CHANGE_PASSWORD.'.pre': Should be sent when a user change the password
-    * * UserAuth\UserEvent::CHANGE_PASSWORD: Should be sent when the user successfully changed the password
-    * * UserAuth\UserEvent::CHANGE_PASSWORD.'.err': Should be sent when there was an error changing the password
-    * * UserAuth\UserEvent::CONFIRM_EMAIL_HANDLED.'.pre': Should be sent before sending the email to confirm user email address
-    * * UserAuth\UserEvent::CONFIRM_EMAIL_HANDLED: Should be sent after the user confirm his/her email
-    * * UserAuth\UserEvent::CONFIRM_EMAIL_HANDLED.'.err': Should be sent to report an error confirming the email
     *
     * @return \Laminas\EventManager\EventManagerInterface
     */

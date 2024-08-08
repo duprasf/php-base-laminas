@@ -26,7 +26,7 @@ abstract class AbstractStorage implements StorageInterface
         return $this->idField;
     }
 
-    private $tokenField;
+    private $tokenField='token';
     /**
      * Set the name of the ID field for your entities (ex: email, userId, etc.)
      * @param string $string
@@ -39,9 +39,6 @@ abstract class AbstractStorage implements StorageInterface
     }
     protected function getTokenField(): string
     {
-        if(!$this->tokenField) {
-            return 'token';
-        }
         return $this->tokenField;
     }
 }

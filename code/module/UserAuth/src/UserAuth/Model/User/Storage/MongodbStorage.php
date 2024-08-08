@@ -3,6 +3,7 @@
 namespace UserAuth\Model\User\Storage;
 
 use MongoDB\Database as MongoDb;
+use MongoDB\Client as MongoClient;
 use MongoDB\Collection as MongoCollection;
 use UserAuth\Model\User\Storage\AbstractStorage;
 use UserAuth\Exception\StorageException;
@@ -67,14 +68,13 @@ class MongodbStorage extends AbstractStorage implements StorageInterface
      */
     public function read(string|int $id, null|array $fields = null): bool|array
     {
-        if(isset($fields[0])) {
+        if(is_array($fields) && isset($fields[0])) {
+            // if keys are numeric, we need to set values as keys to return fields
             $fields = array_fill_keys($fields, 1);
         }
         $fields['typeMap'] = ['root' => 'array', 'document' => 'array', 'array' => 'array'];
         $db = $this->getDatabaseConnection();
         return $db->findOne([$this->getIdField() => $id], $fields ?? []);
-        //$cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
-        //return $cursor->toArray();
     }
 
     public function findByToken(string $token, null|array $fields = null): bool|array
@@ -126,20 +126,24 @@ class MongodbStorage extends AbstractStorage implements StorageInterface
      * @param \MongoDb $obj
      * @return \UserAuth\Model\User\Storage\MongodbStorage
      */
-    public function setDatabaseConnection(MongoDb $obj): self
+    public function setDatabaseConnection(MongoDb|MongoClient|MongoCollection $obj): self
     {
         $this->db = $obj;
         return $this;
     }
     protected function getDatabaseConnection(): MongoCollection
     {
-        if(! $this->db instanceof MongoDb) {
-            throw new StorageException('DB is not a MongoDB\Database Object');
+        if($this->db instanceof MongoCollection) {
+            return $this->db;
+        }
+        if(! ($this->db instanceof MongoDb || $this->db instanceof MongoClient)) {
+            throw new StorageException('DB is not a MongoDB\Database, Client or Collection object');
         }
         $collection = $this->collection;
         if(!$collection) {
             throw new StorageException("A collection name is required");
         }
-        return $this->db->$collection;
+        $this->db = $this->db->$collection;
+        return $this->db;
     }
 }

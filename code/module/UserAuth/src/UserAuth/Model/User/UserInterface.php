@@ -42,7 +42,7 @@ interface UserInterface
     *
     * @return mixed value of self::ID_FIELD
     */
-    public function getUserId(): string;
+    public function getUserId(): ?string;
 
     /**
     * Get the content of the Javascript Web Token (when using API)
