@@ -13,26 +13,19 @@ class UrlFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
-        $helper = new $requestedName();
+        $helper = new Url();
         $helper->setLang($container->get('lang'));
 
-        $match = $container
-            ->get('application')
-            ->getMvcEvent()
-            ->getRouteMatch()
-        ;
+        $router = $container->get('Router');
+        if($router instanceof RouteStackInterface) {
+            $helper->setRouter($router);
+        }
+
+        $match = $router->match($container->get('Request'));
         if ($match instanceof RouteMatch) {
             $helper->setRouteMatch($match);
         }
 
-        $router = $container
-            ->get('application')
-            ->getMvcEvent()
-            ->getRouter()
-        ;
-        if($router instanceof RouteStackInterface) {
-            $helper->setRouter($router);
-        }
         return $helper;
     }
 }
