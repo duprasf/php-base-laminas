@@ -6,14 +6,29 @@ namespace Application;
 
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
-use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack;
 use GcNotify\GcNotify;
+
+$cronjobRoute=[];
+if(getenv('LAMINAS_CRONJOB') && strlen(getenv('LAMINAS_CRONJOB')) >= 35) {
+    $cronjobRoute=[
+        'default-cronjob' => [
+            'type'    => Literal::class,
+            'options' => [
+                'route'    => '/cronjob-'.getenv('LAMINAS_CRONJOB'),
+                'defaults' => [
+                    'controller' => Controller\CronjobController::class,
+                    'action'     => 'cronjob',
+                ],
+            ],
+        ],
+    ];
+}
 
 $return = [
     'router' => [
         'router_class' => TranslatorAwareTreeRouteStack::class,
-        'routes' => [
+        'routes' => array_merge($cronjobRoute, [
             'root' => [
                 'type'    => Segment::class,
                 'options' => [
@@ -38,11 +53,12 @@ $return = [
                     ],
                 ],
             ],
-        ],
+        ]),
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
+            Controller\IndexController::class => Factory\Controller\IndexControllerFactory::class,
+            Controller\CronjobController::class => Factory\Controller\ControllerFactory::class,
         ],
     ],
     'controller_plugins' => [

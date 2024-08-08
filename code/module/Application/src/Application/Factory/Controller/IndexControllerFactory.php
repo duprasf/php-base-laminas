@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OAuth\Factory\Controller;
+namespace Application\Factory\Controller;
 
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;

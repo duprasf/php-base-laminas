@@ -48,9 +48,7 @@ RUN mkdir -p /var/www/data/cache \
 
 # ICM cert is the internal SSC certicate and set cronjob
 COPY icm-root.crt /usr/local/share/ca-certificates/icm-root.crt
-RUN cat /usr/local/share/ca-certificates/icm-root.crt >> /etc/ssl/certs/ca-certificates.crt \
-    && echo '* * * * * /var/www/vendor/bin/laminas cronjob' > /etc/cron.d/cron \
-    && crontab /etc/cron.d/cron
+RUN cat /usr/local/share/ca-certificates/icm-root.crt >> /etc/ssl/certs/ca-certificates.crt
 
 # Clean up
 RUN rm -rf /var/lib/apt/lists/*

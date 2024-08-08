@@ -17,4 +17,10 @@ then
     echo 'alias phpunit="/var/www/vendor/bin/phpunit"' >> ~/.bashrc
 fi
 
+if [[ ${#LAMINAS_CRONJOB} -gt 34 ]]; then
+    echo "* * * * * curl http://127.0.0.1/cronjob-${LAMINAS_CRONJOB}" > /etc/cron.d/cron
+    crontab /etc/cron.d/cron
+fi
+
+
 /go-php.sh
