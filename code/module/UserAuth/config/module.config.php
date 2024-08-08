@@ -180,6 +180,7 @@ return [
             Model\JWT::class => Factory\JWTFactory::class,
             Listener\UserAuthListener::class => Factory\Listener\UserAuthListenerFactory::class,
             Model\User\User::class => Factory\User\UserFactory::class,
+            Model\User\Authenticator\EmailAuthenticator::class => Factory\User\Authenticator\EmailAuthenticatorFactory::class,
         ],
         'aliases' => [
         ],
