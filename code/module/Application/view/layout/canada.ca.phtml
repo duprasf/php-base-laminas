@@ -110,15 +110,15 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             laminas.userSettingCallback = <?=$this->userSettingCallback;?>;
             <?php endif;?>
         });
-        laminas.strings={
-            "Sign in":'<?=$this->translate("Sign in", 'layout');?>',
-            "Sign out":'<?=$this->translate("Sign out", 'layout');?>',
-            "Application settings":'<?=$this->translate("Application settings", 'layout');?>',
-            "required":'<?=$this->translate("required", 'layout');?>',
-            "Submit":'<?=$this->translate("Submit", 'layout');?>',
-            "Cancel":'<?=$this->translate("Cancel", 'layout');?>',
-            "loading":'<?=$this->translate("loading", 'layout');?>',
-        }
+        <?php
+        $translator = $this->getHelperPluginManager()->get('translate')->getTranslator();
+        $keys = array_keys($translator->getAllMessages('layout', 'fr')->getArrayCopy());
+        $strings = array_combine($keys, $keys);
+        $strings = array_merge($strings, $translator->getAllMessages('layout')->getArrayCopy());
+var_dump($strings);
+exit(basename(__FILE__).':'.__LINE__.PHP_EOL);
+        ?>
+        laminas.strings=<?=json_encode($strings);?>;
         </script>
         <?=$this->headScript();?>
 

@@ -207,3 +207,7 @@ msgstr "Connecter"
 msgid "Sign out"
 msgstr "Déconnecter"
 
+#: 
+msgid "loading"
+msgstr "chargement"
+
