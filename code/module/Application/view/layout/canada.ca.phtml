@@ -115,8 +115,6 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         $keys = array_keys($translator->getAllMessages('layout', 'fr')->getArrayCopy());
         $strings = array_combine($keys, $keys);
         $strings = array_merge($strings, $translator->getAllMessages('layout')->getArrayCopy());
-var_dump($strings);
-exit(basename(__FILE__).':'.__LINE__.PHP_EOL);
         ?>
         laminas.strings=<?=json_encode($strings);?>;
         </script>
