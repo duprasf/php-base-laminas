@@ -90,6 +90,11 @@ class EmailAuthenticator extends AbstractAuthenticator implements AuthenticatorI
         if(!$data) {
             throw new InvalidCredentialsException("This token is invalid");
         }
+        //TODO: this might be removed at some point. It prevent removal of token so
+        // someone that test does not have to regenerate a new token each time
+        if(getenv('PHP_DEV_ENV')) {
+            return $data;
+        }
         $this->getStorage()->update($data['email'], ['token' => null, 'expiryTimestamp' => null]);
         if(strtotime($data['expiryTimestamp']) <= time()) {
             throw new InvalidCredentialsException("This token is expired");

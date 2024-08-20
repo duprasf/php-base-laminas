@@ -47,28 +47,32 @@ class User extends ArrayObject implements UserInterface
     */
     public function authenticate(...$args): bool|array
     {
-        if(isset($args[$this->getIdField()])) {
+        $email = isset($args[0]) ? (filter_var($args[0], FILTER_VALIDATE_EMAIL) ? $args[0] : ''):'';
+
+        if($email) {
             $this->getEventManager()->trigger(
                 UserEvent::LOGIN.'.pre',
                 $this,
-                [$this->getIdField() => $args[$this->getIdField()], 'target' => $args[$this->getIdField()]]
+                [$this->getIdField() => $email, 'target' => $email]
             );
         }
         $data = $this->getAuthenticator()->authenticate(...$args);
         if(!$data) {
             $this->getEventManager()->trigger(UserEvent::LOGIN.'.err', $this, [
-                $this->getIdField() => $args[$this->getIdField()],
-                'target' => $args[$this->getIdField()],
+                $this->getIdField() => $email,
+                'target' => $email,
                 'error' => $this->getIdField().' not found'
             ]);
             $this->logout();
             return false;
         }
-        $this->getEventManager()->trigger(
-            UserEvent::LOGIN,
-            $this,
-            ['target' => reset($args)]
-        );
+        if(!isset($args['token'])) {
+            $this->getEventManager()->trigger(
+                UserEvent::LOGIN,
+                $this,
+                ['target' => $email]
+            );
+        }
         if(!is_array($data)) {
             return true;
         }
@@ -109,6 +113,7 @@ class User extends ArrayObject implements UserInterface
         $id = $this[$this->getIdField()];
         $this->getEventManager()->trigger(UserEvent::LOGOUT.'.pre', $this, [$this->getIdField() => $id, 'target' => $id]);
         $this->getAuthenticator()->logout();
+        $this->destroySession();
         $this->getEventManager()->trigger(UserEvent::LOGOUT, $this, [$this->getIdField() => $id, 'target' => $id]);
         return $this;
     }
@@ -122,8 +127,9 @@ class User extends ArrayObject implements UserInterface
     * @throws \UserAuth\Exception\JwtExpiredException If the token is expired
     * @throws \UserAuth\Exception\UserException if the ID field is not set in the JWT
     */
-    public function loadFromJwt(?string $jwt): bool|array
+    public function loadFromJwt(?string $jwt=null): bool|array
     {
+        $jwt = $jwt?:$this->getJwtFromFactory();
         if($jwt == null) {
             throw new JwtException('JWT is null');
         }
@@ -254,6 +260,17 @@ class User extends ArrayObject implements UserInterface
     }
 
     //***************** Getters and setters
+    private $jwtFromFactory;
+    public function setJwtFromFactory(null|string $jwt): self
+    {
+        $this->jwtFromFactory = $jwt;
+        return $this;
+    }
+    public function getJwtFromFactory(): null|string
+    {
+        return $this->jwtFromFactory;
+    }
+
     private $jwtObj;
     /**
     * Set the JWT object (should be set in the factory)

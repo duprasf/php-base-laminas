@@ -84,7 +84,7 @@ class MongodbStorage extends AbstractStorage implements StorageInterface
         }
         $fields['typeMap'] = ['root' => 'array', 'document' => 'array', 'array' => 'array'];
         $db = $this->getDatabaseConnection();
-        return $db->findOne([$this->getTokenField() => $token], $fields ?? []);
+        return $db->findOne([$this->getTokenField() => $token], $fields ?? []) ?? false;
     }
 
     public function findUniqueValue(string $fieldName, $cbGenerate): mixed
