@@ -624,9 +624,7 @@ function formToJson(form) {
 
   // Add each name/value pair to the object
   for (const [name, value] of formData) {
-      if(value.trim()) {
-        pairs[name] = value;
-      }
+    pairs[name] = value;
   }
 
   // Return the object
