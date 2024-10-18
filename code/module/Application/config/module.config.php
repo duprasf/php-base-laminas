@@ -162,11 +162,6 @@ $return = [
             ],
         ],
     ],
-    'laminas-cli' => [
-        'commands' => [
-            'cronjob' => Command\Cronjob::class,
-        ],
-    ],
 ];
 
 // if in dev add a opcache page
