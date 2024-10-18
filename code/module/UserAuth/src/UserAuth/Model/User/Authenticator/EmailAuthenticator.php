@@ -45,6 +45,9 @@ class EmailAuthenticator extends AbstractAuthenticator implements AuthenticatorI
         if($token) {
             return $this->validate($token);
         }
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new UserExistsException('Trying to authenticate without an email');
+        }
         if(!$redirectToRoute && $this->verificationRouteName) {
             throw new UserException('You MUST define a redirectToRoute parameter if not using a custom verificationRouteName');
         }
