@@ -70,6 +70,8 @@ $return = [
             Controller\Plugin\GetTranslator::class => Factory\Controller\Plugin\GetTranslatorFactory::class,
             Controller\Plugin\GetUrlHelper::class => Factory\Controller\Plugin\GetUrlHelperFactory::class,
             Controller\Plugin\Lang::class => Factory\Controller\Plugin\LangFactory::class,
+            Controller\Plugin\CommonApiReturn::class => Factory\Controller\Plugin\PluginFactory::class,
+            Controller\Plugin\CommonApiExceptionReturn::class => Factory\Controller\Plugin\PluginFactory::class,
         ],
         'aliases' => [
             'getTranslator' => Controller\Plugin\GetTranslator::class,
@@ -78,6 +80,9 @@ $return = [
             'getLang' => Controller\Plugin\Lang::class,
             'setApiResponseHeaders' => Controller\Plugin\SetApiResponseHeaders::class,
             'setResponseHeaders' => Controller\Plugin\SetApiResponseHeaders::class,
+            'returnCommonApiVariable' => Controller\Plugin\CommonApiReturn::class,
+            'returnApiException' => Controller\Plugin\CommonApiExceptionReturn::class,
+            'returnApiError' => Controller\Plugin\CommonApiExceptionReturn::class,
         ],
     ],
     'service_manager' => [

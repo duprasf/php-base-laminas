@@ -11,6 +11,8 @@ if(getenv('PHP_DEV_ENV')) {
 }
 
 try {
+    $GLOBALS['startTime'] = microtime(true);
+
     $root = getenv('LAMINAS_ROOT_PATH') ?: dirname(__DIR__);//'/var/www';
     /**
      * This makes our life easier when dealing with paths. Everything is relative
