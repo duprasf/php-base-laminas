@@ -2,19 +2,23 @@
 
 namespace GcDirectory;
 
-return array(
+return [
     'service_manager' => [
         'services' => [
             'gc-directory-config' => [
-                "secret-token" => getenv("GC_DIRECTORY_SECRET_TOKEN"),
-                "base-url" => 'https://geds20api-sage20api.itsso.gc.ca/gapi/v2',
+                "secret-token" => getenv("GCDIRECTORY_SECRET_TOKEN"),
+                "base-url" => getenv('GCDIRECTORY_API_URL'),
+                "username" => getenv('GCDIRECTORY_USER'),
+                "password" => getenv('GCDIRECTORY_PASSWORD'),
             ],
         ],
     ],
-    'public_assets' => array(
-        __NAMESPACE__ => array(
+    /*
+    'public_assets' => [
+        __NAMESPACE__ => [
             'path' => realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'public'),
-            'whitelist' => array('css','jpg','jpeg','png','gif',),
-        ),
-    ),
-);
+            'whitelist' => ['css','jpg','jpeg','png','gif',],
+        ],
+    ],
+    /**/
+];
