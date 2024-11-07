@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Model;
+namespace Application\Interface;
 
 use Exception;
 

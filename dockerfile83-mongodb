@@ -46,6 +46,9 @@ RUN mkdir -p /var/www/data/cache \
     && chown www-data /var/www/data/cache \
     && rm -Rf html && ln -s public html
 
+# Generate new autoload_classmap.php in all module/* folders
+RUN /var/www/vendor/bin/laminas generate-autoload-map --all
+
 # ICM cert is the internal SSC certicate and set cronjob
 COPY icm-root.crt /usr/local/share/ca-certificates/icm-root.crt
 RUN cat /usr/local/share/ca-certificates/icm-root.crt >> /etc/ssl/certs/ca-certificates.crt

@@ -256,8 +256,6 @@ class ApplicationSetupListener
             return;
         }
 
-        $errorMessage = $event->getError();
-        $controllerName = $event->getController();
         $notify->reportError([
             'message' => $event->getError().PHP_EOL.'___'.PHP_EOL.preg_replace('(#(\d+))', '\1)', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)),
             'file' => $event->getController(),

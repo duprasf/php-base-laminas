@@ -3,7 +3,7 @@
 namespace GcNotify;
 
 use Exception;
-use Application\Model\EmailerInterface;
+use Application\Interface\EmailerInterface;
 use GcNotify\Exception\GcNotifyException;
 
 /**

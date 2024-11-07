@@ -167,6 +167,11 @@ $return = [
             ],
         ],
     ],
+    'laminas-cli' => [
+        'commands' => [
+            'generate-autoload-map' => Command\GeneratesAutoloadMap::class,
+        ],
+    ],
 ];
 
 // if in dev add a opcache page

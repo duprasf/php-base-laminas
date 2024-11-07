@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Controller;
 
-use Application\Controller\IndexController;
-use Laminas\Stdlib\ArrayUtils;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use Laminas\Stdlib\ArrayUtils;
 
 /**
 * @ignore Test class, no need to be in documentation
@@ -15,63 +14,71 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 {
     public function setUp(): void
     {
-        // The module configuration should still be applicable for tests.
-        // You can override configuration here with test case specific values,
-        // such as sample view templates, path stacks, module_listener_options,
-        // etc.
-        $configOverrides = [];
-
-        $this->setApplicationConfig(ArrayUtils::merge(
-            include dirname(dirname(dirname(__DIR__))) . '/config/application.config.php',
-            $configOverrides
-        ));
-
+        $this->setApplicationConfig(include '/var/www/config/application.config.php');
         parent::setUp();
     }
 
-    public function testHomePageCanBeAccessed(): void
+    public function testDefaultModulesAreLoaded(): void
     {
+        $this->assertModulesLoaded(['Application', 'AutoStats', 'PublicAsset']);
+    }
+
+    public function testRootPageCanBeLoaded(): void
+    {
+        if(!count($GLOBALS['modulesInAppsFolder'])) {
+            $this->assertCount(0, $GLOBALS['modulesInAppsFolder']);
+            return;
+        }
         $this->dispatch('/', 'GET');
         $this->assertResponseStatusCode(200);
-        //$this->assertModuleName('application');
-        //$this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        //$this->assertControllerClass('IndexController');
-        //$this->assertMatchedRouteName('home');
+        $this->assertNotModuleName('Application', 'Your app should setup a splash page or index page');
     }
 
     public function testEnHomePageCanBeAccessed(): void
     {
+        if(!count($GLOBALS['modulesInAppsFolder'])) {
+            $this->assertCount(0, $GLOBALS['modulesInAppsFolder']);
+            return;
+        }
         $this->dispatch('/en', 'GET');
         $this->assertResponseStatusCode(200);
+        $this->assertNotModuleName('Application', 'Your app should have a /en page');
     }
 
     public function testFrHomePageCanBeAccessed(): void
     {
+        if(!count($GLOBALS['modulesInAppsFolder'])) {
+            $this->assertCount(0, $GLOBALS['modulesInAppsFolder']);
+            return;
+        }
         $this->dispatch('/fr', 'GET');
         $this->assertResponseStatusCode(200);
+        $this->assertNotModuleName('Application', 'Your app should have a /fr page');
     }
-
 
     public function testInvalidRouteDoesNotCrash(): void
     {
         $this->dispatch('/invalid/route', 'GET');
         $this->assertResponseStatusCode(404);
     }
-    /*
-        public function testIndexActionCanBeAccessed(): void
-        {
-            $this->dispatch('/', 'GET');
-            $this->assertResponseStatusCode(200);
-            $this->assertModuleName('application');
-            $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-            $this->assertControllerClass('IndexController');
-            $this->assertMatchedRouteName('home');
-        }
 
-        public function testIndexActionViewModelTemplateRenderedWithinLayout(): void
-        {
-            $this->dispatch('/', 'GET');
-            $this->assertQuery('.container .jumbotron');
-        }
-    /**/
+    public function testBasescript(): void
+    {
+        $this->dispatch('/js/basescript.js', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertTemplateName('application/index/basescript');
+        $this->assertResponseHeaderContains('Content-Type', 'application/javascript');
+    }
+
+    public function testBasescriptNotWanted(): void
+    {
+        $configOverrides = ['service_manager'=>['services'=>['loadBaseScript'=>false]]];
+        $this->setApplicationConfig(ArrayUtils::merge(
+            include '/var/www/config/application.config.php',
+            $configOverrides
+        ));
+        $this->dispatch('/js/basescript.js', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertNotTemplateName('application/index/basescript');
+    }
 }

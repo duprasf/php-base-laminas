@@ -23,6 +23,7 @@
     },
     "require-dev": {
         "laminas/laminas-test": "*",
+        "composer/class-map-generator": "*",
         "phpunit/phpunit": "*"
     },
     "autoload": {

@@ -104,7 +104,7 @@ class CurlWrapper
         return $this;
     }
 
-    public function doNotReturnPage(bool $bool)
+    public function doNotReturnPage(bool $bool=false)
     {
         $this->returnPage = $bool;
         return $this;

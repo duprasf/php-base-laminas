@@ -32,7 +32,7 @@ return [
             ],
         ],
         'factories'=> [
-            'OAuth2ClientPDO'=> function($sm) {
+            'OAuth2ClientDBConnector'=> function($sm) {
                 return new PDO(
                     'mysql:host=hostname.hc-sc.gc.ca;dbname=oauth;',
                     'username',

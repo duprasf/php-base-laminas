@@ -4,40 +4,100 @@ declare(strict_types=1);
 
 namespace ActiveDirectoryTest;
 
-use PHPUnit\Framework\TestCase;
-use Laminas\Stdlib\ArrayUtils;
+use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use ActiveDirectory\Model\ActiveDirectory;
 
-final class ActiveDirectoryTest extends TestCase
+final class ActiveDirectoryTest extends AbstractHttpControllerTestCase
 {
+    protected $emailToTest='francois.dupras@hc-sc.gc.ca';
+    protected $usernameToTest='fdupras';
+
     public function setUp(): void
     {
-        // The module configuration should still be applicable for tests.
-        // You can override configuration here with test case specific values,
-        // such as sample view templates, path stacks, module_listener_options,
-        // etc.
-
-        $configOverrides = [];
-        $config = ArrayUtils::merge(
-            include dirname(dirname(dirname(__DIR__))) . '/config/application.config.php',
-            $configOverrides
-        );
-
-        $this->setLdaps();
-
+        $this->setApplicationConfig(include '/var/www/config/application.config.php');
         parent::setUp();
     }
 
-    public function testValidateUsername(): void
+    protected $readyForLdap=false;
+    protected function isReadyForLdap(): bool
     {
-        $element = new ActiveDirectory();
-        self::assertEquals('fdupras', $element->validateUsername('fdupras'));
+        if($this->readyForLdap) {
+            return true;
+        }
+        $container = $this->getApplicationServiceLocator();
+        $config = $container->get('Config');
+        $fp=false;
+        if(isset($config['service_manager']['services']['ldap-options'])) {
+            foreach($config['service_manager']['services']['ldap-options'] as $ldap) {
+                $ip = gethostbyname($ldap['host']);
+                if(!filter_var($ip, FILTER_VALIDATE_IP)) {
+                    continue;
+                }
+                $fp = fsockopen($ldap['host'], $ldap['port']??389);
+                if($fp) {
+                    break;
+                }
+            }
+        }
+        if(!$fp) {
+            return false;
+        }
+        $this->readyForLdap=true;
+        return true;
     }
 
-    public function testInvalidateUsernames(): void
+    public function testActiveDirectoryValidateUsername(): void
     {
-        $element = new ActiveDirectory();
-        self::assertEquals(false, $element->validateUsername('invalide user name'));
-        self::assertEquals(false, $element->validateUsername('invalide user name'));
+        if(!$this->isReadyForLdap()) {
+            $this->assertTrue(true);
+            return;
+        }
+        $container = $this->getApplicationServiceLocator();
+
+        $ad = $container->get(ActiveDirectory::class);
+        self::assertStringContainsString(
+            'OU=User Accounts,OU=Accounts,OU=Health Canada,DC=ad,DC=hc-sc,DC=gc,DC=ca',
+            $ad->validateUsername($this->usernameToTest)
+        );
+    }
+
+    public function testActiveDirectoryGetByEmail(): void
+    {
+        if(!$this->isReadyForLdap()) {
+            $this->assertTrue(true);
+            return;
+        }
+        $container = $this->getApplicationServiceLocator();
+        $ad = $container->get(ActiveDirectory::class);
+
+        self::assertStringContainsStringIgnoringCase(
+            $this->usernameToTest,
+            $ad->getUserByEmail($this->emailToTest, returnFirstElementOnly: true)['account']
+        );
+    }
+
+    public function testActiveDirectoryGetByUsername(): void
+    {
+        if(!$this->isReadyForLdap()) {
+            $this->assertTrue(true);
+            return;
+        }
+        $container = $this->getApplicationServiceLocator();
+        $ad = $container->get(ActiveDirectory::class);
+        self::assertContains(
+            $this->emailToTest,
+            $ad->getByUsername($this->usernameToTest, returnFirstElementOnly: true)
+        );
+    }
+
+    public function testActiveDirectoryInvalidateUsernames(): void
+    {
+        if(!$this->isReadyForLdap()) {
+            $this->assertTrue(true);
+            return;
+        }
+        $container = $this->getApplicationServiceLocator();
+        $ad = $container->get(ActiveDirectory::class);
+        self::assertFalse($ad->validateUsername('invalide user name'));
     }
 }

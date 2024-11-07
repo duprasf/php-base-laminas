@@ -6,7 +6,7 @@ use Void\UUID;
 use Laminas\Mvc\I18n\Translator as MvcTranslator;
 use Laminas\View\Helper\Url as UrlHelper;
 use GcNotify\GcNotify;
-use Application\Model\EmailerInterface;
+use Application\Interface\EmailerInterface;
 use UserAuth\Exception\UserException;
 use UserAuth\Exception\UserExistsException;
 use UserAuth\Exception\InvalidCredentialsException;

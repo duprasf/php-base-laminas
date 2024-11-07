@@ -4,58 +4,17 @@ namespace ActiveDirectory\Model;
 
 use Laminas\Ldap\Ldap;
 use Laminas\Ldap\Filter;
-use Laminas\Authentication\AuthenticationService;
-use Laminas\Authentication\Adapter\Ldap as LdapAdapter;
 use Laminas\Ldap\Exception\LdapException;
 
 class ActiveDirectory
 {
     /**
-    * Array of LDAP connection
-    *
-    * @var array
-    * @internal
-    */
-    private $ldaps;
-    /**
-    * Set a list of LDAP servers to connect to
-    *
-    * @param array $arrayOfLdap array of Ldap objects
-    * @return ActiveDirectory
-    */
-    public function setLdaps(array $arrayOfLdap)
-    {
-        $this->ldaps = $arrayOfLdap;
-        return $this;
-    }
-    /**
-    * Get all LDAPs objects
-    *
-    * @return array of LDAPs objects
-    */
-    protected function getLdaps()
-    {
-        return $this->ldaps;
-    }
-    /**
-    * Generator that returns each LDAP config one by one
-    *
-    * @return Ldap
-    */
-    protected function getLdap()
-    {
-        foreach($this->ldaps as $ldap) {
-            yield $ldap;
-        }
-    }
-
-    /**
-    * Check if a username exists, return true as soon as a match is found
+    * Check if a username exists, return the username as soon as a match is found
     *
     * @param string $username
-    * @return true if found in one of the LDAP, false otherwise
+    * @return string|bool returns the full canonical account name if found in one of the LDAP, false otherwise
     */
-    public function validateUsername(string $username)
+    public function validateUsername(string $username): string|bool
     {
         foreach($this->getLdap() as $ldap) {
             try {
@@ -74,12 +33,13 @@ class ActiveDirectory
     *
     * @param string $acctname
     * @param string $password
+    * @return bool trued if valid, false otherwise
     */
-    public function validateCredentials(string $acctname, string $password)
+    public function validateCredentials(string $acctname, string $password): bool
     {
         foreach($this->getLdap() as $ldap) {
             try {
-                $r = $ldap->bind($acctname, $password);
+                $ldap->bind($acctname, $password);
                 $acctname = $ldap->getCanonicalAccountName($acctname);
                 return true;
             } catch (LdapException $e) {
@@ -120,7 +80,7 @@ class ActiveDirectory
     */
     public function getUserByEmail(string $email, $requestedFieldsMap = array(), $returnRaw = false, $returnFirstElementOnly = false)
     {
-        return $this->getByEmail($email, $requestedFieldsMap, $returnRaw);
+        return $this->getByEmail($email, $requestedFieldsMap, $returnRaw, $returnFirstElementOnly);
     }
 
     /**
@@ -195,12 +155,12 @@ class ActiveDirectory
     /**
     * Get data from LDAP using the filter
     *
-    * @param array $filter array of Laminas\Ldap\Filter
+    * @param string $filter array of Laminas\Ldap\Filter
     * @param array $requestedFieldsMap
     * @param bool $returnRaw
     * @return array[]
     */
-    protected function getByFilter($filter, $requestedFieldsMap = array(), $returnRaw = false)
+    protected function getByFilter(string $filter, array $requestedFieldsMap = [], bool $returnRaw = false)
     {
         foreach($this->getLdap() as $ldap) {
             $map = array('mail' => 'email',
@@ -322,5 +282,44 @@ class ActiveDirectory
     {
         preg_match("(CN=((?:(?!,OU=)(?!,CN=).)*),(?:CN|OU)=)", $groupDN, $out);
         return isset($out[1]) ? $out[1] : null;
+    }
+
+    /**
+    * Array of LDAP connection
+    *
+    * @var array
+    * @internal
+    */
+    private $ldaps;
+    /**
+    * Set a list of LDAP servers to connect to
+    *
+    * @param array $arrayOfLdap array of Ldap objects
+    * @return ActiveDirectory
+    */
+    public function setLdaps(array $arrayOfLdap)
+    {
+        $this->ldaps = $arrayOfLdap;
+        return $this;
+    }
+    /**
+    * Get all LDAPs objects
+    *
+    * @return array of LDAPs objects
+    */
+    protected function getLdaps()
+    {
+        return $this->ldaps;
+    }
+    /**
+    * Generator that returns each LDAP config one by one
+    *
+    * @return Ldap
+    */
+    protected function getLdap()
+    {
+        foreach($this->ldaps as $ldap) {
+            yield $ldap;
+        }
     }
 }

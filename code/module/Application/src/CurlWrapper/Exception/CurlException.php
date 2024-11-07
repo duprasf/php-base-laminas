@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Exception;
+namespace CurlWrapper\Exception;
 
 use Exception;
 

@@ -11,7 +11,7 @@ class Breadcrumbs extends ArrayObject
 {
     protected $hidden = false;
 
-    public function __invoke($breadcrumbs = null)
+    public function __invoke($breadcrumbs = null): self
     {
         if($breadcrumbs != null) {
             $this->exchangeArray(array());
@@ -20,7 +20,7 @@ class Breadcrumbs extends ArrayObject
         return $this;
     }
 
-    public function addBreadcrumbs($breadcrumbs)
+    public function addBreadcrumbs($breadcrumbs): self
     {
         $extraBreadcrumbs = array();
         if(is_array($breadcrumbs)) {
@@ -46,6 +46,7 @@ class Breadcrumbs extends ArrayObject
             // does not support adding a bunch at once (merge)
             $this->append($crumb);
         }
+        return $this;
     }
 
     public function tojson()

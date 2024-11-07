@@ -13,13 +13,14 @@ $extraModules = file_exists(__DIR__.'/autoload/_modules.local.php')
 * Every modules in apps/ is loaded automatically, this is for using
 * this image as a container for a single app.
 */
-$apps = [];
+$GLOBALS['modulesInAppsFolder'] = [];
 if(!in_array('noAutoLoadApps', $extraModules)) {
-    $apps = glob(realpath(dirname(__DIR__).'/apps').DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR);
-    $apps = array_map('basename', $apps);
+    $GLOBALS['modulesInAppsFolder'] = glob(realpath(dirname(__DIR__).'/apps').DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR);
+    $GLOBALS['modulesInAppsFolder'] = array_map('basename', $GLOBALS['modulesInAppsFolder']);
 } else {
     array_splice($extraModules, array_search('noAutoLoadApps', $extraModules), 1);
 }
+
 
 $envModules = getenv('LAMINAS_LOAD_MODULES');
 if($envModules) {
@@ -57,7 +58,7 @@ $modules = array_merge([
     'PublicAsset',
     'TranslationExtractor',
     'AutoStats'
-], $apps, $extraModules);
+], $GLOBALS['modulesInAppsFolder'], $extraModules);
 
 if(getenv('PHP_DEV_ENV') && isset($_GET['show_modules'])) {
     print '<pre>';
