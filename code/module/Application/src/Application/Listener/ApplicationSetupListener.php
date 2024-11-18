@@ -98,6 +98,9 @@ class ApplicationSetupListener
     public function startSession()
     {
         $session = $this->getSessionManager();
+        if(!$session->isValid()) {
+            $session->destroy();
+        }
         $session->start();
 
         $container = new Container('initialized');
