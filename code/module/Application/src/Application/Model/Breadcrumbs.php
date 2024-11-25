@@ -3,11 +3,12 @@
 namespace Application\Model;
 
 use ArrayObject;
+use JsonSerializable;
 
 /**
 * Simple ArrayObject to handle the Breadcrumbs of a page
 */
-class Breadcrumbs extends ArrayObject
+class Breadcrumbs extends ArrayObject implements JsonSerializable
 {
     protected $hidden = false;
 
@@ -51,7 +52,11 @@ class Breadcrumbs extends ArrayObject
 
     public function tojson()
     {
-        $breadcrumbs = $this->getArrayCopy();
-        return json_encode($breadcrumbs);
+        return json_encode($this);
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->getArrayCopy();
     }
 }

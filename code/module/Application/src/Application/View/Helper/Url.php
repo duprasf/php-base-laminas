@@ -11,6 +11,27 @@ use Laminas\View\Renderer\RendererInterface;
 */
 class Url extends UrlHelper
 {
+    public function __invoke(
+        $name = null,
+        $params = [],
+        $options = [],
+        $reuseMatchedParams = false
+    ) {
+        if(!is_array($params)) {
+            $params = array();
+        }
+        if(!isset($params['lang'])) {
+            $params['lang'] = $this->getLang();
+        }
+        if(!isset($params['locale'])) {
+            $params['locale'] = $params['lang'];
+        }
+        if(!isset($options['locale'])) {
+            $options['locale'] = $params['locale'];//.'_CA';
+        }
+        return parent::__invoke($name, $params, $options, $reuseMatchedParams);
+    }
+
     protected $view;
     public function setView(RendererInterface $view)
     {
@@ -31,26 +52,5 @@ class Url extends UrlHelper
     public function getLang(): string|null
     {
         return $this->lang;
-    }
-
-    public function __invoke(
-        $name = null,
-        $params = [],
-        $options = [],
-        $reuseMatchedParams = false
-    ) {
-        if(!is_array($params)) {
-            $params = array();
-        }
-        if(!isset($params['lang'])) {
-            $params['lang'] = $this->getLang();
-        }
-        if(!isset($params['locale'])) {
-            $params['locale'] = $params['lang'];
-        }
-        if(!isset($options['locale'])) {
-            $options['locale'] = $params['locale'];//.'_CA';
-        }
-        return parent::__invoke($name, $params, $options, $reuseMatchedParams);
     }
 }

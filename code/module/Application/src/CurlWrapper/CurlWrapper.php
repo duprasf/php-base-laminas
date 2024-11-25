@@ -42,7 +42,9 @@ class CurlWrapper
 
     public function __destruct()
     {
-        curl_close($this->handle);
+        if($this->handle) {
+            curl_close($this->handle);
+        }
     }
 
     public function __clone()

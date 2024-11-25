@@ -114,7 +114,7 @@ class GcDirectory
     */
     protected function getData($url, array $requestData)
     {
-        $curl = new CurlWrapper();
+        $curl = $this->getCurlWrapper();
         $curl
             ->url($this->config['base-url'].'/'.$url.'?'.http_build_query($requestData))
             ->headers($this->getHeaders())
@@ -126,8 +126,6 @@ class GcDirectory
         $this->lastStatus = $curl->getReturnCode();
         return $curl->getPageJson();
     }
-
-
 
     /**
     * This method makes the call to GEDS server. It takes care or having the
@@ -145,7 +143,7 @@ class GcDirectory
         ) {
             throw new CurlException('Verb is not acceptable, please use an acceptable verb (post, put, patch or delete)');
         }
-        $curl = new CurlWrapper();
+        $curl = $this->getCurlWrapper();
         $curl
             ->url($this->config['base-url'].'/'.$url)
             ->headers($this->getHeaders())
@@ -157,6 +155,17 @@ class GcDirectory
         $this->lastPage = $curl->getLastPage();
         $this->lastStatus = $curl->getReturnCode();
         return $curl->getPageJson();
+    }
+
+    private $curlWrapper;
+    public function setCurlWrapper(CurlWrapper $obj): self
+    {
+        $this->curlWrapper = $obj;
+        return $this;
+    }
+    protected function getCurlWrapper(): CurlWrapper
+    {
+        return $this->curlWrapper ?? new CurlWrapper();
     }
 
     private $config;

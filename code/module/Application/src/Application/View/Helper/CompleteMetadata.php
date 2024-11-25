@@ -11,41 +11,8 @@ use Application\Model\Metadata;
 
 class CompleteMetadata implements \Laminas\View\Helper\HelperInterface
 {
-    protected $view;
-    public function setView(RendererInterface $view)
-    {
-        $this->view = $view;
-    }
-    public function getView()
-    {
-        return $this->view;
-    }
-
-    private $cdts;
-    public function setCDTS(array $cdts)
-    {
-        $this->cdts = $cdts;
-        return $this;
-    }
-    public function getCDTS()
-    {
-        return $this->cdts;
-    }
-
-    private $metadata;
-    public function setMetadataObj(Metadata $obj)
-    {
-        $this->metadata = $obj;
-        return $this;
-    }
-    protected function getMetadataObj()
-    {
-        return $this->metadata;
-    }
-
     public function __invoke(PhpRenderer|ViewModel $layout)
     {
-
         if($layout instanceof PhpRenderer) {
             $layout->vars()['cdts'] = $this->getCDTS();
             $metadata = $layout->vars('metadata');
@@ -87,5 +54,37 @@ class CompleteMetadata implements \Laminas\View\Helper\HelperInterface
             $layout->setVariable('switch-lang-url', $view->getVariable('switch-lang-url'));
         }
         return $metadata;
+    }
+
+    protected $view;
+    public function setView(RendererInterface $view)
+    {
+        $this->view = $view;
+    }
+    public function getView()
+    {
+        return $this->view;
+    }
+
+    private $cdts;
+    public function setCDTS(array $cdts)
+    {
+        $this->cdts = $cdts;
+        return $this;
+    }
+    public function getCDTS()
+    {
+        return $this->cdts;
+    }
+
+    private $metadata;
+    public function setMetadataObj(Metadata $obj)
+    {
+        $this->metadata = $obj;
+        return $this;
+    }
+    protected function getMetadataObj()
+    {
+        return $this->metadata;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Application\View\Helper;
 
+use JsonSerializable;
 use Laminas\Mvc\I18n\Translator;
 use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Helper\HelperInterface;
@@ -10,41 +11,8 @@ use Application\Model\Breadcrumbs;
 /**
 * Generate the WET HTML for the breadcrumbs
 */
-class BreadcrumbsHelper implements HelperInterface
+class BreadcrumbsHelper implements HelperInterface, JsonSerializable
 {
-    protected $view;
-    public function setView(RendererInterface $view): self
-    {
-        $this->view = $view;
-        return $this;
-    }
-    public function getView(): RendererInterface
-    {
-        return $this->view;
-    }
-
-    protected $translator;
-    public function setTranslator(Translator $translator): self
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-    public function getTranslator(): Translator
-    {
-        return $this->translator;
-    }
-
-    protected $breadcrumbs;
-    public function setBreadcrumbs(null|array|Breadcrumbs $breadcrumbs = null): self
-    {
-        $this->breadcrumbs = $breadcrumbs;
-        return $this;
-    }
-    public function getBreadcrumbs(): array|Breadcrumbs
-    {
-        return $this->breadcrumbs ?? new Breadcrumbs();
-    }
-
     public function __invoke(null|array|Breadcrumbs $breadcrumbs = null): self
     {
         if($breadcrumbs) {
@@ -91,7 +59,44 @@ class BreadcrumbsHelper implements HelperInterface
 
     public function tojson(): string
     {
-        $breadcrumbs = $this->getArrayCopy();
-        return json_encode($breadcrumbs);
+        return json_encode($this->getBreadcrumbs());
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->getBreadcrumbs()->getArrayCopy();
+    }
+
+    protected $view;
+    public function setView(RendererInterface $view): self
+    {
+        $this->view = $view;
+        return $this;
+    }
+    public function getView(): RendererInterface
+    {
+        return $this->view;
+    }
+
+    protected $translator;
+    public function setTranslator(Translator $translator): self
+    {
+        $this->translator = $translator;
+        return $this;
+    }
+    public function getTranslator(): Translator
+    {
+        return $this->translator;
+    }
+
+    protected $breadcrumbs;
+    public function setBreadcrumbs(null|array|Breadcrumbs $breadcrumbs = null): self
+    {
+        $this->breadcrumbs = $breadcrumbs;
+        return $this;
+    }
+    public function getBreadcrumbs(): array|Breadcrumbs
+    {
+        return $this->breadcrumbs ?? new Breadcrumbs();
     }
 }
