@@ -1,4 +1,4 @@
-FROM jack.hc-sc.gc.ca/php/php-base:8.3-mongodb
+FROM jack.hc-sc.gc.ca/php/php-base:8.4
 
 LABEL title='Laminas framework with npm/gulp. Apps goes in /apps/'
 LABEL author='Web/Mobile Team (imsd.web-dsgi@hc-sc.gc.ca)'
@@ -6,6 +6,7 @@ LABEL source='https://github.hc-sc.gc.ca/hs/php-base-laminas'
 
 # These environment variables are setup just to let the application know it is using Laminas
 # The app would know it is in Laminas, the server signature uses this to return Laminas, Drupal or something else.
+# The Apache Document Root is changed from /var/www/html to /public since... well I prefer /public.
 ENV USING_FRAMEWORK=Laminas \
     USING_LAMINAS=1
 
