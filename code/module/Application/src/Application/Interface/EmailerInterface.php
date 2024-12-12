@@ -15,4 +15,7 @@ interface EmailerInterface
     public function reportException(Exception $e, ?String $extraMessage = null, ?String $appName = null, ?String $email = null): bool;
     public function reportError(array $error, ?String $recipient = null, ?String $template = null, ?String $apiKey = null, ?array $personalisation = []): bool;
     public function sendEmail(string $recipient, string $templateId, ?array $personalisation = [], ?string $apiKey = null): bool;
+
+    public function setTemplates(array $templates): self;
+    public function setTemplate(string $name, string $template): self;
 }
