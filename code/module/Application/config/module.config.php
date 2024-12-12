@@ -101,6 +101,7 @@ $return = [
             GcNotify::class => Factory\GcNotifyFactory::class,
             "filesize-suffixes" => Factory\FilesizeSuffixesFactory::class,
             Listener\ApplicationSetupListener::class => Factory\Listener\ApplicationSetupListenerFactory::class,
+            Model\PHPMailerWrapper::class => Factory\PHPMailerWrapperFactory::class,
         ],
         'invokables' => [
             'breadcrumbs' => Model\Breadcrumbs::class,

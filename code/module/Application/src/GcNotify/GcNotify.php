@@ -128,12 +128,12 @@ class GcNotify implements EmailerInterface
     }
 
     protected $templates;
-    public function setTemplates(array $templates)
+    public function setTemplates(array $templates): self
     {
         $this->templates = $templates;
         return $this;
     }
-    public function setTemplate($name, $id)
+    public function setTemplate(string $name, string $id): self
     {
         $this->templates[$name] = $id;
         return $this;

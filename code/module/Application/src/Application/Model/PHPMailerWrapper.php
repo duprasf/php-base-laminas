@@ -1,15 +1,18 @@
 <?php
 
-namespace Application\Interface;
+namespace Application\Model;
 
 use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception as SMTP_Exception;
 use Application\Interface\EmailerInterface;
+use UserAuth\Trait\UserAwareTrait;
 
-class PHPMailer implements EmailerInterface
+class PHPMailerWrapper implements EmailerInterface
 {
+    use UserAwareTrait;
+
     public function __construct(bool $userException=true)
     {
         $this->setUseException($userException);
@@ -18,11 +21,6 @@ class PHPMailer implements EmailerInterface
     public function __invoke(...$data): bool
     {
         return $this->sendEmail(...$data);
-    }
-
-    public function sendAuthenticationEmail(string $recipient, string $template, string $url, null|string $apiKey = null): bool
-    {
-        return false;
     }
 
     public function reportException(Exception $e, ?String $extraMessage = null, ?String $appName = null, ?String $email = null): bool
@@ -37,39 +35,24 @@ class PHPMailer implements EmailerInterface
 
     public function sendEmail(string $recipient, string $templateId, ?array $personalisation = [], ?string $apiKey = null): bool
     {
-        $mail = new PHPMailer(true);
-
         $template = $this->templates[$templateId] ?? $templateId;
-        try {
-            //Server settings
-            //$mail->SMTPDebug = SMTP::DEBUG_SERVER; //Enable verbose debug output
-            $mail->isSMTP();
-            $mail->Host       = getenv('SMTP_HOST');
-            $mail->SMTPAuth   = true;
-            $mail->Username   = getenv('SMTP_USERNAME');
-            $mail->Password   = getenv('SMTP_PASSWORD');
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = getenv('SMTP_PORT');
 
-            //Recipients
-            $mail->setFrom($personalisation['from'] ?? $this->getUser()->email);
-            $mail->addAddress($recipient);
+        $mail = $this->getPhpMailer();
+        //Recipients
+        $mail->setFrom($personalisation['from'] ?? $this->getUser()->email ?? 'no-reply@hc-sc.gc.ca');
+        $mail->addAddress($recipient);
 
-            //Content
-            $body = $template['body'];
-            $body = str_replace(array_keys($personalisation), $personalisation, $body);
-            $mail->isHTML(true);
-            $mail->Subject = $template['subject'];
-            $mail->Body    = $body;
-            $mail->AltBody = strip_tags($body);
-
-            if(!$mail->send()) {
-                throw new SMTP_Exception('Could not send email');
-            }
-            return true;
-        } catch (SMTP_Exception $e) {
-            return false;
+        //Content
+        $body = $template['body'];
+        $body = str_replace(array_map(function($v){return '{{'.$v.'}}';}, array_keys($personalisation)), $personalisation, $body);
+        $mail->isHTML(true);
+        $mail->Subject = $template['subject'];
+        $mail->Body    = $body;
+        $mail->AltBody = strip_tags($body);
+        if(!$mail->send()) {
+            throw new SMTP_Exception('Could not send email');
         }
+        return true;
     }
 
     private $useException;
@@ -94,15 +77,30 @@ class PHPMailer implements EmailerInterface
     }
 
     protected $templates;
-    public function setTemplates(array $templates)
+    public function setTemplates(array $templates, bool $replace=true): self
     {
-        $this->templates = $templates;
+        if($replace) {
+            $this->templates = $templates;
+            return $this;
+        }
+        $this->templates = array_merge($this->templates, $templates);
         return $this;
     }
-    public function setTemplate($name, $id)
+    public function setTemplate(string $content, string $id, string $subject=''): self
     {
-        $this->templates[$name] = $id;
+        $this->templates[$id] = ['body'=>$content, 'subject'=>$subject];
         return $this;
+    }
+
+    protected $phpMailer;
+    public function setPhpMailer(PHPMailer $obj): self
+    {
+        $this->phpMailer = $obj;
+        return $this;
+    }
+    protected function getPhpMailer(): PHPMailer
+    {
+        return $this->phpMailer;
     }
 
     public function __toString(): string
