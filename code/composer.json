@@ -19,7 +19,8 @@
         "laminas/laminas-ldap": "*",
         "laminas/laminas-crypt": "*",
         "psr/log": "*",
-        "dompdf/dompdf": "*"
+        "dompdf/dompdf": "*",
+        "phpmailer/phpmailer": "*"
     },
     "require-dev": {
         "laminas/laminas-test": "*",
