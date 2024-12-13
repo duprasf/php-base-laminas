@@ -204,6 +204,9 @@ class User {
                 if(laminas.user.getOption('verbose')) {
                     console.log('ping successful. JWT is:', response.jwt);
                 }
+                if(!response.jwt) {
+                    return;
+                }
                 laminas.user.handleLogin(response.jwt, laminas.user.getRemembered())
             })
             .catch( error => {
