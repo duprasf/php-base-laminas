@@ -3,7 +3,6 @@
 namespace UserAuth\Controller\Plugin;
 
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
-use Laminas\Mvc\I18n\Translator as MvcTranslator;
 use Laminas\View\Model\JsonModel;
 use UserAuth\Model\User\UserInterface;
 use UserAuth\Model\UserInterface as OldInterface;
