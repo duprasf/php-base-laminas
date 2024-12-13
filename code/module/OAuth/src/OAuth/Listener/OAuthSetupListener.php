@@ -2,6 +2,8 @@
 
 namespace OAuth\Listener;
 
+use Laminas\Router\Http\Segment;
+use Laminas\Router\Http\Literal;
 use Laminas\EventManager\EventManagerAwareInterface;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\SharedEventManager;
@@ -10,7 +12,6 @@ use Laminas\Mvc\MvcEvent;
 use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Session\SessionManager;
 use Laminas\Http\Request;
-use Laminas\Router\Http\Segment;
 use OAuth\Controller\OAuth2ClientController;
 use OAuth\Controller\OAuth2ServerController;
 

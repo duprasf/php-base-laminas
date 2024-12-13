@@ -14,7 +14,7 @@ class OAuth2ClientFactory implements FactoryInterface
     {
         $obj = new $requestName();
         if(!$container->has('OAuth2ClientDBConnector')) {
-            print 'You must define a config key "OAuth2ClientDBConnector" [service_manager][aliases][OAuth2ClientDBConnector=>the PDO to use]';
+            print '//You must define a config key "OAuth2ClientDBConnector" [service_manager][aliases][OAuth2ClientDBConnector=>the PDO to use]';
             exit();
         }
         $obj->setOAuth2Config($container->get('OAuth2Config'));

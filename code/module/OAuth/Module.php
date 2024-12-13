@@ -6,8 +6,6 @@ use Laminas\Stdlib\ArrayUtils;
 use Laminas\ModuleManager\Feature\ConfigProviderInterface;
 use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
-use Laminas\Router\Http\Segment;
-use Laminas\Router\Http\Literal;
 
 class Module implements ConfigProviderInterface
 {

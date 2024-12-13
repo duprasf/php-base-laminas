@@ -12,7 +12,7 @@ use Model\User;
 return [
     'router' => [
         'routes' => [
-            // routes are defined in Module.php to set the low priority
+            // routes are defined in OAuthSetupListener.php to set the low priority
         ],
     ],
     'controllers' => [
