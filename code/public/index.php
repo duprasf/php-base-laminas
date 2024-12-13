@@ -5,6 +5,18 @@ declare(strict_types=1);
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 
+$envFolder = dirname(__DIR__).DIRECTORY_SEPARATOR.'environment';
+if(file_exists($envFolder) && is_dir($envFolder) && is_readable($envFolder)) {
+    foreach(glob($envFolder.DIRECTORY_SEPARATOR.'*.env') as $file) {
+        foreach(file($file) as $line) {
+            if(!trim($line)) {
+                continue;
+            }
+            putenv(trim($line));
+        }
+    }
+}
+
 if(getenv('PHP_DEV_ENV')) {
     ini_set('display_errors', true);
     error_reporting(E_ALL);
