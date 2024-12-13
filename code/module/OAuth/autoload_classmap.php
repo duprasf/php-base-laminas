@@ -1,27 +1,4 @@
 <?php
 
-return array (
-  'OAuth\\Module' => '/var/www/module/OAuth/Module.php',
-  'OAuth\\Command\\Encode' => '/var/www/module/OAuth/src/OAuth/Command/Encode.php',
-  'OAuth\\Controller\\OAuth2ClientController' => '/var/www/module/OAuth/src/OAuth/Controller/OAuth2ClientController.php',
-  'OAuth\\Controller\\OAuth2ServerController' => '/var/www/module/OAuth/src/OAuth/Controller/OAuth2ServerController.php',
-  'OAuth\\Model\\OAuth2ServerInterface' => '/var/www/module/OAuth/src/OAuth/Model/OAuth2ServerInterface.php',
-  'OAuth\\Model\\OAuth2Server' => '/var/www/module/OAuth/src/OAuth/Model/OAuth2Server.php',
-  'OAuth\\Model\\CodeVerifier' => '/var/www/module/OAuth/src/OAuth/Model/CodeVerifier.php',
-  'OAuth\\Model\\OAuth2ClientInterface' => '/var/www/module/OAuth/src/OAuth/Model/OAuth2ClientInterface.php',
-  'OAuth\\Model\\OAuth2Client' => '/var/www/module/OAuth/src/OAuth/Model/OAuth2Client.php',
-  'OAuth\\Factory\\Controller\\OAuth2ServerControllerFactory' => '/var/www/module/OAuth/src/OAuth/Factory/Controller/OAuth2ServerControllerFactory.php',
-  'OAuth\\Factory\\Controller\\OAuth2ClientControllerFactory' => '/var/www/module/OAuth/src/OAuth/Factory/Controller/OAuth2ClientControllerFactory.php',
-  'OAuth\\Factory\\OAuth2ServerFactory' => '/var/www/module/OAuth/src/OAuth/Factory/OAuth2ServerFactory.php',
-  'OAuth\\Factory\\Listener\\OAuthSetupListenerFactory' => '/var/www/module/OAuth/src/OAuth/Factory/Listener/OAuthSetupListenerFactory.php',
-  'OAuth\\Factory\\OAuth2ClientFactory' => '/var/www/module/OAuth/src/OAuth/Factory/OAuth2ClientFactory.php',
-  'OAuth\\Listener\\OAuthSetupListener' => '/var/www/module/OAuth/src/OAuth/Listener/OAuthSetupListener.php',
-  'OAuth\\Exception\\AuthorizationExpired' => '/var/www/module/OAuth/src/OAuth/Exception/AuthorizationExpired.php',
-  'OAuth\\Exception\\MissingMandatoryValue' => '/var/www/module/OAuth/src/OAuth/Exception/MissingMandatoryValue.php',
-  'OAuth\\Exception\\MethodNotFound' => '/var/www/module/OAuth/src/OAuth/Exception/MethodNotFound.php',
-  'OAuth\\Exception\\OAuthException' => '/var/www/module/OAuth/src/OAuth/Exception/OAuthException.php',
-  'OAuth\\Exception\\InvalidScope' => '/var/www/module/OAuth/src/OAuth/Exception/InvalidScope.php',
-  'OAuth\\Exception\\ClientRedirectMismatch' => '/var/www/module/OAuth/src/OAuth/Exception/ClientRedirectMismatch.php',
-  'OAuth\\Exception\\InvalidValidationCode' => '/var/www/module/OAuth/src/OAuth/Exception/InvalidValidationCode.php',
-  'OAuth\\Exception\\InvalidClientSecret' => '/var/www/module/OAuth/src/OAuth/Exception/InvalidClientSecret.php',
-);
+// autoload_classmap.php
+return [];
