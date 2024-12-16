@@ -5,13 +5,14 @@ namespace Application\Factory;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use PHPMailer\PHPMailer\PHPMailer;
+use UserAuth\Model\User\User;
 
 class PHPMailerWrapperFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null)
     {
         $obj = new $requestedName();
-        
+
         //Server settings
         $mailer = new PHPMailer(true);
         //$mail->SMTPDebug = SMTP::DEBUG_SERVER; //Enable verbose debug output
@@ -26,7 +27,7 @@ class PHPMailerWrapperFactory implements FactoryInterface
         $mailer->Port       = getenv('SMTP_PORT');
 
         $obj->setPhpMailer($mailer);
-        
+
         return $obj;
     }
 }

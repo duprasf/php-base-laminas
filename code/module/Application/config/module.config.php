@@ -102,6 +102,7 @@ $return = [
             "filesize-suffixes" => Factory\FilesizeSuffixesFactory::class,
             Listener\ApplicationSetupListener::class => Factory\Listener\ApplicationSetupListenerFactory::class,
             Model\PHPMailerWrapper::class => Factory\PHPMailerWrapperFactory::class,
+            Model\LaminasEmail::class => Factory\LaminasEmailFactory::class,
         ],
         'invokables' => [
             'breadcrumbs' => Model\Breadcrumbs::class,

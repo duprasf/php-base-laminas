@@ -87,7 +87,7 @@ class ApplicationSetupListener
             100
         );
 
-        $eventManager->getSharedManager()->attach(
+        $sharedEventManager->attach(
             '*',
             MvcEvent::EVENT_RENDER,
             array($this, 'updateViewLang'),

@@ -7,12 +7,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception as SMTP_Exception;
 use Application\Interface\EmailerInterface;
-use UserAuth\Trait\UserAwareTrait;
 
 class PHPMailerWrapper implements EmailerInterface
 {
-    use UserAwareTrait;
-
     public function __construct(bool $userException=true)
     {
         $this->setUseException($userException);
@@ -39,12 +36,12 @@ class PHPMailerWrapper implements EmailerInterface
 
         $mail = $this->getPhpMailer();
         //Recipients
-        $mail->setFrom($personalisation['from'] ?? $this->getUser()->email ?? 'no-reply@hc-sc.gc.ca');
+        $mail->setFrom($personalisation['from'] ?? 'no-reply@noemail.com');
         $mail->addAddress($recipient);
 
         //Content
         $body = $template['body'];
-        $body = str_replace(array_map(function($v){return '{{'.$v.'}}';}, array_keys($personalisation)), $personalisation, $body);
+        $body = str_replace(array_map(function($v){return '(('.$v.'))';}, array_keys($personalisation)), $personalisation, $body);
         $mail->isHTML(true);
         $mail->Subject = $template['subject'];
         $mail->Body    = $body;
