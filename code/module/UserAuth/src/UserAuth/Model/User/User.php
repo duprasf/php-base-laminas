@@ -2,6 +2,7 @@
 
 namespace UserAuth\Model\User;
 
+use Exception;
 use ArrayObject;
 use Laminas\EventManager\EventManagerInterface as EventManager;
 use Laminas\Session\Container;
@@ -23,8 +24,14 @@ class User extends ArrayObject implements UserInterface
     public function register(array $data)
     {
         $this->getEventManager()->trigger(UserEvent::REGISTER.'.pre', $this, [$this->getIdField() => $data[$this->getIdField()]]);
-        $result = $this->getAuthenticator()->register($data);
-        $this->getEventManager()->trigger(UserEvent::REGISTER, $this, [$this->getIdField() => $data[$this->getIdField()]]);
+        try {
+            $result = $this->getAuthenticator()->register($data);
+            $this->authenticate(...$data);
+            $this->getEventManager()->trigger(UserEvent::REGISTER, $this, [$this->getIdField() => $data[$this->getIdField()]]);
+        } catch(Exception $e) {
+            $this->getEventManager()->trigger(UserEvent::REGISTER.'.err', $this, [$this->getIdField() => $data[$this->getIdField()]]);
+            throw $e;
+        }
         return $result;
     }
 
@@ -77,6 +84,45 @@ class User extends ArrayObject implements UserInterface
             return true;
         }
         $this->setArrayAndSession($data);
+        return $data;
+    }
+
+    public function validateEmail($token)
+    {
+        $this->getEventManager()->trigger(
+            UserEvent::EMAIL_CONFIRMED.'.pre',
+            $this,
+            ['token' => $token]
+        );
+        $data = $this->getAuthenticator()->validateToken($token);
+        if(!$data) {
+            $this->getEventManager()->trigger(UserEvent::EMAIL_CONFIRMED.'.err', $this, [
+                'token' => $token,
+                'error' => 'Token not found'
+            ]);
+            $this->logout();
+            return false;
+        }
+        unset($data['token']);
+        $this->setArrayAndSession($data);
+        $this->saveToSession();
+        $results = $this->getEventManager()->trigger(
+            UserEvent::EMAIL_CONFIRMED,
+            $this,
+            [
+                'token' => $token,
+                $this->getIdField()=>$data[$this->getIdField()],
+            ]
+        );
+
+        foreach($results as $result) {
+            if(!is_array($result)) {
+                continue;
+            }
+            if(isset($result['redirectToRoute'])) {
+                return $result;
+            }
+        }
         return $data;
     }
 

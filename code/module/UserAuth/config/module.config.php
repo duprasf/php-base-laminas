@@ -11,8 +11,9 @@ return [
         'routes' => [
             'emailLoginValidateToken' => [
                 'type'    => Segment::class,
+                'priority' => 100,
                 'options' => [
-                    'route'    => '/{email-login}/:token',
+                    'route'    => '/{email-validation}/:token',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'emailLoginValidateToken',

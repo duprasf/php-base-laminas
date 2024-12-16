@@ -115,6 +115,18 @@ class MySQLStorage extends AbstractStorage implements StorageInterface
         $prepared->execute([$token]);
         return $prepared->fetch(PDO::FETCH_ASSOC);
     }
+    public function removeToken(string $token, string $id)
+    {
+        $query = "UPDATE `".$this->getTableName()."`
+                SET `".$this->getTokenField()."`=''
+            WHERE `".$this->getTokenField()."` LIKE ?
+                AND `".$this->getIdField()."` LIKE ?
+            LIMIT 1
+        ";
+        $prepared = $this->getDatabaseConnection()->prepare($query);
+        $prepared->execute([$token, $id]);
+        return $prepared->rowCount();
+    }
 
     public function findUniqueValue(string $fieldName, $cbGenerate): mixed
     {

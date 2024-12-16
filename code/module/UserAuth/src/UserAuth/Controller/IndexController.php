@@ -13,9 +13,15 @@ class IndexController extends AbstractActionController
     public function emailLoginValidateTokenAction()
     {
         try {
-            $arg = ['token' => $this->params()->fromRoute('token')];
-            $data = $this->getUser()->authenticate(...$arg);
-            return $this->redirect()->toRoute($data['redirectToRoute']);
+            $data = $this->getUser()->validateEmail($this->params()->fromRoute('token'));
+
+            if(isset($data['redirectToRoute'])) {
+                return $this->redirect()->toRoute($data['redirectToRoute'], $data['redirectParams']??[]);
+            }
+            if(isset($data['redirectToUrl'])) {
+                return $this->redirect()->toUrl($data['redirectToUrl']);
+            }
+            return $this->redirect()->toUrl('/');
         } catch (Exception $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());
         }

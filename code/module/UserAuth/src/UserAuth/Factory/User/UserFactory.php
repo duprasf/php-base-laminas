@@ -50,7 +50,6 @@ class UserFactory implements FactoryInterface
             }
         }
 
-
         return $obj;
     }
 }

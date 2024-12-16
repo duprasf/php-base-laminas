@@ -3,16 +3,21 @@
 namespace UserAuth\Model\User\Authenticator;
 
 use Laminas\Mvc\I18n\Translator as MvcTranslator;
+use Void\UUID;
+use Application\Trait\LanguageAwareTrait;
 use UserAuth\Exception\UserException;
 use UserAuth\Exception\WrongPasswordException;
 use UserAuth\Exception\InvalidCredentialsException;
 use UserAuth\Exception\InvalidPassword;
+use UserAuth\Exception\InvalidToken;
 use UserAuth\Exception\UserExistsException;
 use UserAuth\Model\User\Authenticator\AuthenticatorInterface;
 use UserAuth\Model\User\Authenticator\AbstractAuthenticator;
 
 class CredentialsAuthenticator extends AbstractAuthenticator implements AuthenticatorInterface
 {
+    use LanguageAwareTrait;
+
     private $lastPasswordErrors = [];
     public function getLastPasswordErrors(): array
     {
@@ -44,6 +49,7 @@ class CredentialsAuthenticator extends AbstractAuthenticator implements Authenti
         }
         unset($data['confirmPassword']);
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        $data[$this->getEmailTokenFieldName()] = UUID::v4();
         return $this->getStorage()->insert($data);
     }
 
@@ -60,6 +66,17 @@ class CredentialsAuthenticator extends AbstractAuthenticator implements Authenti
         if(!password_verify($password, $data['password'])) {
             throw new WrongPasswordException();
         }
+        return $data;
+    }
+
+    public function validateToken($token)
+    {
+        $data = $this->getStorage()->findByToken($token);
+        if(!$data) {
+            throw new InvalidToken();
+        }
+        unset($data['password']);
+        $this->getStorage()->removeToken($token, $data[$this->getIdField()]);
         return $data;
     }
 
@@ -173,7 +190,7 @@ class CredentialsAuthenticator extends AbstractAuthenticator implements Authenti
         $this->translator = $mvcTranslator;
         return $this;
     }
-    protected function getTranslator()
+    protected function getTranslator(): MvcTranslator
     {
         return $this->translator;
     }

@@ -11,7 +11,7 @@ class UserEvent
     public const LOGIN_FAILED = 'user.login_failed';
     public const RESET_PASSWORD_REQUEST = 'user.reset_pwd_request';
     public const RESET_PASSWORD_HANDLED = 'user.reset_pwd_handled';
-    public const CONFIRM_EMAIL_HANDLED = 'user.confirm_email_handled';
+    public const EMAIL_CONFIRMED = 'user.email_confirmed';
     public const EMAIL_SENT = 'user.email_sent';
     public const CHANGE_PASSWORD = 'user.change_password';
 }

@@ -59,8 +59,8 @@ class UserAudit
             case UserEvent::RESET_PASSWORD_HANDLED:
                 $message .= '[RESET_PASS_HANDLED] A password reset link was used for {username} ({userId}) from {ip} using {userAgent}.';
                 break;
-            case UserEvent::CONFIRM_EMAIL_HANDLED:
-                $message .= '[CONFIRM_EMAIL_SENT] A confirmation email was sent to {email} for user {username} ({userId}).';
+            case UserEvent::EMAIL_CONFIRMED:
+                $message .= '[EMAIL_CONFIRMED] The link sent to {email} for user {username} ({userId}) was confirmed.';
                 break;
             case UserEvent::REGISTER:
                 $message .= '[REGISTER] A new user, {username} ({userId}), has registered from {ip} using {userAgent}.';
