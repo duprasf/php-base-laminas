@@ -62,16 +62,13 @@ class OAuth2ClientController extends AbstractActionController
 
     public function jsAction()
     {
-
+        $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/javascript');
+        $this->getResponse()->getHeaders()->addHeaderLine('Content-Language', 'en');
         if(!$this->enabled) {
-            $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/javascript');
-            $this->getResponse()->getHeaders()->addHeaderLine('Content-Language', 'en');
             $this->getResponse()->setContent('');
             return $this->getResponse();
         }
 
-        $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/javascript');
-        $this->getResponse()->getHeaders()->addHeaderLine('Content-Language', 'en');
         $view = new ViewModel();
         $view->setTerminal(true);
 
