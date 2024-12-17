@@ -87,7 +87,7 @@ class EmailAuthenticator extends AbstractAuthenticator implements AuthenticatorI
      * Validating the user by using the token send by the authenticate function
      * @return bool
      */
-    public function validate(string|null $token = null): array
+    public function validateToken(string|null $token = null): array
     {
         $data = $this->getStorage()->findByToken($token);
         if(!$data) {
