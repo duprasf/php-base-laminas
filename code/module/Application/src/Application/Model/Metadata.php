@@ -29,8 +29,8 @@ class Metadata extends ArrayObject
     public function getDefaultMetadataFromEnvVariables()
     {
         $a = [
-            'issued' => getenv('ISSUED_DATE'),
-            'modified' => getenv('LAST_MODIFIED_DATE'),
+            'issued' => getExistingEnv('ISSUED_DATE'),
+            'modified' => getExistingEnv('LAST_MODIFIED_DATE'),
         ];
         // this is to remove keys with "false" which is the default return from getenv()
         return array_filter($a);

@@ -22,7 +22,7 @@ if(!in_array('noAutoLoadApps', $extraModules)) {
 }
 
 
-$envModules = getenv('LAMINAS_LOAD_MODULES');
+$envModules = getExistingEnv('LAMINAS_LOAD_MODULES');
 if($envModules) {
     try {
         $envModules = json_decode($envModules, true);

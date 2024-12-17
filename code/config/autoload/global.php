@@ -34,18 +34,18 @@ return [
                 'issued' => date("Y-m-d"),
                 'subject' => ['en' => 'GV Government and Politics','fr' => 'GV Gouvernement et vie politique'],
             ],
-            'JWT_SECRET' => getenv('JWT_SECRET')
-                ? getenv('JWT_SECRET')
+            'JWT_SECRET' => getExistingEnv('JWT_SECRET')
+                ? getExistingEnv('JWT_SECRET')
                 : 'Secret key for the JWT. The longer the more secure. Nulla semper eros eget dolor commodo, ut ultrices metus auctor. Mauris arcu odio, suscipit non eros non, egestas porttitor erat. Integer id lectus tristique, dapibus metus luctus, lacinia magna. Nunc urna turpis, tempor ac commodo sit amet, mattis ut elit. Curabitur ut lacus nec orci luctus rhoncus. Cras venenatis fringilla suscipit. Etiam id feugiat risus. Nullam molestie dictum pulvinar. Quisque vehicula varius nisi. Proin placerat augue mi, et molestie magna cursus ut. Integer ullamcorper risus sed erat gravida sollicitudin et sed risus. Suspendisse potenti. Integer lorem neque, vehicula vel dui vitae, fringilla ullamcorper augue. Sed ut diam ipsum. Mauris a massa lobortis, dapibus est quis, tempus massa.'
             ,
 
-            'useAdobeAnalytics' => getenv('ANALYTICS_USE_ADOBE'),
-            'useAdobeAnalyticsWithPersonalInformation' => getenv('ANALYTICS_USE_ADOBE_WITH_PERSONAL_INFORMATION'),
-            'googleAnalyticsId' => getenv('ANALYTICS_GA_ID'),
+            'useAdobeAnalytics' => getExistingEnv('ANALYTICS_USE_ADOBE'),
+            'useAdobeAnalyticsWithPersonalInformation' => getExistingEnv('ANALYTICS_USE_ADOBE_WITH_PERSONAL_INFORMATION'),
+            'googleAnalyticsId' => getExistingEnv('ANALYTICS_GA_ID'),
 
             'cdts-version' => '5_0_1',
             'cdts-path' => 'https://www.canada.ca/etc/designs/canada/cdts/gcweb/v%s',
-            'cdts-env' => getenv('PHP_DEV_ENV') ? 'dev' : 'prod',
+            'cdts-env' => getExistingEnv('PHP_DEV_ENV') ? 'dev' : 'prod',
             'cdts-integrity' => [
                 '4_0_24' => [
                     '/cdts/compiled/soyutils.js' => 'sha384-32eoaED5PWLqUcm/SmCNYkjyLGbZouGKcA7SqNkg4pw/HO5GQvYe41sFH2Gurff2',
@@ -117,12 +117,12 @@ return [
         ],
     ],
     'session_config' => [
-        'remember_me_seconds' => getenv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400),
+        'remember_me_seconds' => getExistingEnv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400),
         /*
         'name' => 'laminas_basic',
         'cookie_secure' => true,
-        'cookie_lifetime' => getenv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400),
-        'gc_maxlifetime' => (getenv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400)) + 3600,
+        'cookie_lifetime' => getExistingEnv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400),
+        'gc_maxlifetime' => (getExistingEnv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400)) + 3600,
         /**/
     ],
     'session_storage' => [

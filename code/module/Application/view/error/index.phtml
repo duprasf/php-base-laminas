@@ -6,7 +6,7 @@
 <h1>An error occurred</h1>
 <h2><?= $this->message ?></h2>
 
-<?php if (! empty($this->display_exceptions)) : ?>
+<?php if (! empty($this->display_exceptions) || getExistingEnv('PHP_DEV_ENV')) : ?>
     <?php if (isset($this->exception) && $this->exception instanceof \Throwable) : ?>
 <hr/>
 

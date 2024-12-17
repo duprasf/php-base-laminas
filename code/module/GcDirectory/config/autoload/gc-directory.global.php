@@ -14,12 +14,12 @@ return [
     'service_manager' => [
         'services' => [
             'gc-directory-config' => [
-                "secret-token" => getenv("GCDIRECTORY_SECRET_TOKEN"),
-                "base-url" => getenv('GCDIRECTORY_API_URL'),
-                "username" => getenv('GCDIRECTORY_USER'),
-                "password" => getenv('GCDIRECTORY_PASSWORD'),
-                "adminKey" => getenv('GCDIRECTORY_ADMIN_KEY'),
-                "deptId" => getenv('GCDIRECTORY_DEPT_ID'),
+                "secret-token" => getExistingEnv("GCDIRECTORY_SECRET_TOKEN"),
+                "base-url" => getExistingEnv('GCDIRECTORY_API_URL'),
+                "username" => getExistingEnv('GCDIRECTORY_USER'),
+                "password" => getExistingEnv('GCDIRECTORY_PASSWORD'),
+                "adminKey" => getExistingEnv('GCDIRECTORY_ADMIN_KEY'),
+                "deptId" => getExistingEnv('GCDIRECTORY_DEPT_ID'),
             ],
         ],
     ],

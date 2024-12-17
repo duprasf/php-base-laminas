@@ -15,22 +15,22 @@ class LaminasEmailFactory implements FactoryInterface
 
         $transport = new SmtpTransport();
         $options   = new SmtpOptions([
-            'name'              => getenv('SMTP_NAME') ?? 'SMTP',
-            'host'              => getenv('SMTP_HOST'),
-            'port'              => getenv('SMTP_PORT'),
-            'connection_class'  => getenv('SMTP_AUTH'),
+            'name'              => getExistingEnv('SMTP_NAME') ?? 'SMTP',
+            'host'              => getExistingEnv('SMTP_HOST'),
+            'port'              => getExistingEnv('SMTP_PORT'),
+            'connection_class'  => getExistingEnv('SMTP_AUTH'),
             'connection_config' => [
-                'ssl'      => getenv('SMTP_ENCRYPTION'),
-                'username' => getenv('SMTP_USERNAME'),
-                'password' => getenv('SMTP_PASSWORD'),
+                'ssl'      => getExistingEnv('SMTP_ENCRYPTION'),
+                'username' => getExistingEnv('SMTP_USERNAME'),
+                'password' => getExistingEnv('SMTP_PASSWORD'),
             ],
         ]);
 
         $transport->setOptions($options);
         $obj->setSmtpTransport($transport);
 
-        if(getenv('SMTP_ERROR_REPORTING_EMAIL')) {
-            $obj->setErrorReportingEmail(getenv('SMTP_ERROR_REPORTING_EMAIL'));
+        if(getExistingEnv('SMTP_ERROR_REPORTING_EMAIL')) {
+            $obj->setErrorReportingEmail(getExistingEnv('SMTP_ERROR_REPORTING_EMAIL'));
         }
 
         return $obj;

@@ -238,20 +238,20 @@ class ApplicationSetupListener
     */
     public function onError(MvcEvent $event)
     {
-        if(getenv('PHP_DEV_ENV')) {
+        if(getExistingEnv('PHP_DEV_ENV')) {
             // do not report in dev
             return;
         }
 
-        if(!getenv('GC_NOTIFY_ERROR_REPORTING_API_KEY')) {
+        if(!getExistingEnv('GC_NOTIFY_ERROR_REPORTING_API_KEY')) {
             // we do not have the GC Notify Key for reporting errors :(
             return;
         }
 
         // TODO: should set GcNotify as a dependency injection
         $notify = new GcNotify();
-        $notify->setErrorReportingKey(getenv('GC_NOTIFY_ERROR_REPORTING_API_KEY'));
-        $notify->setAppName(getenv('GC_NOTIFY_ERROR_REPORTING_APP_NAME'));
+        $notify->setErrorReportingKey(getExistingEnv('GC_NOTIFY_ERROR_REPORTING_API_KEY'));
+        $notify->setAppName(getExistingEnv('GC_NOTIFY_ERROR_REPORTING_APP_NAME'));
 
         $exception = $event->getParam('exception');
         if ($exception) {

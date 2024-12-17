@@ -16,8 +16,8 @@ class ActiveDirectoryFactory implements FactoryInterface
     {
         // The factory created the object to be returned
         $obj = new ActiveDirectory();
-        if(getenv('LAMINAS_LDAP_CONNECTIONS')) {
-            $options = json_decode(getenv('LAMINAS_LDAP_CONNECTIONS'), true);
+        if(getExistingEnv('LAMINAS_LDAP_CONNECTIONS')) {
+            $options = json_decode(getExistingEnv('LAMINAS_LDAP_CONNECTIONS'), true);
         }
         if(!$options && $container->has('ldap-options')) {
             $options = $container->get('ldap-options');

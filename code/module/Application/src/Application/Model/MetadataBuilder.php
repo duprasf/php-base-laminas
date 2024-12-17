@@ -109,15 +109,15 @@ class MetadataBuilder
 
             if(!isset($data['issued']) || (isset($data['issued']) && !preg_match('(^\d{4}-\d{2}-\d{2}(?: \d{1,2}:\d{1,2}(?::\d{1,2})?)?$)', $data['issued']))) {
                 $error[] = $this->translate('Issued date is invalid');
-                $data['issued'] = getenv('ISSUED_DATE') ? strtotime(getenv('ISSUED_DATE')) : time();
-                $data['issuedTimestamp'] = getenv('ISSUED_DATE') ? strtotime(getenv('ISSUED_DATE')) : time();
+                $data['issued'] = getExistingEnv('ISSUED_DATE') ? strtotime(getExistingEnv('ISSUED_DATE')) : time();
+                $data['issuedTimestamp'] = getExistingEnv('ISSUED_DATE') ? strtotime(getExistingEnv('ISSUED_DATE')) : time();
             } else {
                 $data['issuedTimestamp'] = strtotime($data['issued']);
             }
 
             if(!isset($data['modified']) || !is_string($data['modified']) || $data['modified'] == '') {
-                $data['modified'] = getenv('LAST_MODIFIED_DATE') ? strtotime(getenv('LAST_MODIFIED_DATE')) : $data['issued'];
-                $data['modifiedTimestamp'] = getenv('LAST_MODIFIED_DATE') ? strtotime(getenv('LAST_MODIFIED_DATE')) : $data['issuedTimestamp'];
+                $data['modified'] = getExistingEnv('LAST_MODIFIED_DATE') ? strtotime(getExistingEnv('LAST_MODIFIED_DATE')) : $data['issued'];
+                $data['modifiedTimestamp'] = getExistingEnv('LAST_MODIFIED_DATE') ? strtotime(getExistingEnv('LAST_MODIFIED_DATE')) : $data['issuedTimestamp'];
             } elseif(isset($data['modified']) && !preg_match('(^\d{4}-\d{2}-\d{2}(?: \d{1,2}:\d{1,2}(?::\d{1,2})?)?$)', $data['modified'])) {
                 $error[] = $this->translate('Modified date is invalid');
                 $data['modified'] = $data['issued'];

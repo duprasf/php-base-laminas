@@ -5,19 +5,31 @@ declare(strict_types=1);
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 
+function getExistingEnv($name)
+{
+    return isset($_ENV[$name]) ? $_ENV[$name] : null;
+}
+
+// if exists read/load all environment variables found in the folder below
 $envFolder = dirname(__DIR__).DIRECTORY_SEPARATOR.'environment';
 if(file_exists($envFolder) && is_dir($envFolder) && is_readable($envFolder)) {
     foreach(glob($envFolder.DIRECTORY_SEPARATOR.'*.env') as $file) {
-        foreach(file($file) as $line) {
-            if(!trim($line)) {
+        $array = file($file);
+        foreach($array as $line) {
+            $line = trim($line);
+            $split = explode('=',$line);
+            $key = array_shift($split);
+            if(!$line) {
                 continue;
             }
             putenv(trim($line));
+
+            $_ENV[$key]=implode('=', $split);
         }
     }
 }
 
-if(getenv('PHP_DEV_ENV')) {
+if(getExistingEnv('PHP_DEV_ENV')) {
     ini_set('display_errors', true);
     error_reporting(E_ALL);
 }
@@ -25,7 +37,7 @@ if(getenv('PHP_DEV_ENV')) {
 try {
     $GLOBALS['startTime'] = microtime(true);
 
-    $root = getenv('LAMINAS_ROOT_PATH') ?: dirname(__DIR__);//'/var/www';
+    $root = getExistingEnv('LAMINAS_ROOT_PATH') ?: dirname(__DIR__);//'/var/www';
     /**
      * This makes our life easier when dealing with paths. Everything is relative
      * to the application root now.
@@ -62,7 +74,7 @@ try {
     Application::init($appConfig)->run();
 
 } catch(\Exception $e) {
-    if(getenv('PHP_DEV_ENV')) {
+    if(getExistingEnv('PHP_DEV_ENV')) {
         print '<pre>'.$e->getMessage().'</pre>';
         print 'Stack:<pre>';
         debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -73,3 +85,4 @@ try {
         print 'unknown error';
     }
 }
+

@@ -10,12 +10,12 @@ use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack;
 use GcNotify\GcNotify;
 
 $cronjobRoute=[];
-if(getenv('LAMINAS_CRONJOB') && strlen(getenv('LAMINAS_CRONJOB')) >= 35) {
+if(getExistingEnv('LAMINAS_CRONJOB') && strlen(getExistingEnv('LAMINAS_CRONJOB')) >= 35) {
     $cronjobRoute=[
         'default-cronjob' => [
             'type'    => Literal::class,
             'options' => [
-                'route'    => '/cronjob-'.getenv('LAMINAS_CRONJOB'),
+                'route'    => '/cronjob-'.getExistingEnv('LAMINAS_CRONJOB'),
                 'defaults' => [
                     'controller' => Controller\CronjobController::class,
                     'action'     => 'cronjob',
@@ -177,7 +177,7 @@ $return = [
 ];
 
 // if in dev add a opcache page
-if(getenv('PHP_DEV_ENV') == 1) {
+if(getExistingEnv('PHP_DEV_ENV') == 1) {
     $return['router']['routes']['cache'] = [
         'type'    => Literal::class,
         'options' => [

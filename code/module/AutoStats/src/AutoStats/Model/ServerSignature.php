@@ -11,15 +11,15 @@ class ServerSignature
         $data = array_merge(
             ServerSpecs::get(),
             [
-                'isDocker' => getenv('IN_DOCKER'),
-                'containerName' => getenv('IN_DOCKER') ? getenv('DOCKER_CONTAINER_NAME') : '',
-                'framework' => getenv('USING_FRAMEWORK') ?? 'Laminas',
+                'isDocker' => getExistingEnv('IN_DOCKER'),
+                'containerName' => getExistingEnv('IN_DOCKER') ? getExistingEnv('DOCKER_CONTAINER_NAME') : '',
+                'framework' => getExistingEnv('USING_FRAMEWORK') ?? 'Laminas',
             ]
         );
 
-        if(getenv('DATABASE_SERVER')) {
-            $data['databaseServer'] = getenv('DATABASE_SERVER');
-            $data['databaseName'] = getenv('DATABASE_DBNAME');
+        if(getExistingEnv('DATABASE_SERVER')) {
+            $data['databaseServer'] = getExistingEnv('DATABASE_SERVER');
+            $data['databaseName'] = getExistingEnv('DATABASE_DBNAME');
         }
         return $data;
     }

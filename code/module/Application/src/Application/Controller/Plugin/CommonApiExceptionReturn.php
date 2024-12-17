@@ -15,7 +15,7 @@ class CommonApiExceptionReturn extends AbstractPlugin
         }
         $view->setVariable(
             'error',
-            getenv("PHP_DEV_ENV")
+            getExistingEnv("PHP_DEV_ENV")
                 ? $e->getMessage() .' ('.$e->getFile().':'.$e->getLine().')'
                 : 'Unknown error'
         );

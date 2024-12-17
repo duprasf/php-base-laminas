@@ -17,14 +17,14 @@ class PHPMailerWrapperFactory implements FactoryInterface
         $mailer = new PHPMailer(true);
         //$mail->SMTPDebug = SMTP::DEBUG_SERVER; //Enable verbose debug output
         $mailer->isSMTP();
-        $mailer->Host       = getenv('SMTP_HOST');
-        if(getenv('SMTP_USERNAME') && getenv('SMTP_PASSWORD')) {
+        $mailer->Host       = getExistingEnv('SMTP_HOST');
+        if(getExistingEnv('SMTP_USERNAME') && getExistingEnv('SMTP_PASSWORD')) {
             $mailer->SMTPAuth   = true;
-            $mailer->Username   = getenv('SMTP_USERNAME');
-            $mailer->Password   = getenv('SMTP_PASSWORD');
+            $mailer->Username   = getExistingEnv('SMTP_USERNAME');
+            $mailer->Password   = getExistingEnv('SMTP_PASSWORD');
         }
-        $mailer->SMTPSecure = getenv('SMTP_ENCRYPTION');//PHPMailer::ENCRYPTION_STARTTLS;
-        $mailer->Port       = getenv('SMTP_PORT');
+        $mailer->SMTPSecure = getExistingEnv('SMTP_ENCRYPTION');//PHPMailer::ENCRYPTION_STARTTLS;
+        $mailer->Port       = getExistingEnv('SMTP_PORT');
 
         $obj->setPhpMailer($mailer);
 

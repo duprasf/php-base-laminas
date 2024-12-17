@@ -17,8 +17,8 @@ class GcNotifyFactory implements FactoryInterface
             }
             $obj = new GcNotify();
 
-            if(getenv('GC_NOTIFY_TEMPATES')) {
-                $templates = json_decode(getenv('GC_NOTIFY_TEMPATES'), true);
+            if(getExistingEnv('GC_NOTIFY_TEMPATES')) {
+                $templates = json_decode(getExistingEnv('GC_NOTIFY_TEMPATES'), true);
                 if(json_last_error() == JSON_ERROR_NONE) {
                     $obj->setTemplates($templates);
                 }
@@ -27,32 +27,32 @@ class GcNotifyFactory implements FactoryInterface
                 $obj->setTemplates($container->get('gc-notify-templates'));
             }
 
-            if(getenv('GC_NOTIFY_API_KEY')) {
-                $obj->setApiKey(getenv('GC_NOTIFY_API_KEY'));
+            if(getExistingEnv('GC_NOTIFY_API_KEY')) {
+                $obj->setApiKey(getExistingEnv('GC_NOTIFY_API_KEY'));
             }
             if($container->has('gc-notify-error-reporting-key')) {
                 $obj->setApiKey($container->get('gc-notify-error-reporting-key'));
             }
 
-            if(getenv('GC_NOTIFY_ERROR_REPORTING_API_KEY')) {
-                $obj->setErrorReportingKey(getenv('GC_NOTIFY_ERROR_REPORTING_API_KEY'));
+            if(getExistingEnv('GC_NOTIFY_ERROR_REPORTING_API_KEY')) {
+                $obj->setErrorReportingKey(getExistingEnv('GC_NOTIFY_ERROR_REPORTING_API_KEY'));
             }
             if($container->has('gc-notify-error-reporting-key')) {
                 $obj->setErrorReportingKey($container->get('gc-notify-error-reporting-key'));
             }
 
-            if(getenv('GC_NOTIFY_ERROR_REPORTING_APP_NAME')) {
-                $obj->setAppName(getenv('GC_NOTIFY_ERROR_REPORTING_APP_NAME'));
+            if(getExistingEnv('GC_NOTIFY_ERROR_REPORTING_APP_NAME')) {
+                $obj->setAppName(getExistingEnv('GC_NOTIFY_ERROR_REPORTING_APP_NAME'));
             }
-            if(getenv('GC_NOTIFY_APP_NAME')) {
-                $obj->setAppName(getenv('GC_NOTIFY_APP_NAME'));
+            if(getExistingEnv('GC_NOTIFY_APP_NAME')) {
+                $obj->setAppName(getExistingEnv('GC_NOTIFY_APP_NAME'));
             }
             if($container->has('gc-notify-error-reporting-app-name')) {
                 $obj->setAppName($container->get('gc-notify-error-reporting-app-name'));
             }
 
-            if(getenv('GC_NOTIFY_OVERWRITE_ALL_EMAIL')) {
-                $obj->setOverwriteEmail(getenv('GC_NOTIFY_OVERWRITE_ALL_EMAIL'));
+            if(getExistingEnv('GC_NOTIFY_OVERWRITE_ALL_EMAIL')) {
+                $obj->setOverwriteEmail(getExistingEnv('GC_NOTIFY_OVERWRITE_ALL_EMAIL'));
             }
             if($container->has('gc-notify-overwrite_all_email')) {
                 $obj->setOverwriteEmail($container->get('gc-notify-overwrite_all_email'));

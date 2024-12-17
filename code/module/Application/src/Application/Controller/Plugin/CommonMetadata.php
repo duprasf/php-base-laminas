@@ -98,7 +98,7 @@ class CommonMetadata extends AbstractPlugin
             "description" => $translator->translate("Default Application"),
             "versionNumber" => '1.0',
             "isApp" => false,
-            "contactLinks" => ["mailto:".getenv('ADMIN_EMAIL')],
+            "contactLinks" => ["mailto:".getExistingEnv('ADMIN_EMAIL')],
             "showShare" => false,
             "showFeedback" => false,
             "appUrl" => $url('root'),
