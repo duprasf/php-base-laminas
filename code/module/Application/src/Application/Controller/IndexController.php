@@ -35,6 +35,7 @@ class IndexController extends AbstractActionController
     {
         $view = new ViewModel();
         $this->_setCommonMetadata($view);
+        $view->setTerminal(true);
 
         return $view;
     }

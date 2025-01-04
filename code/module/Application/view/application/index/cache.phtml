@@ -30,6 +30,24 @@ $statuses = [
 ];
 
 ?>
+<!DOCTYPE html><html class="no-js" lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex">
+    <title>OPCache</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="robots" content="noindex,nofollow">
+
+    <meta property="dcterms:subject" title="gccore" content="GV Government and Politics; GV Gouvernement et vie politique">
+    <meta property="dcterms:language" title="ISO639-2/T" content="eng">
+
+    <meta property="dcterms:issued" title="W3CDTF" content="2025-01-04">
+    <meta property="dcterms:modified" title="W3CDTF" content="2025-01-04">
+
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' *.charactersheets.ca *.charactersheets.xyz use.fontawesome.com code.jquery.com bootstrapdocs.com 'unsafe-eval' 'unsafe-inline'; img-src 'self' data:">
+
+    <link rel="stylesheet" href="https://bootstrapdocs.com/v3.3.1/docs/dist/css/bootstrap.min.css">
 <style>
 .status {
     display:flex;
@@ -163,6 +181,8 @@ $statuses = [
 #live-refresh::before {
 }
 </style>
+<script src="/application/js/basescript.js"></script>
+<script src="/application/js/jsonview.js"></script>
 <script>
 ready(init);
 let liveRefreshInterval;
@@ -294,6 +314,23 @@ function parse(data) {
 }
 </script>
 
+    <link rel="shortcut icon" href="/character-sheets/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/character-sheets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/character-sheets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/character-sheets/favicon-16x16.png">
+    <link rel="manifest" href="/character-sheets/site.webmanifest">
+    <link rel="mask-icon" href="/character-sheets/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#000000">
+    <!--
+    manifest.json provides metadata used when your web app is added to the
+    homescreen on Android. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="/charactersheets/manifest.json">
+
+</head>
+<body vocab="http://schema.org/" typeof="WebPage" data-user-id="0" data-theme="light">
 <div class="btn-group">
     <button class="btn btn-default" id="live-refresh"><span class="glyphicon glyphicon-unchecked"></span>&nbsp;Live refresh</button>
     <button class="btn btn-default" id="refresh">Refresh</button>
@@ -341,3 +378,5 @@ function parse(data) {
 
 <div id="dump" class="well">
 </div>
+</body>
+</html>
