@@ -10,6 +10,7 @@ use UserAuth\UserEvent;
 use UserAuth\Model\JWT;
 use UserAuth\Exception\UserException;
 use UserAuth\Exception\JwtException;
+use UserAuth\Exception\InvalidCredentialsException;
 use UserAuth\Model\User\Storage\StorageInterface;
 use UserAuth\Model\User\Authenticator\AuthenticatorInterface;
 
@@ -156,7 +157,7 @@ class User extends ArrayObject implements UserInterface
     */
     public function logout(): self
     {
-        $id = $this[$this->getIdField()];
+        $id = isset($this[$this->getIdField()]) ? $this[$this->getIdField()] : 0;
         $this->getEventManager()->trigger(UserEvent::LOGOUT.'.pre', $this, [$this->getIdField() => $id, 'target' => $id]);
         $this->getAuthenticator()->logout();
         $this->destroySession();
@@ -254,6 +255,37 @@ class User extends ArrayObject implements UserInterface
             $payload['id'] = $this[$this->getIdField()] ?? null;
         }
         return $payload;
+    }
+
+    public function setToken(string|int $id, string|array $tokenOrCallback): string
+    {
+        $tokenField = $this->getAuthenticator()->getEmailTokenFieldName();
+        if(!$tokenField) {
+            throw new UserException('No token field set');
+        }
+        $token = $this->getStorage()->findUniqueValue($tokenField, $tokenOrCallback);
+        if(!$this->getStorage()->update($id, [$tokenField=>$token])) {
+            throw new UserException('Could not save token');
+        }
+        return $token;
+    }
+
+    public function changePassword(string|int $id, string $existing, string $new): bool
+    {
+        $storage = $this->getStorage();
+        $tokenFieldName=$this->getAuthenticator()->getEmailTokenFieldName();
+        $existingValues = $storage->read($id, ['password', $tokenFieldName]);
+        if($existingValues[$tokenFieldName] && $existing == $existingValues[$tokenFieldName]) {
+            if($result = $storage->update($id, ['password'=>password_hash($new, PASSWORD_DEFAULT),$tokenFieldName=>''])) {
+                $this->authenticate(...[$this->getIdField()=>$id, 'password'=>$new]);
+            }
+
+            return $result;
+        }
+        if(!password_verify($existing, $existingValues['password'])) {
+            throw new InvalidCredentialsException();
+        }
+        return $storage->update($id, ['password'=>password_hash($new, PASSWORD_DEFAULT)]);
     }
 
     //****************** Session

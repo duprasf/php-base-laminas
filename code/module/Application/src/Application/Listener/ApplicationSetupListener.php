@@ -101,6 +101,7 @@ class ApplicationSetupListener
         if(!$session->isValid()) {
             $session->destroy();
         }
+
         $session->start();
 
         $container = new Container('initialized');

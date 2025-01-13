@@ -206,7 +206,7 @@ class CredentialsAuthenticator extends AbstractAuthenticator implements Authenti
         $this->tokenFieldName = $tokenFieldName;
         return $this;
     }
-    protected function getEmailTokenFieldName(): string
+    public function getEmailTokenFieldName(): string
     {
         if(!$this->tokenFieldName) {
             $this->tokenFieldName = 'token';
