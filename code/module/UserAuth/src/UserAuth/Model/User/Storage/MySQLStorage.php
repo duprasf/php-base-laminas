@@ -134,10 +134,13 @@ class MySQLStorage extends AbstractStorage implements StorageInterface
         $prepared = $this->getDatabaseConnection()->prepare($query);
         $i = 0;
         while($i < 500) {
-            $value = call_user_func($cbGenerate);
+            $value = is_array($cbGenerate) ? call_user_func($cbGenerate) : $cbGenerate;
             $prepared->execute([$value]);
             if($prepared->rowCount() === 0) {
                 break;
+            }
+            if(!is_array($cbGenerate)) {
+                $i=510;
             }
             $i++;
         }
