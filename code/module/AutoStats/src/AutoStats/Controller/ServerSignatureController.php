@@ -35,7 +35,7 @@ class ServerSignatureController extends AbstractRestfulController
             return $view;
         }
 
-        $data = ServerSignature::get();
+        $data = ServerSignature::get(['os', 'web']);
 
         $publicKey = openssl_get_publickey($this->getApmLitePublicKey());
 

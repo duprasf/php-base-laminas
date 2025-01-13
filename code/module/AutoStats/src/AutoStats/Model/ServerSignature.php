@@ -6,10 +6,10 @@ use Void\ServerSpecs;
 
 class ServerSignature
 {
-    public static function get(): array
+    public static function get(int|array $params=0): array
     {
         $data = array_merge(
-            ServerSpecs::get(),
+            ServerSpecs::get($params),
             [
                 'isDocker' => getExistingEnv('IN_DOCKER'),
                 'containerName' => getExistingEnv('IN_DOCKER') ? getExistingEnv('DOCKER_CONTAINER_NAME') : '',
