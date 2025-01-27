@@ -37,6 +37,7 @@ RUN npm install --global gulp-cli && npm install
 
 # Install all the composer package including Zend Framework
 RUN composer update
+RUN composer require mongodb/mongodb
 
 # Make a folder and clone the Void repo (developed by Francois Dupras)
 RUN mkdir -p /var/www/vendor/Void && git clone https://github.com/duprasf/Void.git /var/www/vendor/Void/.
