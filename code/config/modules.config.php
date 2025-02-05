@@ -51,13 +51,13 @@ $modules = array_merge([
     'Laminas\Di',
     'Laminas\Router',
     'Laminas\Validator',
-    'OAuth',
+    //'OAuth',
     'UserAuth',
     'ActiveDirectory',
     'Application',
     'PublicAsset',
     'TranslationExtractor',
-    'AutoStats'
+    //'AutoStats'
 ], $GLOBALS['modulesInAppsFolder'], $extraModules);
 
 if(getenv('PHP_DEV_ENV') && isset($_GET['show_modules'])) {
