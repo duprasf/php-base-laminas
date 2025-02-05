@@ -131,8 +131,11 @@ class MongodbStorage extends AbstractStorage implements StorageInterface
         $this->db = $obj;
         return $this;
     }
-    protected function getDatabaseConnection(): MongoCollection
+    public function getDatabaseConnection($collection = null): MongoCollection
     {
+        if($collection) {
+            return $this->db->$collection;
+        }
         if($this->db instanceof MongoCollection) {
             return $this->db;
         }
