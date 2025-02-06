@@ -8,7 +8,7 @@ use Laminas\View\Model\JsonModel;
 
 class CommonApiReturn extends AbstractPlugin
 {
-    public function __invoke(array $data, null|JsonModel $view=null)
+    public function __invoke(mixed $data, null|JsonModel $view=null)
     {
         if(!$view) {
             $view = new JsonModel();

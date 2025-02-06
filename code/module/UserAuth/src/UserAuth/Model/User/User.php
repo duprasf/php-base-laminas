@@ -326,7 +326,7 @@ class User extends ArrayObject implements UserInterface
             $container->exchangeArray([]);
             return false;
         }
-        $this->setArrayAndSession($this->getStorage()->read($data[$this->getIdField()]));
+        $this->setArrayAndSession($data);
         return true;
     }
 
