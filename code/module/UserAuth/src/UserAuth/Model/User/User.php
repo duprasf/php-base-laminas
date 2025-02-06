@@ -9,7 +9,6 @@ use Laminas\Session\Container;
 use UserAuth\UserEvent;
 use UserAuth\Model\JWT;
 use UserAuth\Exception\UserException;
-use UserAuth\Exception\UserExistsException;
 use UserAuth\Exception\JwtException;
 use UserAuth\Exception\InvalidCredentialsException;
 use UserAuth\Model\User\Storage\StorageInterface;
@@ -27,14 +26,8 @@ class User extends ArrayObject implements UserInterface
     {
         $this->getEventManager()->trigger(UserEvent::REGISTER.'.pre', $this, [$this->getIdField() => $data[$this->getIdField()]]);
         try {
-            $result = false;
-            try {
-                $result = $this->getAuthenticator()->register($data);
-            } catch(UserExistsException $e) {
-                // if the user already exists in the DB, just continue
-            }
+            $result = $this->getAuthenticator()->register($data);
             $this->authenticate(...$data);
-
             $this->getEventManager()->trigger(UserEvent::REGISTER, $this, [$this->getIdField() => $data[$this->getIdField()]]);
         } catch(Exception $e) {
             $this->getEventManager()->trigger(UserEvent::REGISTER.'.err', $this, [$this->getIdField() => $data[$this->getIdField()]]);

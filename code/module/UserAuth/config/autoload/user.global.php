@@ -1,7 +1,5 @@
 <?php
 
-namespace UserAuth;
-
 return [
     'service_manager' => [
         'service' => [
