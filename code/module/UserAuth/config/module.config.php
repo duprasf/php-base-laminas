@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UserAuth;
 
 use Laminas\Router\Http\Segment;
+use Laminas\Session\Storage\SessionArrayStorage;
 
 return [
     'router' => [
