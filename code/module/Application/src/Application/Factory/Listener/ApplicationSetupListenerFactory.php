@@ -14,10 +14,12 @@ class ApplicationSetupListenerFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestName, array $options = null)
     {
         $obj = new $requestName();
-        $obj->setSessionManager($container->get(SessionManager::class));
+        $sessionManager=$container->get('sessionManager');
+        $obj->setSessionManager($sessionManager);
 
         $obj->setRequest($container->get(Request::class));
         $obj->setConfig($container->get('Config'));
+        $obj->setDomain($container->get('domain'));
         return $obj;
     }
 }

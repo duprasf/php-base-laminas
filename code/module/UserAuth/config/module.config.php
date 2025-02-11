@@ -202,4 +202,17 @@ return [
             __NAMESPACE__ => __DIR__ . '/../view',
         ],
     ],
+    'session' => [
+        'config' => [
+            'options'=> [
+                'use_cookies' => true,
+                'cookie_domain'=>getenv('PHP_SESSION_DOMAIN'),
+                'name' => "sessionName",
+                'remember_me_seconds' => getenv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400),
+            ],
+        ],
+    ],
+    'session_storage' => [
+        'type' => SessionArrayStorage::class,
+    ],
 ];

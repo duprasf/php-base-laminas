@@ -19,16 +19,16 @@ class SessionManagerFactory implements FactoryInterface
             return $sessionManager;
         }
 
-        $session = $config['session'];
+        $config = $config['session'];
 
         $sessionConfig = null;
-        if (isset($session['config'])) {
-            $class = isset($session['config']['class'])
-            ? $session['config']['class']
+        if (isset($config['config'])) {
+            $class = isset($config['config']['class'])
+            ? $config['config']['class']
             : SessionConfig::class;
 
-            $options = isset($session['config']['options'])
-            ? $session['config']['options']
+            $options = isset($config['config']['options'])
+            ? $config['config']['options']
             : [];
 
             $sessionConfig = new $class();
@@ -36,16 +36,16 @@ class SessionManagerFactory implements FactoryInterface
         }
 
         $sessionStorage = null;
-        if (isset($session['session_storage'])) {
-            $class = $session['session_storage'];
+        if (isset($config['session_storage'])) {
+            $class = $config['session_storage'];
             $sessionStorage = new $class();
         }
 
         $sessionSaveHandler = null;
-        if (isset($session['save_handler'])) {
+        if (isset($config['save_handler'])) {
             // class should be fetched from service manager
             // since it will require constructor arguments
-            $sessionSaveHandler = $container->get($session['save_handler']);
+            $sessionSaveHandler = $container->get($config['save_handler']);
         }
 
         $sessionManager = new SessionManager(

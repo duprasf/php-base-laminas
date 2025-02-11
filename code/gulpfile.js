@@ -39,9 +39,9 @@ function js(cb) {
                         let newJson={};
                         for(let str in json) {
                             if(str.indexOf('apps/'+folder+'/public') >= 0) {
-                                newJson[str.replace('apps/'+folder+'/public', camelToDash(folder))] = json[str];
+                                newJson[str.replace('apps/'+folder+'/public', '/'+camelToDash(folder))] = json[str];
                             } else if(str.indexOf('module/'+folder+'/public') >= 0) {
-                                newJson[str.replace('module/'+folder+'/public', camelToDash(folder))] = json[str];
+                                newJson[str.replace('module/'+folder+'/public', '/'+camelToDash(folder))] = json[str];
                             }
                         }
                         return JSON.stringify(newJson);

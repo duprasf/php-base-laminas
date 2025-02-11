@@ -119,19 +119,13 @@ class ApplicationSetupListener
         $container->httpUserAgent = $request->getServer()->get('HTTP_USER_AGENT');
 
         $config = $this->getConfig();
-        if (!isset($config['session_config'])) {
-            return;
-        }
-
-        $sessionConfig = $config['session_config'];
-
-        if (!isset($sessionConfig['validators'])) {
+        if (!isset($config['session']['validators'])) {
             return;
         }
 
         $chain = $session->getValidatorChain();
 
-        foreach ($sessionConfig['validators'] as $validator) {
+        foreach ($config['session']['validators'] as $validator) {
             switch ($validator) {
                 case Validator\HttpUserAgent::class:
                     $validator = new $validator($container->httpUserAgent);
@@ -266,5 +260,16 @@ class ApplicationSetupListener
         ]);
 
         return;
+    }
+
+    private $domain;
+    public function setDomain(string $domain): self
+    {
+        $this->domain = $domain;
+        return $this;
+    }
+    protected function getDomain(): string
+    {
+        return $this->domain;
     }
 }

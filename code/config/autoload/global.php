@@ -116,16 +116,4 @@ return [
             ],
         ],
     ],
-    'session_config' => [
-        'remember_me_seconds' => getExistingEnv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400),
-        /*
-        'name' => 'laminas_basic',
-        'cookie_secure' => true,
-        'cookie_lifetime' => getExistingEnv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400),
-        'gc_maxlifetime' => (getExistingEnv('PHP_SESSION_TIME') ?: (ini_get('session.gc_maxlifetime') ?: 86400)) + 3600,
-        /**/
-    ],
-    'session_storage' => [
-        'type' => SessionArrayStorage::class,
-    ],
 ];

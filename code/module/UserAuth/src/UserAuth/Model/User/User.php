@@ -300,7 +300,9 @@ class User extends ArrayObject implements UserInterface
             $data['iat'] = time();
         }
         $data['exp'] = time() + $this->getSessionLength();
-        $container->exchangeArray($data);
+        foreach($data as $k=>$v) {
+            $container->$k=$v;
+        }
         return $this;
     }
 

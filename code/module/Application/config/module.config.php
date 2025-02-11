@@ -7,6 +7,7 @@ namespace Application;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\Mvc\I18n\Router\TranslatorAwareTreeRouteStack;
+use Laminas\Session\SessionManager;
 use GcNotify\GcNotify;
 
 $cronjobRoute=[];
@@ -92,12 +93,14 @@ $return = [
             'sessionManager' => Model\SessionManager::class,
         ],
         'factories' => [
+            SessionManager::class => Factory\SessionManagerFactory::class,
+            Model\SessionManager::class => Factory\SessionManagerFactory::class,
+
             Command\Cronjob::class => Factory\Command\CronjobCommandFactory::class,
             Model\Metadata::class => Factory\MetadataFactory::class,
             'lang' => Factory\LangFactory::class,
             'domain' => Factory\DomainFactory::class,
             Model\MetadataBuilder::class => Factory\MetadataBuilderFactory::class,
-            Model\SessionManager::class => Factory\SessionManagerFactory::class,
             GcNotify::class => Factory\GcNotifyFactory::class,
             "filesize-suffixes" => Factory\FilesizeSuffixesFactory::class,
             Listener\ApplicationSetupListener::class => Factory\Listener\ApplicationSetupListenerFactory::class,
