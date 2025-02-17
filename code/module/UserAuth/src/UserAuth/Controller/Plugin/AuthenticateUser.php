@@ -6,33 +6,13 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Http\Header\Authorization;
 use Laminas\Http\Header\GenericHeader;
 use UserAuth\Model\User\UserInterface;
-use UserAuth\Model\EmailUser;
+use UserAuth\Trait\UserAwareTrait;
 use UserAuth\Model\JWT;
 use UserAuth\Exception\JwtException;
 
 class AuthenticateUser extends AbstractPlugin
 {
-    private $user;
-    public function setUser(UserInterface $obj)
-    {
-        $this->user = $obj;
-        return $this;
-    }
-    protected function getUser()
-    {
-        return $this->user;
-    }
-
-    private $jwtObj;
-    public function setJwtObj(JWT $obj)
-    {
-        $this->jwtObj = $obj;
-        return $this;
-    }
-    protected function getJwtObj()
-    {
-        return $this->jwtObj;
-    }
+    use UserAwareTrait;
 
     public function __invoke(Authorization|GenericHeader|string|null $auth): string|UserInterface
     {
@@ -60,5 +40,16 @@ class AuthenticateUser extends AbstractPlugin
 
         $this->getUser()->loadFromJwt($jwt);
         return $this->getUser();
+    }
+
+    private $jwtObj;
+    public function setJwtObj(JWT $obj)
+    {
+        $this->jwtObj = $obj;
+        return $this;
+    }
+    protected function getJwtObj()
+    {
+        return $this->jwtObj;
     }
 }

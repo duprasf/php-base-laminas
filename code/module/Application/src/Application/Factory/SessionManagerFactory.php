@@ -20,7 +20,6 @@ class SessionManagerFactory implements FactoryInterface
         }
 
         $config = $config['session'];
-
         $sessionConfig = null;
         if (isset($config['config'])) {
             $class = isset($config['config']['class'])
