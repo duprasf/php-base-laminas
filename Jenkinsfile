@@ -95,15 +95,6 @@ pipeline {
                 }
                 script {
                     def buildInfoTemp
-                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.2", 'docker-local'
-                    buildInfo.append buildInfoTemp
-                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.2${version}", 'docker-local'
-                    buildInfo.append buildInfoTemp
-                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.2-mongodb", 'docker-local'
-                    buildInfo.append buildInfoTemp
-                    buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.2${version}-mongodb", 'docker-local'
-                    buildInfo.append buildInfoTemp
-
                     buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.3", 'docker-local'
                     buildInfo.append buildInfoTemp
                     buildInfoTemp = artifactoryDocker.push "${containerRegistry}/php/php-base-laminas:8.3${version}", 'docker-local'
