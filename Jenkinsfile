@@ -74,18 +74,10 @@ pipeline {
                     sh """
                         docker login -u ${USR} -p ${PWD} ${containerRegistry}
 
-                        docker build --pull -t php-base-laminas:8.2${version} -t php-base-laminas:8.2 -f dockerfile82 .
-                        docker tag php-base-laminas:8.2 ${containerRegistry}/php/php-base-laminas:8.2
-                        docker tag php-base-laminas:8.2${version} ${containerRegistry}/php/php-base-laminas:8.2${version}
-
                         docker build --pull -t php-base-laminas:8.3${version} -t php-base-laminas:8.3 -t php-base-laminas:latest -f dockerfile83 .
                         docker tag php-base-laminas:8.3 ${containerRegistry}/php/php-base-laminas:8.3
                         docker tag php-base-laminas:8.3${version} ${containerRegistry}/php/php-base-laminas:8.3${version}
                         docker tag php-base-laminas:latest ${containerRegistry}/php/php-base-laminas:latest
-
-                        docker build --pull -t php-base-laminas:8.2${version}-mongodb -t php-base-laminas:8.2-mongodb -f dockerfile82-mongodb .
-                        docker tag php-base-laminas:8.2-mongodb ${containerRegistry}/php/php-base-laminas:8.2-mongodb
-                        docker tag php-base-laminas:8.2${version}-mongodb ${containerRegistry}/php/php-base-laminas:8.2${version}-mongodb
 
                         docker build --pull -t php-base-laminas:8.3${version}-mongodb -t php-base-laminas:8.3-mongodb -t php-base-laminas:latest-mongodb -f dockerfile83-mongodb .
                         docker tag php-base-laminas:8.3${version}-mongodb ${containerRegistry}/php/php-base-laminas:8.3${version}-mongodb
@@ -125,13 +117,9 @@ pipeline {
                 ]
             )
             sh """
-                docker rmi php-base-laminas:8.2
-                docker rmi php-base-laminas:8.2${version}
                 docker rmi php-base-laminas:8.3
                 docker rmi php-base-laminas:8.3${version}
                 docker rmi php-base-laminas:latest
-                docker rmi php-base-laminas:8.2-mongodb
-                docker rmi php-base-laminas:8.2${version}-mongodb
                 docker rmi php-base-laminas:8.3${version}-mongodb
                 docker rmi php-base-laminas:8.3-mongodb
                 docker rmi php-base-laminas:latest-mongodb
