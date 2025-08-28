@@ -43,9 +43,8 @@ return [
             'useAdobeAnalyticsWithPersonalInformation' => getExistingEnv('ANALYTICS_USE_ADOBE_WITH_PERSONAL_INFORMATION'),
             'googleAnalyticsId' => getExistingEnv('ANALYTICS_GA_ID'),
 
-            'cdts-version' => '5_0_1',
+            'cdts-version' => '5_0_4',
             'cdts-path' => 'https://www.canada.ca/etc/designs/canada/cdts/gcweb/v%s',
-            'cdts-env' => getExistingEnv('PHP_DEV_ENV') ? 'dev' : 'prod',
             'cdts-integrity' => [
                 '4_0_24' => [
                     '/cdts/compiled/soyutils.js' => 'sha384-32eoaED5PWLqUcm/SmCNYkjyLGbZouGKcA7SqNkg4pw/HO5GQvYe41sFH2Gurff2',
@@ -102,6 +101,13 @@ return [
                     '/cdts/compiled/wet-fr.js' => 'sha384-uUG0C9gTNvYwZ1GW/xEfNqqs/ZFGBcR6y+yyKSXEWuB3nqCpDelitWilNMGXMwT3',
                     '/cdts/cdtsfixes.css' => "sha384-zSpYa4FHx3BrgIDTrj3QGfclWZJ6b3KtRRzwPmcZBEnd1Bl9U5TCUP0DqT/RJYGW",
                     '/cdts/cdtsapps.css' => "sha384-6fF78tukeGgTIwO3KIWClcj4QTOZUlpI3OGFYb9wKYf6XrWUSgxSdlbUepkvQql1",
+                ],
+                '5_0_4' => [
+                    '/cdts/compiled/soyutils.js' => 'sha384-hfwnpowMIP7hDqCMoNULlqSq7k2nu8R7zl+zHfYpNc5iokyd+Gbk5NO5ZdJFCv0o',
+                    '/cdts/compiled/wet-en.js' => 'sha384-tT+kiosMFIpLfCr8ZkcRVoPtIdcsnhIgMJMFb9zKb5NE4yglUoVYp1qZYBX1ui90',
+                    '/cdts/compiled/wet-fr.js' => 'sha384-tlXuD/on3VRQMr12FnaRxyFnJ6KhK/yQhx421YtEFd2ii/ls0hqlWe61+el/wfLt',
+                    '/cdts/cdtsfixes.css' => "sha384-zSpYa4FHx3BrgIDTrj3QGfclWZJ6b3KtRRzwPmcZBEnd1Bl9U5TCUP0DqT/RJYGW",
+                    '/cdts/cdtsapps.css' => "sha384-/3ozjJq3Da48CBxM82HmEsdCECRvz2pEbA6IO86wqkZuI3UjXK+jLAfho2xUlhLv",
                 ],
             ],
         ],
