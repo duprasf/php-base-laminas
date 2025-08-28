@@ -1,9 +1,7 @@
 <?php
-
-use \Application\Model\Breadcrumbs;
+use Application\Model\Breadcrumbs;
 
 $layout = $this->viewModel()->getCurrent();
-
 $views = $layout->getChildren();
 $view = isset($views[0]) ? $views[0] : $layout;
 $this->completeMetadata($layout);
@@ -18,7 +16,6 @@ $cdtsVersion = $layout->cdts['version'];
 $integrity = $layout->cdts['integrity'];
 $cdtsPath = $layout->cdts['path'];
 
-$cdtsEnv = $layout->cdts['env'];
 $cdnEnv = $cdtsEnv == 'prod' ? 'live' : 'dev';
 
 if(is_null($this->attribution) && !is_null($view->attribution)) {
@@ -36,6 +33,9 @@ elseif(is_string($this->attribution) && strpos($this->attribution, '|')) {
     $this->attribution = null;
 }
 
+if(is_array($this->contentSecurityPolicy)) {
+    $this->contentSecurityPolicy=join(' ',$this->contentSecurityPolicy);
+}
 if(!$this->contentSecurityPolicy) {
     $this->contentSecurityPolicy = "default-src 'self' *.canada.ca healthycanadians.gc.ca canadiaensensante.gc.ca code.jquery.com ajax.googleapis.com google.com www.google.com assets.adobedtm.com www.google-analytics.com ssl.google-analytics.com www.googletagmanager.com *.googleapis.com fonts.gstatic.com use.fontawesome.com 'unsafe-eval' 'unsafe-inline'";
 }
@@ -50,8 +50,8 @@ $usefulLinksTitle = $layout->usefulLinksTitle ? $layout->usefulLinksTitle : $thi
 $usefulLinksLocation = $layout->usefulLinksLocation;
 ?>
 <?= $this->doctype() ?>
-<!--[if lt IE 9]><html class="no-js lt-ie9<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr"><![endif]--><!--[if gt IE 8]><!-->
-<html class="no-js<?=!$cdtsEnv==='live'?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr">
+<!--[if lt IE 9]><html class="no-js lt-ie9<?=$this->phpDevEnv==true?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr"><![endif]--><!--[if gt IE 8]><!-->
+<html class="no-js<?=$this->phpDevEnv==true?' dev':'';?>" lang="<?=$this->lang;?>" dir="ltr">
     <!--<![endif]-->
     <head>
 
@@ -93,10 +93,54 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
 
         <meta http-equiv="Content-Security-Policy" content="<?=$this->contentSecurityPolicy;?>">
 
+        <?php if($this->noRobots):?>
+        <meta name="robots" content="noindex, nofollow">
+        <?php endif; ?>
+
         <script src="/application/js/basescript.js"></script>
         <script>
         // framework placeholder (for user, session timeout, etc.)
-        let laminas = {};
+        let laminas = {
+            dataTableCall: (selector, settings)=>{
+                // it is better to do it with WET since the solution below
+                // created two sort buttons for each fields
+                // However, it seems only 1 table per page can be done this way.
+                window["wb-tables"] = settings;
+                $( selector ).trigger( "wb-init.wb-tables" );
+
+                //////////
+                // settings should be something like
+                //{
+                //    "serverSide": true,
+                //    "ajax"      : {
+                //        "url":laminas.[...].urls.api.logs,
+                //        "beforeSend": laminas.datatableBeforeSend,
+                //        "contentType":"application/json; charset=utf-8",
+                //        "dataSrc":"data" // the name of the arg containing the data
+                //    },
+                //    "cache": false,
+                //    "columns": [
+                //        {"data": "_id", "name":"id", "visible": false},
+                //        {"data": "microtimestamp", "name": laminas.directory.strings['Time'], "render":(data, type, row, meta)=>{
+                //            let m = moment(data);
+                //            return m.fromNow();
+                //        }},
+                //        {"data": "userId",  "name": laminas.directory.strings['User']},
+                //        {"data": "action",  "name": laminas.directory.strings['Action']},
+                //        {"data": "params",  "name": laminas.directory.strings['Target'], "render":(data, type, row, meta)=>{
+                //            return data['target']??'';
+                //        }},
+                //        {"data": "params",  "name": laminas.directory.strings['Params'], "visible": false},
+                //    ]
+                //}
+
+            },
+            datatableBeforeSend: (request) => {
+                //request.setRequestHeader("authorization", 'Bearer '+laminas.user.getJwt());
+                request.setRequestHeader("X-for-datatable", 1);
+                return true;
+            }
+        };
         laminas.isApp = '<?=$this->layout()->isApp;?>';
         laminas.lang = '<?=$this->lang;?>';
         ready(function(){
@@ -164,8 +208,8 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         <!-- Write closure template -->
         <script>
             document.write(wet.builder.refTop({
-                cdnEnv: "<?=$cdtsEnv;?>",
-                jqueryEnv: "<?=$cdtsEnv;?>"
+                cdnEnv: "prod",
+                jqueryEnv: "prod"
             }));
         </script>
 
@@ -291,7 +335,15 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         <?endif;?>
 
             <?if(!$this->isAppWithoutH1):?>
-                <h1 property="name" id="wb-cont"><?=$this->titleH1;?></h1>
+                <?php if($this->thumbnail):?>
+                    <div class="col-md-6"><div class="row profile">
+                <?php endif; ?>
+                <?php if($this->pagetag):?>
+                      <h1 property="name" id="wb-cont"><?=$this->titleH1;?></h1>
+                      <p class="pagetag"><?=$this->pagetag;?></p>
+                <?php else: ?>
+                    <h1 property="name" id="wb-cont"><?=$this->titleH1;?></h1>
+                <?php endif;?>
                 <?if(is_array($this->attribution) && count($this->attribution) == 2):?>
                     <p class="gc-byline">
                         <strong>
@@ -300,6 +352,10 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                         </strong>
                     </p>
                 <?endif;?>
+                <?php if($this->thumbnail):?>
+                    </div></div>
+                    <div class="col-md-6 margin-top-small hidden-sm hidden-xs"> <img src="<?=$this->thumbnail?>" alt="" class="pull-right img-responsive thumbnail"></div>
+                <?php endif; ?>
             <?endif;?>
 
 
@@ -470,7 +526,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             });
             var defPreFooter = document.getElementById("def-preFooter");
             defPreFooter.outerHTML = wet.builder.preFooter({
-                cdnEnv: "<?=$cdtsEnv;?>",
+                cdnEnv: "prod",
                 <?php print $this->showShare===false?'showShare: false,':'';?>
                 <?php print $this->showFeedback===false?'showFeedback: false,':'';?>
                 <?php print $this->versionNumber?"versionIdentifier: '".$this->versionNumber."',":'';?>

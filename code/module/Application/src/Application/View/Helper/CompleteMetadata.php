@@ -2,6 +2,7 @@
 
 namespace Application\View\Helper;
 
+use Exception;
 use Laminas\View\Renderer\RendererInterface;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Model\ViewModel;
@@ -40,10 +41,9 @@ class CompleteMetadata implements \Laminas\View\Helper\HelperInterface
             } else {
                 $metadata->completeMetadata();
             }
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             var_dump($e->getMessage());
             exit(basename(__FILE__).':'.__LINE__.PHP_EOL);
-
         }
 
         $layout->setVariables($metadata);

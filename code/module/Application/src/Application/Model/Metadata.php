@@ -3,6 +3,7 @@
 namespace Application\Model;
 
 use ArrayObject;
+use ArrayIterator;
 use Laminas\Mvc\I18n\Translator;
 use Application\Exception\MetadataException;
 use Application\Model\Breadcrumbs;
@@ -14,6 +15,35 @@ use Application\Model\Breadcrumbs;
 class Metadata extends ArrayObject
 {
     private $ready = false;
+
+    public function __construct(array|object $array = [], int $flags = 0, string $iteratorClass = ArrayIterator::class) {
+        if(!isset($array['contentSecurityPolicy'])) {
+            $array['contentSecurityPolicy']=[
+                "default-src",
+                "'self'",
+                "*.canada.ca",
+                "healthycanadians.gc.ca",
+                "canadiaensensante.gc.ca",
+                "code.jquery.com",
+                "ajax.googleapis.com",
+                "google.com",
+                "www.google.com",
+                "assets.adobedtm.com",
+                "www.google-analytics.com",
+                "ssl.google-analytics.com",
+                "www.googletagmanager.com",
+                "*.googleapis.com",
+                "cse.google.com",
+                "fonts.gstatic.com",
+                "use.fontawesome.com",
+                "netdna.bootstrapcdn.com",
+                "'unsafe-eval'",
+                "'unsafe-inline'",
+            ];
+        }
+        parent::__construct($array, $flags, $iteratorClass);
+        $this->init();
+    }
 
     protected $defaultMetadata = [];
     public function setDefaultMetadata(array $data)
@@ -34,12 +64,6 @@ class Metadata extends ArrayObject
         ];
         // this is to remove keys with "false" which is the default return from getenv()
         return array_filter($a);
-    }
-
-    public function __construct(array|ArrayObject|null $data = [])
-    {
-        $this->exchangeArray($data ?? []);
-        $this->init();
     }
 
     public function init()
@@ -183,7 +207,6 @@ class Metadata extends ArrayObject
             }
             $this['contactLinks'] = json_encode($contact);
         }
-
         return $this;
     }
 }

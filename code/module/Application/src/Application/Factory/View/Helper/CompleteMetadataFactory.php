@@ -25,7 +25,6 @@ class CompleteMetadataFactory implements FactoryInterface
             'version' => $cdtsVersion,
             'integrity' => $integrity,
             'path' => sprintf($sm->has('cdts-path') ? $sm->get('cdts-path') : 'https://www.canada.ca/etc/designs/canada/cdts/gcweb/v%s', $cdtsVersion),
-            'env' => $sm->has('cdts-env') ? $sm->get('cdts-env') : 'dev',
         ]);
 
         $object->setMetadataObj($sm->get(Metadata::class));
