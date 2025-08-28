@@ -6,6 +6,7 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\I18n\Translator;
+use Application\Model\Metadata;
 use Void\ArrayObject;
 
 class IndexController extends AbstractActionController
@@ -22,7 +23,7 @@ class IndexController extends AbstractActionController
     }
 
     private $metadata;
-    public function setMetadata(ArrayObject $obj)
+    public function setMetadata(ArrayObject|Metadata $obj)
     {
         $this->metadata = $obj;
         return $this;

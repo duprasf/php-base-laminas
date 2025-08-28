@@ -2,6 +2,7 @@
 
 namespace Stockpile\Model;
 
+use Application\Model\Metadata;
 use Void\ArrayObject;
 
 /**
@@ -18,7 +19,7 @@ use Void\ArrayObject;
 * $this->page->setDesc(get_string('general_capc_desc', $language_id));
 * $this->page->setDateCreated("2016-04-29");
 */
-class OldHealthCanadaMetadata extends ArrayObject
+class OldHealthCanadaMetadata extends Metadata
 {
     protected $map = [
         "setTitle" => "title",
@@ -29,12 +30,18 @@ class OldHealthCanadaMetadata extends ArrayObject
         "setDcSubjects" => "subject",
         "setDcCreator" => "creator",
         "setLangUrl" => "switch-lang-url",
+        "setAttribution"=>"attribution",
+        "setPageTag"=>"pagetag",
+        "setThumbnail"=>"thumbnail",
     ];
 
     public function __call($name, $args)
     {
         if(isset($this->map[$name])) {
             $this[$this->map[$name]] = $args[0];
+        }
+        if($name == "showNoRobots") {
+            $this["noRobots"]=true;
         }
     }
 }
