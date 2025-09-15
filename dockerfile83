@@ -49,12 +49,6 @@ RUN mkdir -p /var/www/data/cache \
     && chown www-data /var/www/data/cache \
     && rm -Rf html && ln -s public html
 
-# ICM cert is the internal SSC certicate and set cronjob
-COPY icm-root.crt /usr/local/share/ca-certificates/icm-root.crt
-RUN cat /usr/local/share/ca-certificates/icm-root.crt >> /etc/ssl/certs/ca-certificates.crt
-COPY GOC-GDC-ROOT-A.crt /usr/local/share/ca-certificates/GOC-GDC-ROOT-A.crt
-RUN cat /usr/local/share/ca-certificates/GOC-GDC-ROOT-A.crt >> /etc/ssl/certs/ca-certificates.crt
-
 # Clean up
 RUN rm -rf /var/lib/apt/lists/*
 
