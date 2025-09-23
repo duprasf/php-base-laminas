@@ -82,8 +82,8 @@ class FileSystemRoute extends Regex
             $path.'/index-'.$lang.'.php',
             $path.'-'.$lang3.'.php',
             $path.'/index-'.$lang3.'.php',
-            $lang.'/'.$path.'.phtml',
-            $lang.'/'.$path.'.php',
+            '/'.$lang.$path.'.phtml',
+            '/'.$lang.$path.'.php',
         );
         $found = false;
         foreach($possibility as $fullpath) {
