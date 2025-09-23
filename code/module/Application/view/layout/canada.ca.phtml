@@ -16,8 +16,6 @@ $cdtsVersion = $layout->cdts['version'];
 $integrity = $layout->cdts['integrity'];
 $cdtsPath = $layout->cdts['path'];
 
-$cdnEnv = $cdtsEnv == 'prod' ? 'live' : 'dev';
-
 if(is_null($this->attribution) && !is_null($view->attribution)) {
     $this->attribution = $view->attribution;
 }
@@ -290,7 +288,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
                         </section>
                     </div>
                 </div>
-                <nav role="navigation" id="wb-sm" data-ajax-replace="http://cdn.canada.ca/gcweb-cdn-<?=$cdnEnv;?>/sitemenu/sitemenu-<?=$this->lang;?>.html" data-trgt="mb-pnl" class="wb-menu visible-md visible-lg" typeof="SiteNavigationElement">
+                <nav role="navigation" id="wb-sm" data-ajax-replace="//cdn.canada.ca/gcweb-cdn-live/sitemenu/sitemenu-<?=$this->lang;?>.html" data-trgt="mb-pnl" class="wb-menu visible-md visible-lg" typeof="SiteNavigationElement">
                     <div class="container nvbar">
                         <?if($this->lang == 'fr'):?>
                         <h2>Menu des sujets</h2>
@@ -416,7 +414,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             </div></div>
         <?endif;?>
         <div id="def-footer">
-            <aside class="gc-nttvs container" data-ajax-replace="//cdn.canada.ca/gcweb-cdn-<?=$cdnEnv;?>/features/features-<?=$this->lang;?>.html">
+            <aside class="gc-nttvs container" data-ajax-replace="//cdn.canada.ca/gcweb-cdn-live/features/features-<?=$this->lang;?>.html">
                 <?if($this->lang=='fr'):?>
                 <h2>Activités et initiatives du gouvernement du Canada</h2>
                 <div id="gcwb_prts" class="wb-eqht row">
