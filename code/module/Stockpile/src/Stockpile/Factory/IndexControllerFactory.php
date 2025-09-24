@@ -16,7 +16,6 @@ class IndexControllerFactory implements FactoryInterface
         $obj = new IndexController();
         $config = $container->get('config');
 
-        $obj->setTranslator($container->get('MvcTranslator'));
         $obj->setMetadata($container->get('OldHealthCanadaMetadata'));
 
         return $obj;

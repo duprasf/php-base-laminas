@@ -33,6 +33,8 @@ class OldHealthCanadaMetadata extends Metadata
         "setAttribution"=>"attribution",
         "setPageTag"=>"pagetag",
         "setThumbnail"=>"thumbnail",
+        "setExtraCss"=>"extra-css",
+        "setExtraJs"=>"extra-js",
     ];
 
     public function __call($name, $args)

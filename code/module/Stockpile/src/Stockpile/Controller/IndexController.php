@@ -6,22 +6,12 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\I18n\Translator;
-use Application\Model\Metadata;
 use Void\ArrayObject;
+use Application\Model\Metadata;
+use Application\Model\Breadcrumbs;
 
 class IndexController extends AbstractActionController
 {
-    private $translator;
-    public function setTranslator(Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
     private $metadata;
     public function setMetadata(ArrayObject|Metadata $obj)
     {
@@ -42,6 +32,12 @@ class IndexController extends AbstractActionController
         $view->setVariable('lang', $this->params('lang'));
 
         $view->setVariable('metadata', $this->getMetadata());
+        $view->setVariable('breadcrumbItems', new Breadcrumbs([
+            [
+                'href'=>'http://canada.ca/'.$this->getTranslator()->getLang(),
+                'title' => 'Canada.ca'
+            ],
+        ]));
         $view->setVariable('page', $this->getMetadata());
 
         return $view;
