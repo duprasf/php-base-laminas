@@ -509,7 +509,7 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
         <script>
             var defTop = document.getElementById("def-top");
             defTop.outerHTML = wet.builder.<?=$this->isApp?'appTop':'top';?>({
-                cdnEnv: "<?=$cdtsEnv;?>",
+                cdnEnv: "prod",
                 topSecMenu: <?=$sideMenu||$sideMenuPartial ? 'true':'false';?>,
                 lngLinks: [{
                     lang: "<?=$otherLang;?>",
@@ -533,10 +533,10 @@ $usefulLinksLocation = $layout->usefulLinksLocation;
             var defFooter = document.getElementById("def-footer");
             defFooter.outerHTML = wet.builder.<?=$this->isApp?'appFooter':'footer';?>({
                 <?php print $this->contactLinks?"contactLinks: ".$this->contactLinks.",":'';?>
-                cdnEnv: "<?=$cdtsEnv;?>"
+                cdnEnv: "prod"
             });
             document.write(wet.builder.refFooter({
-                cdnEnv: "<?=$cdtsEnv;?>"
+                cdnEnv: "prod"
             }));
         </script>
         <!-- Custom Scripts Start -->
